@@ -143,13 +143,19 @@
   .gcard img{width:74px;height:64px;object-fit:contain;object-position:top;margin-bottom:18px}
   .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
   .gcard h2{font-size:22px;color:var(--ink);font-weight:800;letter-spacing:.1em;margin-bottom:22px}
-  .gcard input{width:100%;height:48px;border:1px solid var(--line);border-radius:14px;background:var(--card-solid);
-    color:var(--ink);font-size:15px;text-align:center;letter-spacing:.18em;font-family:var(--mono);outline:none}
-  .gcard input:focus{border-color:var(--red)}
-  .gcard button{margin-top:12px;width:100%;height:46px;border:none;border-radius:14px;background:var(--red);
-    color:#fff;font-weight:700;font-size:14px;letter-spacing:.06em;cursor:pointer;transition:all .25s var(--ease)}
-  .gcard button:hover{transform:translateY(-2px)}
-  .gmsg{margin-top:12px;font-size:12px;color:var(--red);min-height:16px}
+  .gbtn{
+    width:100%;height:48px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14px;letter-spacing:.02em;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:#f4f4f4;color:#111;border:1px solid #d9d9d9;transition:all .25s var(--ease);
+  }
+  .gbtn:hover{transform:translateY(-2px)}
+  .gbtn .gdot{width:16px;height:16px;border-radius:50%;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
+  .gmsg{margin-top:12px;font-size:12px;color:var(--red);min-height:16px;line-height:1.5}
+  .gout{margin-top:12px;background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:99px;padding:8px 18px;font-size:12px;cursor:pointer;display:none;font-family:inherit}
+  .gout.show{display:inline-block}
+  .gback{display:block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .gback:hover{color:var(--ink)}
 
   @media(max-width:1080px){
     .stage{padding:18px 18px 90px}
@@ -169,10 +175,11 @@
   <div class="gcard">
     <img src="ares-head.png?v=3" alt="">
     <div class="gk">Ares Digital</div>
-    <h2>COMMAND</h2>
-    <input id="gateIn" type="password" placeholder="········" autocomplete="off">
-    <button id="gateBtn">ENTER</button>
+    <h2 id="gateTitle">COMMAND</h2>
+    <button id="gGoogle" class="gbtn"><span class="gdot"></span>Continue with Google</button>
     <div class="gmsg" id="gateMsg"></div>
+    <button class="gout" id="gOut">Sign out</button>
+    <a class="gback" href="index.html">← Back to Anomaly</a>
   </div>
 </div>
 
@@ -248,22 +255,43 @@
   <span class="t"><small>Switch to</small><b>Anomaly</b></span>
 </a>
 
-<script>
-/* gate (shared with hub) */
-const GATE_HASH = "a85442a37b917b5463e629a4f66b0c711a1a04411b1601cdd7c109bcb70a6309";
-async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
-async function tryUnlock(pass, silent){
-  if(await sha("anomaly-hub|"+pass) === GATE_HASH){
-    sessionStorage.setItem("hubKey", pass);
-    document.getElementById("gate").classList.add("off");
-    return true;
+<script type="module">
+/* auth gate — same login as the hub; requires the "ares" permission */
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
+const auth=getAuth(app), db=getFirestore(app);
+const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
+const gMsg=document.getElementById("gateMsg"), gOut=document.getElementById("gOut");
+document.getElementById("gGoogle").onclick=async()=>{
+  gMsg.textContent="";
+  try{ await signInWithPopup(auth,new GoogleAuthProvider()); }
+  catch(e){ gMsg.textContent="SIGN-IN FAILED: "+(e.code||e.message); }
+};
+gOut.onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async u=>{
+  if(!u){ document.getElementById("gate").classList.remove("off"); gOut.classList.remove("show"); return; }
+  const email=(u.email||"").toLowerCase();
+  if(OWNERS.includes(email)){ document.getElementById("gate").classList.add("off"); return; }
+  let ok=false;
+  try{
+    const d=await getDoc(doc(db,"hub","access"));
+    const a=d.exists()?((d.data()||{}).platforms||{}):{};
+    const cfg=a.ares||{mode:"owners"};
+    if(cfg.mode==="everyone") ok=true;
+    else if(cfg.mode==="custom") ok=(cfg.emails||[]).map(e=>e.toLowerCase()).includes(email);
+    else if(cfg.mode==="managers"){
+      try{ const r=await getDoc(doc(db,"roles",email)); const role=r.exists()?(r.data()||{}).role:""; ok=role==="manager"||role==="admin"; }catch(e){}
+    }
+  }catch(e){}
+  if(ok){ document.getElementById("gate").classList.add("off"); }
+  else{
+    document.getElementById("gateTitle").textContent="RESTRICTED";
+    gMsg.textContent="SIGNED IN AS "+email.toUpperCase()+" — NO ARES ACCESS.";
+    gOut.classList.add("show");
   }
-  if(!silent) document.getElementById("gateMsg").textContent = "WRONG PASSCODE";
-  return false;
-}
-(async()=>{const k=sessionStorage.getItem("hubKey"); if(k) await tryUnlock(k,true);})();
-document.getElementById("gateBtn").onclick=()=>tryUnlock(document.getElementById("gateIn").value.trim());
-document.getElementById("gateIn").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock(e.target.value.trim());});
+});
 
 /* 3D spinning spartan — colored faces, darkened core layers */
 const spinner=document.getElementById("spinner");
