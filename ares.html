@@ -197,9 +197,14 @@
       <a href="https://dash.aresdigital.store/">Editors</a>
       <a href="https://aresdigital.store/">Store</a>
     </nav>
-    <div class="userchip">
-      <div class="avatar">DP</div>
-      <div class="who"><b>Daniel Pan</b><span>Owner</span></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="userchip">
+        <div class="avatar">DP</div>
+        <div class="who"><b>Daniel Pan</b><span>Owner</span></div>
+      </div>
+      <button id="logoutBtn" title="Sign out" aria-label="Sign out" style="width:38px;height:38px;border-radius:50%;cursor:pointer;background:var(--card);border:1px solid var(--line);color:var(--muted);display:grid;place-items:center">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
     </div>
   </div>
 
@@ -216,19 +221,19 @@
     <div class="scene"><div class="spinner" id="spinner"></div></div>
 
     <div class="catcol">
-      <a class="fcard" href="https://dash.aresdigital.store/">
+      <a class="fcard" href="https://dash.aresdigital.store/" target="_blank" rel="noopener">
         <div class="row"><span class="label">Operations</span><span class="arrow">↗</span></div>
         <h3>Editor Dashboard</h3>
         <p>Editors pick up, track, and deliver meet media orders.</p>
         <div class="tagline"><span class="tag hot">Live</span><span class="tag">dash.aresdigital.store</span></div>
       </a>
-      <a class="fcard" href="https://aresdigital.store/">
+      <a class="fcard" href="https://aresdigital.store/" target="_blank" rel="noopener">
         <div class="row"><span class="label">Storefront</span><span class="arrow">↗</span></div>
         <h3>Shopify Store</h3>
         <p>Meet collections, packages, and the SellEasy add-on flow.</p>
         <div class="tagline"><span class="tag hot">Live</span><span class="tag">Shopify</span></div>
       </a>
-      <a class="fcard" href="https://admin.shopify.com/">
+      <a class="fcard" href="https://admin.shopify.com/" target="_blank" rel="noopener">
         <div class="row"><span class="label">Back office</span><span class="arrow">↗</span></div>
         <h3>Shopify Admin</h3>
         <p>Orders, products, collections — flip meets live from here.</p>
@@ -237,11 +242,11 @@
     </div>
 
     <div class="pillrow">
-      <a class="pill" href="https://www.instagram.com/">
+      <a class="pill" href="https://www.instagram.com/" target="_blank" rel="noopener">
         <span class="ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg></span>
         <span class="t"><small>Social</small><b>Instagram</b></span>
       </a>
-      <a class="pill" href="https://github.com/anomalycreativeco/ares-editor-dashboard">
+      <a class="pill" href="https://github.com/anomalycreativeco/ares-editor-dashboard" target="_blank" rel="noopener">
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 15.5c2 1.2 5 1.2 7 0M9 10.5v1M15 10.5v1"/></svg></span>
         <span class="t"><small>Source</small><b>GitHub</b></span>
       </a>
@@ -270,6 +275,7 @@ document.getElementById("gGoogle").onclick=async()=>{
   catch(e){ gMsg.textContent="SIGN-IN FAILED: "+(e.code||e.message); }
 };
 gOut.onclick=()=>signOut(auth);
+document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
   if(!u){ document.getElementById("gate").classList.remove("off"); gOut.classList.remove("show"); return; }
   const email=(u.email||"").toLowerCase();

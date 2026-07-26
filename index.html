@@ -67,9 +67,13 @@
   /* ── Top bar ─────────────────────── */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;z-index:6}
   .brand{display:flex;align-items:center;gap:11px}
-  .brand img{width:30px;height:30px;object-fit:contain}
-  .brand-name b{display:block;font-size:14px;letter-spacing:.02em;color:var(--ink);font-weight:700;line-height:1.15}
-  .brand-name span{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .brand .badge{
+    width:34px;height:34px;border-radius:50%;background:#92ABA7;flex:none;
+    display:grid;place-items:center;box-shadow:0 1px 4px rgba(28,33,31,.25);
+  }
+  .brand .badge img{width:19px;height:19px;object-fit:contain;display:block}
+  .brand-name b{display:block;font-size:13px;letter-spacing:.14em;color:var(--ink);font-weight:700;line-height:1.15;text-transform:uppercase}
+  .brand-name span{font-size:11px;color:var(--muted);letter-spacing:.04em}
   .navpills{display:flex;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
   .navpills a,.navpills button{
     font-size:13px;font-weight:600;color:var(--body);cursor:pointer;
@@ -296,23 +300,25 @@
 
   <div class="topbar">
     <div class="brand">
-      <img id="brandLogo" src="logomark.png" alt="Anomaly logomark">
-      <div class="brand-name"><b>Anomaly</b><span>Creative Studio</span></div>
+      <span class="badge"><img id="brandLogo" src="logomark.png" alt="Anomaly logomark"></span>
+      <div class="brand-name"><b>Anomaly</b><span>Studio Hub</span></div>
     </div>
     <nav class="navpills">
-      <button class="active">Platforms</button>
+      <button class="active">Home</button>
       <button data-cat="client">Client</button>
-      <button data-cat="post">Post-Production</button>
       <button data-cat="pre">Pre-Production</button>
-      <a href="https://github.com/anomalycreativeco">GitHub</a>
+      <button data-cat="post">Post-Production</button>
     </nav>
     <div class="tb-right">
       <button class="gear-btn" id="gearBtn" title="Access control" aria-label="Access control">⚙</button>
       <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
-      <div class="userchip" id="userChip" title="Click to sign out">
+      <div class="userchip" id="userChip" title="Account">
         <div class="avatar" id="uAvatar">·</div>
         <div class="who"><b id="uName">—</b><span id="uRole">—</span></div>
       </div>
+      <button class="theme-btn logout-btn" id="logoutBtn" title="Sign out" aria-label="Sign out">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
     </div>
   </div>
 
@@ -351,32 +357,28 @@
         <p>Onboarding, ownership, and client-facing platforms.</p>
         <span class="count" data-count="client">—</span>
       </button>
-      <button class="cat" data-cat="post">
-        <div class="row"><span class="num">SEC·02</span><span class="arrow">↗</span></div>
-        <h3>Post-Production</h3>
-        <p>Editing pipeline — ingest to delivery, with live stats at left.</p>
-        <span class="count" data-count="post">—</span>
-      </button>
       <button class="cat" data-cat="pre">
-        <div class="row"><span class="num">SEC·03</span><span class="arrow">↗</span></div>
+        <div class="row"><span class="num">SEC·02</span><span class="arrow">↗</span></div>
         <h3>Pre-Production</h3>
         <p>Planning, concepts, and content calendars before cameras roll.</p>
         <span class="count" data-count="pre">—</span>
       </button>
+      <button class="cat" data-cat="post">
+        <div class="row"><span class="num">SEC·03</span><span class="arrow">↗</span></div>
+        <h3>Post-Production</h3>
+        <p>Editing pipeline — ingest to delivery, with live stats at left.</p>
+        <span class="count" data-count="post">—</span>
+      </button>
     </div>
 
     <div class="pillrow">
-      <a class="pill" id="pillAnalytics" href="analytics.html" style="display:none">
+      <a class="pill" id="pillAnalytics" href="analytics.html" target="_blank" rel="noopener" style="display:none">
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span>
         <span class="t"><small>Revenue · 2026</small><b>Analytics Dashboard</b></span>
       </a>
-      <a class="pill" id="pillBrand" href="https://anomalycreativeco.github.io/brand-hub/" style="display:none">
+      <a class="pill" id="pillBrand" href="https://anomalycreativeco.github.io/brand-hub/" target="_blank" rel="noopener" style="display:none">
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5"/></svg></span>
         <span class="t"><small>Brand</small><b>Brand Hub</b></span>
-      </a>
-      <a class="pill" href="https://github.com/anomalycreativeco">
-        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 15.5c2 1.2 5 1.2 7 0M9 10.5v1M15 10.5v1"/></svg></span>
-        <span class="t"><small>Source</small><b>GitHub</b></span>
       </a>
     </div>
 
@@ -412,6 +414,11 @@
     <div id="adminList" style="margin-top:18px"></div>
     <button class="asave" id="adminSave">Save access</button>
     <div class="anote" id="adminNote"></div>
+    <div class="anote" style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
+      Source ·
+      <a href="https://github.com/anomalycreativeco" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">GitHub org</a> ·
+      <a href="https://github.com/anomalycreativeco/anomalycreativeco.github.io" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">Hub repo</a>
+    </div>
   </div>
 </div>
 
@@ -448,8 +455,8 @@ const ITEMS={
 };
 const CATMETA={
   client:{kick:"SEC·01 — Client",title:"Client",desc:"Everything that touches a client relationship — from first contact to who owns the account."},
-  post:{kick:"SEC·02 — Post-Production",title:"Post-Production",desc:"The editing engine room. Live production stats surface on the hub front page."},
-  pre:{kick:"SEC·03 — Pre-Production",title:"Pre-Production",desc:"Planning before cameras roll — calendars, concepts, and approvals."}
+  pre:{kick:"SEC·02 — Pre-Production",title:"Pre-Production",desc:"Planning before cameras roll — calendars, concepts, and approvals."},
+  post:{kick:"SEC·03 — Post-Production",title:"Post-Production",desc:"The editing engine room. Live production stats surface on the hub front page."}
 };
 
 let USER=null, MYEMAIL="", MYROLE="none", ACCESS=null;
@@ -460,17 +467,17 @@ const root=document.documentElement, spinner=document.getElementById("spinner");
 const LAYERS=24, DEPTH=26;
 function buildSpinner(){
   const dark=root.getAttribute("data-theme")==="dark";
-  const src=dark?"logomark-green.png":"logomark.png";
+  // dark mode spins the fuzzy AI mark (soft volumetric stack); light mode the machined black mark
+  const src=dark?"logomark-fuzzy.png":"logomark.png";
   spinner.innerHTML="";
   for(let i=0;i<LAYERS;i++){
     const img=document.createElement("img");
     img.src=src; img.alt=i===0?"Anomaly logomark, rotating in 3D":"";
     img.style.transform=`translateZ(${(i-(LAYERS-1)/2)*(DEPTH/(LAYERS-1))}px)`;
-    if(i>1&&i<LAYERS-2) img.style.filter=dark?"brightness(.55)":"invert(.42)";
+    if(!dark && i>1&&i<LAYERS-2) img.style.filter="invert(.42)";
     spinner.appendChild(img);
   }
-  document.getElementById("brandLogo").src=src;
-  document.getElementById("gateLogo").src=src;
+  document.getElementById("gateLogo").src=dark?"logomark-fuzzy.png":"logomark.png";
 }
 function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");
   localStorage.setItem("hub-theme",t);buildSpinner();}
@@ -485,7 +492,7 @@ document.getElementById("gGoogle").onclick=async()=>{
   catch(e){ gMsg.className="gmsg err"; gMsg.textContent=e.code==="auth/popup-closed-by-user"?"Sign-in canceled.":"Sign-in failed: "+(e.code||e.message); }
 };
 gOut.onclick=()=>signOut(auth);
-document.getElementById("userChip").onclick=()=>{ if(confirm("Sign out of the Studio Hub?")) signOut(auth); };
+document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 
 onAuthStateChanged(auth,async u=>{
   if(!u){ USER=null; MYEMAIL=""; MYROLE="none";
@@ -559,7 +566,7 @@ function openCat(key){
   document.getElementById("pDesc").textContent=c.desc;
   const items=visibleItems(key);
   document.getElementById("pList").innerHTML=items.length?items.map(it=>`
-    <a class="prow" href="${it.url}">
+    <a class="prow" href="${it.url}" target="_blank" rel="noopener">
       <span class="pi"><svg viewBox="0 0 24 24"><path d="${it.icon}"/></svg></span>
       <span class="pt"><b>${it.name}</b><span>${it.desc}</span></span>
       <span class="tag">${it.tag}</span><span class="go">↗</span>

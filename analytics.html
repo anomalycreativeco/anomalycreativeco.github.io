@@ -157,6 +157,9 @@
     <div class="tb-right">
       <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
       <a class="backbtn" href="index.html">← Studio Hub</a>
+      <button class="theme-btn" id="logoutBtn" title="Sign out" aria-label="Sign out" style="display:grid;place-items:center">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
     </div>
   </div>
 
@@ -217,6 +220,7 @@ document.getElementById("gGoogle").onclick=async()=>{
   catch(e){ gMsgEl.textContent="Sign-in failed: "+(e.code||e.message); }
 };
 gOut.onclick=()=>signOut(auth);
+document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
   if(!u){ document.getElementById("stepAuth").style.display="block";
     document.getElementById("stepKey").style.display="none";
