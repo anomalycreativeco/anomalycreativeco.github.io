@@ -136,6 +136,14 @@
   .kpi span{font-size:9.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
   .kpi.warn b{color:#c0563c}
   .amsg{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;text-align:center}
+  .trow{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12px;color:var(--body);line-height:1.4}
+  .trow:first-child{border-top:none}
+  .trow .dot{width:6px;height:6px;border-radius:50%;background:var(--green-mid);margin-top:5px;flex:none}
+  .trow.cal .dot{background:var(--green)}
+  .trow.over .dot{background:#c0563c}
+  .trow b{color:var(--ink);font-weight:600}
+  .trow .tt{font-family:var(--mono);font-size:10px;color:var(--muted);flex:none;margin-top:1px}
+  .tmore{font-family:var(--mono);font-size:10px;color:var(--faint);padding-top:6px;letter-spacing:.08em}
   .chart{width:100%;display:block}
   .chart .bar{fill:var(--green-mid);transition:fill .2s}
   .chart .bar:hover{fill:var(--green)}
@@ -333,8 +341,13 @@
     <div class="podium"><div class="ring"></div><div class="shade"></div></div>
     <div class="scene"><div class="spinner" id="spinner"></div></div>
 
-    <!-- live analytics from the Editing Pipeline -->
+    <!-- today + live analytics from the Editing Pipeline -->
     <div class="astrip" id="astrip" style="display:none">
+      <div class="acard" id="todayCard">
+        <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
+        <div id="todayCal"></div>
+        <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
+      </div>
       <div class="acard" id="aKpis">
         <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
         <div id="aBody"><div class="amsg">Loading production stats…</div></div>
@@ -372,6 +385,10 @@
     </div>
 
     <div class="pillrow">
+      <a class="pill" id="pillAutomations" href="automations.html" target="_blank" rel="noopener" style="display:none">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></span>
+        <span class="t"><small>Claude Code</small><b>Client Automations</b></span>
+      </a>
       <a class="pill" id="pillAnalytics" href="analytics.html" target="_blank" rel="noopener" style="display:none">
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span>
         <span class="t"><small>Revenue · 2026</small><b>Analytics Dashboard</b></span>
@@ -439,6 +456,7 @@ const PLATFORMS={
   rchplanner:{name:"RCH Content Planner",cat:"pre",def:"everyone"},
   brandhub:{name:"Brand Hub",cat:null,def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
+  automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
   ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"}
 };
 const ITEMS={
@@ -552,9 +570,52 @@ function applyAccess(){
     document.querySelector(`[data-count="${c}"]`).textContent=n+" platform"+(n===1?"":"s");
   });
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
+  document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("pillBrand").style.display=canSee("brandhub")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
-  document.getElementById("astrip").style.display=canSee("pipeline")?"flex":"none";
+  document.getElementById("astrip").style.display="flex";
+  document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
+  loadToday();
+}
+
+/* ── Today: personal to-dos + Filming / Meetings calendar ── */
+const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function firstName(){return ((USER&&USER.displayName)||MYEMAIL.split("@")[0]).trim().split(/\s+/)[0].toLowerCase();}
+async function loadToday(){
+  const d=new Date();
+  document.getElementById("todayLabel").textContent=d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"});
+  // calendar events, synced into hub/today by Claude each morning
+  try{
+    const t=await getDoc(doc(db,"hub","today"));
+    const data=t.exists()?t.data():null;
+    const cal=document.getElementById("todayCal");
+    let evts=data?data.events:[];
+    if(typeof evts==="string"){try{evts=JSON.parse(evts);}catch(e){evts=[];}}
+    if(data && data.date===todayISO() && (evts||[]).length){
+      cal.innerHTML=(evts||[]).map(e=>`
+        <div class="trow cal"><span class="dot"></span><span class="tt">${e.start||""}</span>
+        <span><b>${e.title}</b> · ${e.cal==="filming"?"Filming":"Meeting"}</span></div>`).join("");
+    } else cal.innerHTML="";
+  }catch(e){ document.getElementById("todayCal").innerHTML=""; }
+  renderTodayTasks(null);
+}
+function renderTodayTasks(tasks){
+  const box=document.getElementById("todayTasks");
+  if(!canSee("pipeline")){ box.innerHTML=""; return; }
+  if(!tasks){ if(!box.dataset.done) box.innerHTML='<div class="amsg">Loading your tasks…</div>'; return; }
+  box.dataset.done="1";
+  const me=firstName(), today=todayISO();
+  const mine=t=>{const a=(t.assignee||"").toLowerCase(); return a===me||a==="all";};
+  const open=tasks.filter(t=>!t.completed&&mine(t));
+  const due=open.filter(t=>t.dueDate===today);
+  const overdue=open.filter(t=>t.dueDate&&t.dueDate<today);
+  let html=due.slice(0,5).map(t=>`
+    <div class="trow"><span class="dot"></span><span><b>${(t.clientAbbr||"—")}</b> · ${t.projectName||t.type||"task"}</span></div>`).join("");
+  if(due.length>5) html+=`<div class="tmore">+${due.length-5} more due today</div>`;
+  if(overdue.length) html+=`<div class="trow over"><span class="dot"></span><span><b>${overdue.length} overdue</b> — open the pipeline</span></div>`;
+  if(!due.length&&!overdue.length) html+=`<div class="amsg">Nothing due today — clear runway.</div>`;
+  document.getElementById("todayBadge").textContent=due.length?due.length+" due":"";
+  box.innerHTML=html;
 }
 
 /* category panels */
@@ -653,6 +714,7 @@ function drawStats(tasks){
       <text x="${50+w}" y="${y+9}">${v}</text>`;
   }).join("");
   document.getElementById("aClientCard").style.display="block";
+  renderTodayTasks(tasks);
 }
 async function pullStats(){
   if(!canSee("pipeline")) return;

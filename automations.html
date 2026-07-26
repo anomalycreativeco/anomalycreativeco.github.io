@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anomaly · Client Automations</title>
+<meta name="description" content="Anomaly Creative Studio — Claude Code automation control panel.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="logomark.png">
+<style>
+  :root{
+    --ink:#111417; --body:#3d4449; --muted:#878e94; --faint:#b4bac0;
+    --card:rgba(255,255,255,.82); --card-solid:#ffffff;
+    --line:rgba(17,20,23,.07);
+    --shadow:0 18px 40px -18px rgba(17,20,23,.18), 0 4px 12px -6px rgba(17,20,23,.07);
+    --green:#3C554F; --green-2:#4E6A63; --green-3:#6D8F88; --green-4:#91ABA5; --green-5:#B5C6C2;
+    --bg:radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #f2f3f4 45%, #e3e5e7 100%);
+    --amber:#b07f3c; --r:20px;
+    --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Menlo",monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  html[data-theme="dark"]{
+    --ink:#f2f5f4; --body:#c3cecb; --muted:#7e8f8b; --faint:#54615e;
+    --card:rgba(22,28,27,.75); --card-solid:#181e1d;
+    --line:rgba(181,198,194,.1);
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+    --green:#B5C6C2; --green-2:#91ABA5; --green-3:#6D8F88; --green-4:#4E6A63; --green-5:#3C554F;
+    --bg:radial-gradient(120% 90% at 50% -10%, #10201c 0%, #0a100f 45%, #050807 100%);
+    --amber:#d9a55d;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--body);background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
+  ::selection{background:var(--green-3);color:#fff}
+  a{text-decoration:none;color:inherit}
+  button,input,textarea{font-family:inherit}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 36px 70px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:34px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .bdg{width:30px;height:30px;border-radius:50%;background:#92ABA7;display:grid;place-items:center;box-shadow:0 1px 4px rgba(28,33,31,.25)}
+  .brand .bdg img{width:17px;height:17px;object-fit:contain}
+  .brand-name b{display:block;font-size:12.5px;letter-spacing:.14em;color:var(--ink);font-weight:700;line-height:1.15;text-transform:uppercase}
+  .brand-name span{font-size:10.5px;color:var(--muted)}
+  .tb-right{display:flex;align-items:center;gap:10px}
+  .backbtn,.theme-btn{
+    font-size:12.5px;font-weight:600;color:var(--body);cursor:pointer;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:9px 18px;transition:all .25s var(--ease);
+  }
+  .backbtn:hover,.theme-btn:hover{color:var(--ink);transform:translateY(-2px)}
+  .theme-btn{width:36px;height:36px;padding:0;border-radius:50%}
+
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+  .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--green-3);margin-bottom:8px}
+  h1{font-size:clamp(30px,3.6vw,42px);color:var(--ink);letter-spacing:-.02em;font-weight:700;line-height:1.05}
+  .hsub{font-size:13px;color:var(--muted);margin-top:8px;max-width:560px;line-height:1.6}
+
+  .saverow{display:flex;align-items:center;gap:14px;margin:22px 0 8px;position:sticky;top:12px;z-index:10}
+  .savebtn{
+    background:var(--ink);color:var(--card-solid);border:none;border-radius:13px;cursor:pointer;
+    font-weight:600;font-size:13.5px;padding:12px 26px;transition:all .25s var(--ease);box-shadow:var(--shadow);
+  }
+  .savebtn:hover{transform:translateY(-2px)}
+  .savemsg{font-size:12px;color:var(--muted)}
+  .savemsg.err{color:#c0563c}
+
+  .clientgroup{margin-top:26px}
+  .cg-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;margin-bottom:12px}
+  .auto{
+    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);padding:20px 22px;margin-bottom:12px;
+  }
+  .a-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .a-name{font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.01em;flex:1;min-width:200px}
+  .engine{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 10px}
+  .statusbtn{
+    border:none;border-radius:99px;cursor:pointer;font-weight:700;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;padding:8px 16px;transition:all .25s var(--ease);font-family:var(--mono);
+  }
+  .statusbtn.active{background:var(--green-3);color:#fff}
+  .statusbtn.paused{background:rgba(176,127,60,.15);color:var(--amber);border:1px solid var(--amber)}
+  .statusbtn:hover{transform:translateY(-2px)}
+  .a-desc{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.55;max-width:660px}
+  .a-grid{display:grid;grid-template-columns:220px 1fr;gap:12px;margin-top:14px}
+  @media(max-width:700px){.a-grid{grid-template-columns:1fr}}
+  .fld label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .fld input,.fld textarea{
+    width:100%;border:1px solid var(--line);border-radius:12px;background:var(--card-solid);
+    color:var(--ink);font-size:13px;padding:10px 12px;outline:none;resize:vertical;
+  }
+  .fld input:focus,.fld textarea:focus{border-color:var(--green-3)}
+  .fld textarea{min-height:44px}
+  .notemeta{font-size:10.5px;color:var(--faint);font-family:var(--mono);margin-top:5px}
+  .ro .fld input,.ro .fld textarea{pointer-events:none;opacity:.7}
+  .ro .statusbtn{pointer-events:none}
+
+  .howto{
+    margin-top:34px;border-top:1px solid var(--line);padding-top:18px;
+    font-size:12px;color:var(--muted);line-height:1.7;max-width:680px;
+  }
+  .howto b{color:var(--body)}
+
+  /* gate */
+  .gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+  .gate.off{display:none}
+  .gcard{text-align:center;width:min(360px,90vw)}
+  .gcard>img{width:60px;height:60px;object-fit:contain;margin-bottom:18px}
+  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .gcard h2{font-size:21px;color:var(--ink);font-weight:700;margin-bottom:22px}
+  .gbtn{
+    width:100%;height:48px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--card-solid);color:var(--ink);border:1px solid var(--line);transition:all .25s var(--ease);
+  }
+  .gbtn:hover{transform:translateY(-2px)}
+  .gbtn .gdot{width:16px;height:16px;border-radius:50%;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
+  .gmsg{margin-top:14px;font-size:12px;color:#c0563c;min-height:16px;line-height:1.5}
+  .gout{margin-top:12px;background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:99px;padding:8px 18px;font-size:12px;cursor:pointer;display:none}
+  .gout.show{display:inline-block}
+  .gback{display:block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .gback:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gcard">
+    <img src="logomark.png" alt="" id="gateLogo">
+    <div class="gk">Anomaly Creative Studio</div>
+    <h2 id="gateTitle">Client Automations</h2>
+    <div id="stepAuth">
+      <button class="gbtn" id="gGoogle"><span class="gdot"></span>Continue with Google</button>
+    </div>
+    <div class="gmsg" id="gateMsg"></div>
+    <button class="gout" id="gOut">Sign out</button>
+    <a class="gback" href="index.html">← Studio Hub</a>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <div class="topbar">
+    <div class="brand">
+      <span class="bdg"><img id="brandLogo" src="logomark.png" alt="Anomaly"></span>
+      <div class="brand-name"><b>Anomaly</b><span>Client Automations</span></div>
+    </div>
+    <div class="tb-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+      <a class="backbtn" href="index.html">← Studio Hub</a>
+    </div>
+  </div>
+
+  <div class="headrow">
+    <div>
+      <div class="kicker">Claude Code · Control Panel</div>
+      <h1>Client Automations</h1>
+      <div class="hsub">Every automation Claude runs for a client. Pause or restart any of them, adjust frequency, or leave a note — Claude checks this panel before each run.</div>
+    </div>
+  </div>
+
+  <div class="saverow" id="saverow" style="display:none">
+    <button class="savebtn" id="saveBtn">Save changes</button>
+    <span class="savemsg" id="saveMsg"></span>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="howto">
+    <b>How this reaches Claude:</b> your changes save to the pipeline project's Firestore (<span style="font-family:var(--mono)">hub/automations</span>).
+    Scheduled automations run a preflight check against it — paused means skipped, and notes are read at the start of the run.
+    Frequency text is the source of truth Claude reconciles schedules against. Notes stay until you clear them.
+  </div>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const root=document.documentElement;
+function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");localStorage.setItem("hub-theme",t);
+  document.getElementById("gateLogo").src=t==="dark"?"logomark-fuzzy.png":"logomark.png";}
+setTheme(localStorage.getItem("hub-theme")||"light");
+document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+
+const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
+const auth=getAuth(app), db=getFirestore(app);
+const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
+
+/* current automation inventory — used until the doc exists in Firestore */
+const SEEDS=[
+  {id:"cdf-weekly-carousel",client:"Capital Discount Furniture",name:"Weekly SEO Carousel",engine:"Scheduled · Mon 9:13 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Renders the 8-slide CDF carousel from the Carousel Engine and auto-posts the zip + topic to Slack #capital-discount-furniture. Fully hands-off."},
+  {id:"currin-weekly-seo-update",client:"Currin Outdoor Living",name:"Weekly SEO Report",engine:"Scheduled · Mon 9:02 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Pulls the SEO partner's ranking doc, refreshes the keyword dashboard artifact, and saves the weekly PDF into Weekly SEO Reports."},
+  {id:"beechwood-eblast-carousel",client:"Beechwood Homes",name:"E-blast → IG Carousel",engine:"Skill · /loop 20m",freq:"On demand — 20-min poll loop",status:"active",note:"",desc:"Watches for Chloe's BeeFree e-blasts, mirrors each into an on-brand carousel in the right community folder, and applies client revisions from the thread. Draft-only."},
+  {id:"bhi-ig-pipeline",client:"Big Hitters International",name:"Frame.io → Instagram",engine:"Skill · staged rollout",freq:"On demand — poll runs",status:"paused",note:"",desc:"Approved Frame.io assets get an on-brand caption and publish to IG. Currently in dry-run rollout; connectors pending."},
+  {id:"frameio-captions-pipeline",client:"Josh Holyfield",name:"Frame.io → Captions",engine:"Skill · config pending",freq:"On demand — poll runs",status:"paused",note:"",desc:"Approved videos run through the Captions (Mirage) API with the client's template and return captioned to Frame.io."},
+  {id:"weekly-carousel",client:"Anomaly · Studio",name:"Weekly Anomaly Carousel",engine:"Scheduled · Mon 9:06 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"9-slide Anomaly Creative carousel — 1080×1350 PNGs plus caption, ready to post."},
+  {id:"inspiration-folder-digest",client:"Anomaly · Studio",name:"Inspiration Digest",engine:"Scheduled · Mon 9:09 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Hunts trending carousel/design references into the inspiration folders and digests them into STYLE-INDEX.md."}
+];
+
+let USER=null, MYEMAIL="", LIST=null, isOwner=false;
+const gMsg=document.getElementById("gateMsg"), gOut=document.getElementById("gOut");
+document.getElementById("gGoogle").onclick=async()=>{
+  gMsg.textContent="";
+  try{ await signInWithPopup(auth,new GoogleAuthProvider()); }
+  catch(e){ gMsg.textContent="Sign-in failed: "+(e.code||e.message); }
+};
+gOut.onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,async u=>{
+  if(!u){ document.getElementById("gate").classList.remove("off"); gOut.classList.remove("show"); return; }
+  USER=u; MYEMAIL=(u.email||"").toLowerCase(); isOwner=OWNERS.includes(MYEMAIL);
+  let ok=isOwner;
+  if(!ok){
+    try{
+      const d=await getDoc(doc(db,"hub","access"));
+      const a=d.exists()?((d.data()||{}).platforms||{}):{};
+      const cfg=a.automations||{mode:"owners"};
+      if(cfg.mode==="everyone") ok=true;
+      else if(cfg.mode==="custom") ok=(cfg.emails||[]).map(e=>e.toLowerCase()).includes(MYEMAIL);
+      else if(cfg.mode==="managers"){
+        try{ const r=await getDoc(doc(db,"roles",MYEMAIL)); const role=r.exists()?(r.data()||{}).role:""; ok=role==="manager"||role==="admin"; }catch(e){}
+      }
+    }catch(e){}
+  }
+  if(!ok){
+    document.getElementById("gateTitle").textContent="Restricted";
+    document.getElementById("stepAuth").style.display="none";
+    gMsg.textContent="Signed in as "+MYEMAIL+" — this account can't view automations.";
+    gOut.classList.add("show");
+    return;
+  }
+  document.getElementById("gate").classList.add("off");
+  document.getElementById("app").style.visibility="visible";
+  await load();
+});
+
+async function load(){
+  try{
+    const d=await getDoc(doc(db,"hub","automations"));
+    LIST=d.exists()?JSON.parse((d.data()||{}).list||"[]"):SEEDS;
+    if(!LIST.length) LIST=SEEDS;
+  }catch(e){ LIST=SEEDS; }
+  render();
+}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+function render(){
+  const groups={};
+  LIST.forEach(a=>{(groups[a.client]=groups[a.client]||[]).push(a);});
+  document.getElementById("list").innerHTML=Object.entries(groups).map(([client,items])=>`
+    <div class="clientgroup ${isOwner?"":"ro"}">
+      <div class="cg-title">${esc(client)}</div>
+      ${items.map(a=>`
+      <div class="auto" data-id="${esc(a.id)}">
+        <div class="a-top">
+          <span class="a-name">${esc(a.name)}</span>
+          <span class="engine">${esc(a.engine)}</span>
+          <button class="statusbtn ${a.status==="active"?"active":"paused"}" data-toggle="${esc(a.id)}">${a.status==="active"?"● Active":"❚❚ Paused"}</button>
+        </div>
+        <div class="a-desc">${esc(a.desc)}</div>
+        <div class="a-grid">
+          <div class="fld"><label>Frequency</label><input data-f="freq" value="${esc(a.freq)}"></div>
+          <div class="fld"><label>Note for Claude — read before each run</label>
+            <textarea data-f="note" placeholder="e.g. skip the pool topics until August, client is rebranding">${esc(a.note)}</textarea>
+            ${a.noteAt?`<div class="notemeta">note updated ${new Date(a.noteAt).toLocaleDateString()}</div>`:""}
+          </div>
+        </div>
+      </div>`).join("")}
+    </div>`).join("");
+  document.getElementById("saverow").style.display=isOwner?"flex":"none";
+  document.querySelectorAll("[data-toggle]").forEach(b=>b.onclick=()=>{
+    const a=LIST.find(x=>x.id===b.dataset.toggle);
+    a.status=a.status==="active"?"paused":"active";
+    b.className="statusbtn "+(a.status==="active"?"active":"paused");
+    b.textContent=a.status==="active"?"● Active":"❚❚ Paused";
+  });
+}
+document.getElementById("saveBtn").onclick=async()=>{
+  document.querySelectorAll(".auto").forEach(el=>{
+    const a=LIST.find(x=>x.id===el.dataset.id); if(!a) return;
+    const freq=el.querySelector('[data-f="freq"]').value.trim();
+    const note=el.querySelector('[data-f="note"]').value.trim();
+    if(note!==(a.note||"")) a.noteAt=Date.now();
+    a.freq=freq; a.note=note;
+  });
+  const msg=document.getElementById("saveMsg");
+  try{
+    await setDoc(doc(db,"hub","automations"),{list:JSON.stringify(LIST),updatedBy:MYEMAIL,at:Date.now()});
+    msg.className="savemsg"; msg.textContent="Saved — Claude reads this before every automation run.";
+    render();
+  }catch(e){
+    msg.className="savemsg err"; msg.textContent="Couldn't save ("+(e.code||e.message)+").";
+  }
+};
+</script>
+
+</body>
+</html>
