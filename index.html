@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anomaly · Studio Hub</title>
+<meta name="description" content="Central hub for every Anomaly Creative Studio platform — pipelines, dashboards, planners, and client tools.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◬</text></svg>">
+<style>
+  :root{
+    --ground:#000000;
+    --surface:#0B0E0D;
+    --ink:#FFFFFF;
+    --body:#B5C6C2;
+    --muted:#8FA7A1;
+    --faint:#5E706B;
+    --accent:#B5C6C2;
+    --accent-mid:#91ABA5;
+    --accent-deep:#6D8F88;
+    --line:rgba(181,198,194,.14);
+    --card:rgba(181,198,194,.035);
+    --card-hover:rgba(181,198,194,.07);
+    --hero-glow:rgba(109,143,136,.16);
+    --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono","Menlo",monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+    --maxw:1180px;
+    --r:14px;
+  }
+  html[data-theme="light"]{
+    --ground:#F3F5F4;
+    --surface:#FBFCFB;
+    --ink:#0A0F0E;
+    --body:#28322F;
+    --muted:#51625E;
+    --faint:#8A9A95;
+    --accent:#4E6A63;
+    --accent-mid:#5F7D76;
+    --accent-deep:#3C554F;
+    --line:rgba(31,45,42,.14);
+    --card:rgba(31,45,42,.03);
+    --card-hover:rgba(31,45,42,.06);
+    --hero-glow:rgba(109,143,136,.30);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ground);
+    color:var(--body);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  ::selection{background:var(--accent-deep);color:#fff}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+
+  /* ── Nav ─────────────────────────── */
+  nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    background:color-mix(in srgb, var(--ground) 78%, transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:var(--maxw);margin:0 auto;padding:18px 32px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .wordmark{
+    font-family:var(--sans);font-weight:700;letter-spacing:.34em;
+    font-size:13px;color:var(--ink);text-transform:uppercase;text-decoration:none;
+    display:flex;align-items:center;gap:10px;
+  }
+  .wordmark .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-deep);box-shadow:0 0 12px var(--accent-deep)}
+  .nav-right{display:flex;align-items:center;gap:18px}
+  .nav-tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+  .theme-btn{
+    border:1px solid var(--line);background:transparent;color:var(--muted);
+    width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:14px;
+    display:grid;place-items:center;transition:all .25s var(--ease);
+  }
+  .theme-btn:hover{color:var(--ink);border-color:var(--accent-deep)}
+
+  /* ── Hero ────────────────────────── */
+  header{position:relative;overflow:hidden}
+  .glow{
+    position:absolute;inset:auto;top:-220px;left:50%;transform:translateX(-50%);
+    width:900px;height:520px;border-radius:50%;
+    background:radial-gradient(closest-side, var(--hero-glow), transparent 70%);
+    pointer-events:none;
+  }
+  .hero{padding:104px 0 72px;position:relative}
+  .kicker{
+    font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent-mid);margin-bottom:26px;display:flex;align-items:center;gap:12px;
+  }
+  .kicker::before{content:"";display:block;width:34px;height:1px;background:var(--accent-deep)}
+  h1{
+    font-family:var(--serif);font-weight:400;color:var(--ink);
+    font-size:clamp(44px,7vw,84px);line-height:1.04;letter-spacing:-.01em;
+    max-width:840px;
+  }
+  h1 em{font-style:italic;color:var(--accent-mid)}
+  .hero p{
+    margin-top:28px;max-width:560px;font-size:17px;color:var(--muted);
+  }
+  .hero-meta{
+    margin-top:44px;display:flex;gap:36px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;
+  }
+  .hero-meta b{color:var(--body);font-weight:500}
+
+  /* ── Sections ────────────────────── */
+  section{padding:40px 0 8px}
+  .sec-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    border-top:1px solid var(--line);padding-top:28px;margin-bottom:28px;gap:16px;
+  }
+  .sec-title{
+    font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-mid);
+  }
+  .sec-count{font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+  /* ── Cards ───────────────────────── */
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:14px;padding-bottom:40px;
+  }
+  .card{
+    position:relative;display:flex;flex-direction:column;gap:14px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:26px 26px 22px;text-decoration:none;
+    transition:all .3s var(--ease);
+  }
+  .card:hover{
+    background:var(--card-hover);border-color:var(--accent-deep);
+    transform:translateY(-3px);
+  }
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .card-num{
+    font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.14em;
+  }
+  .card-arrow{
+    color:var(--faint);font-size:16px;line-height:1;
+    transition:all .3s var(--ease);
+  }
+  .card:hover .card-arrow{color:var(--accent-mid);transform:translate(3px,-3px)}
+  .card h3{
+    font-family:var(--serif);font-weight:600;font-size:23px;line-height:1.2;
+    color:var(--ink);letter-spacing:-.01em;
+  }
+  .card p{font-size:14.5px;color:var(--muted);flex:1}
+  .card-foot{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    padding-top:14px;border-top:1px solid var(--line);
+  }
+  .tag{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    padding:4px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted);
+  }
+  .tag.fb{color:var(--accent-mid);border-color:color-mix(in srgb, var(--accent-deep) 55%, transparent)}
+  .tag.live{color:var(--accent-mid)}
+  .tag.live::before{
+    content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+    background:var(--accent-deep);margin-right:6px;vertical-align:1px;
+    box-shadow:0 0 8px var(--accent-deep);
+  }
+
+  /* ── Footer ──────────────────────── */
+  footer{border-top:1px solid var(--line);margin-top:48px}
+  .foot-inner{
+    max-width:var(--maxw);margin:0 auto;padding:34px 32px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;
+  }
+  .foot-inner a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .foot-inner a:hover{color:var(--ink)}
+
+  @media(max-width:640px){
+    .wrap,.nav-inner,.foot-inner{padding-left:20px;padding-right:20px}
+    .hero{padding:72px 0 52px}
+    .hero-meta{gap:20px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="wordmark" href="#"><span class="dot"></span>Anomaly</a>
+    <div class="nav-right">
+      <span class="nav-tag">Studio Hub</span>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">◐</button>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="hero">
+      <div class="kicker">Internal Platforms · Anomaly Creative Studio</div>
+      <h1>Every tool the studio runs on, <em>one front door.</em></h1>
+      <p>Pipelines, dashboards, planners, and client platforms — built in-house, launched from here.</p>
+      <div class="hero-meta">
+        <span>Platforms <b id="platformCount">7</b></span>
+        <span>Status <b>All systems live</b></span>
+        <span>Est. <b>2026</b></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="sec-head">
+      <div class="sec-title">01 — Studio Operations</div>
+      <div class="sec-count">5 platforms</div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/">
+        <div class="card-top"><span class="card-num">OPS·01</span><span class="card-arrow">↗</span></div>
+        <h3>Editing Pipeline</h3>
+        <p>Post-production tracker — every project, editor, and delivery from ingest to final export.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag fb">Firebase</span></div>
+      </a>
+
+      <a class="card" href="https://anomalycreativeco.github.io/Anomaly-Client-Onboarding/">
+        <div class="card-top"><span class="card-num">OPS·02</span><span class="card-arrow">↗</span></div>
+        <h3>Client Onboarding</h3>
+        <p>Onboarding tracker for new clients — from signed contract through kickoff, nothing slips.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag fb">Firebase</span></div>
+      </a>
+
+      <a class="card" href="https://anomalycreativeco.github.io/Anomaly-Revenue-Dashboard/">
+        <div class="card-top"><span class="card-num">OPS·03</span><span class="card-arrow">↗</span></div>
+        <h3>Revenue Dashboard</h3>
+        <p>2026 revenue at a glance — monthly actuals, pacing, and goal progress across the studio.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag">Dashboard</span></div>
+      </a>
+
+      <a class="card" href="https://anomalycreativeco.github.io/Anomaly-Client-Relationship-Map/">
+        <div class="card-top"><span class="card-num">OPS·04</span><span class="card-arrow">↗</span></div>
+        <h3>Client Relationship Map</h3>
+        <p>Team responsibilities dashboard — who owns which client, account by account.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag">Dashboard</span></div>
+      </a>
+
+      <a class="card" href="https://anomalycreativeco.github.io/brand-hub/">
+        <div class="card-top"><span class="card-num">OPS·05</span><span class="card-arrow">↗</span></div>
+        <h3>Brand Hub</h3>
+        <p>Anomaly brand guidelines and AI content generator — the source of truth for how we look and sound.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag">Brand</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="sec-title">02 — Client Platforms</div>
+      <div class="sec-count">2 platforms</div>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="https://anomalycreativeco.github.io/Anomaly-x-RCH---Content-Planning/">
+        <div class="card-top"><span class="card-num">CLI·01</span><span class="card-arrow">↗</span></div>
+        <h3>Anomaly × RCH Planner</h3>
+        <p>Monthly content planner for RCH — shared calendar, concepts, and approvals in one place.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag fb">Firebase</span></div>
+      </a>
+
+      <a class="card" href="https://dash.aresdigital.store/">
+        <div class="card-top"><span class="card-num">CLI·02</span><span class="card-arrow">↗</span></div>
+        <h3>Ares Editor Dashboard</h3>
+        <p>Ares Digital order dashboard — editors pick up, track, and deliver meet media orders.</p>
+        <div class="card-foot"><span class="tag live">Live</span><span class="tag">Custom domain</span></div>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <span>Anomaly Creative Studio © 2026</span>
+    <a href="https://github.com/anomalycreativeco">github.com/anomalycreativeco</a>
+  </div>
+</footer>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  const root = document.documentElement;
+  const saved = localStorage.getItem('anomaly-hub-theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    if (next === 'dark') root.removeAttribute('data-theme'); else root.setAttribute('data-theme','light');
+    localStorage.setItem('anomaly-hub-theme', next === 'dark' ? '' : 'light');
+  });
+</script>
+
+</body>
+</html>
