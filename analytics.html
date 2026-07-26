@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anomaly · Analytics Dashboard</title>
+<meta name="description" content="Anomaly Creative Studio — 2026 analytics.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="logomark.png">
+<style>
+  :root{
+    --ink:#111417; --body:#3d4449; --muted:#878e94; --faint:#b4bac0;
+    --card:rgba(255,255,255,.82); --card-solid:#ffffff;
+    --line:rgba(17,20,23,.07);
+    --shadow:0 18px 40px -18px rgba(17,20,23,.18), 0 4px 12px -6px rgba(17,20,23,.07);
+    --green:#3C554F; --green-2:#4E6A63; --green-3:#6D8F88; --green-4:#91ABA5; --green-5:#B5C6C2;
+    --bg:radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #f2f3f4 45%, #e3e5e7 100%);
+    --r:20px;
+    --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Menlo",monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  html[data-theme="dark"]{
+    --ink:#f2f5f4; --body:#c3cecb; --muted:#7e8f8b; --faint:#54615e;
+    --card:rgba(22,28,27,.75); --card-solid:#181e1d;
+    --line:rgba(181,198,194,.1);
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+    --green:#B5C6C2; --green-2:#91ABA5; --green-3:#6D8F88; --green-4:#4E6A63; --green-5:#3C554F;
+    --bg:radial-gradient(120% 90% at 50% -10%, #10201c 0%, #0a100f 45%, #050807 100%);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--body);background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
+  ::selection{background:var(--green-3);color:#fff}
+  a{text-decoration:none;color:inherit}
+  button{font-family:inherit}
+  .wrap{max-width:1280px;margin:0 auto;padding:24px 36px 60px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:34px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand img{width:28px;height:28px;object-fit:contain}
+  .brand-name b{display:block;font-size:13.5px;color:var(--ink);font-weight:700;line-height:1.15}
+  .brand-name span{font-size:10px;color:var(--muted);letter-spacing:.06em}
+  .tb-right{display:flex;align-items:center;gap:10px}
+  .backbtn,.theme-btn{
+    font-size:12.5px;font-weight:600;color:var(--body);cursor:pointer;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:9px 18px;transition:all .25s var(--ease);
+  }
+  .backbtn:hover,.theme-btn:hover{color:var(--ink);transform:translateY(-2px)}
+  .theme-btn{width:36px;height:36px;padding:0;border-radius:50%}
+
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+  .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--green-3);margin-bottom:8px}
+  h1{font-size:clamp(30px,3.6vw,44px);color:var(--ink);letter-spacing:-.02em;font-weight:700;line-height:1.05}
+  .asof{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px}
+  .card h2{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:16px}
+
+  .kpis{grid-column:span 12;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px 22px}
+  .kpi .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .kpi .val{font-size:clamp(24px,2.4vw,32px);font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-top:8px}
+  .kpi .sub{font-size:11px;color:var(--muted);margin-top:4px}
+  .kpi.hero{background:linear-gradient(135deg,var(--green-2),var(--green-3))}
+  .kpi.hero .lbl,.kpi.hero .sub{color:rgba(255,255,255,.75)}
+  .kpi.hero .val{color:#fff}
+  .meter{height:5px;border-radius:99px;background:rgba(127,127,127,.18);margin-top:12px;overflow:hidden}
+  .meter i{display:block;height:100%;border-radius:99px;background:var(--green-3)}
+  .kpi.hero .meter{background:rgba(255,255,255,.25)}
+  .kpi.hero .meter i{background:#fff}
+
+  .c-month{grid-column:span 8}
+  .c-industry{grid-column:span 4}
+  .c-services{grid-column:span 4}
+  .c-clients{grid-column:span 8}
+  @media(max-width:960px){.c-month,.c-industry,.c-services,.c-clients{grid-column:span 12}}
+
+  .chart{width:100%;display:block}
+  .chart text{font-family:var(--mono);font-size:9px;fill:var(--muted)}
+  .chart .vlabel{fill:var(--body);font-weight:600}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px}
+  .lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted)}
+  .lg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+  .rank{display:flex;flex-direction:column;gap:7px;max-height:420px;overflow:auto;padding-right:6px}
+  .rrow{display:grid;grid-template-columns:22px 1fr 90px;align-items:center;gap:10px}
+  .rrow .n{font-family:var(--mono);font-size:10px;color:var(--faint)}
+  .rrow .name{font-size:12.5px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rrow .barwrap{grid-column:2/4;height:7px;border-radius:99px;background:rgba(127,127,127,.12);overflow:hidden;margin-top:-2px}
+  .rrow .barwrap i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green-3),var(--green-4))}
+  .rrow .amt{font-family:var(--mono);font-size:11px;color:var(--body);text-align:right}
+  .rblock{padding:6px 4px;border-radius:10px}
+  .rblock:hover{background:rgba(127,127,127,.06)}
+
+  .srow{display:grid;grid-template-columns:130px 1fr 54px;align-items:center;gap:10px;margin-bottom:10px}
+  .srow .name{font-size:12px;color:var(--ink);font-weight:600}
+  .srow .bar{height:9px;border-radius:99px;background:rgba(127,127,127,.12);overflow:hidden}
+  .srow .bar i{display:block;height:100%;border-radius:99px;background:var(--green-3)}
+  .srow .pct{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right}
+
+  /* gate */
+  .gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+  .gate.off{display:none}
+  .gcard{text-align:center;width:min(340px,90vw)}
+  .gcard img{width:60px;height:60px;object-fit:contain;margin-bottom:18px}
+  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .gcard h2{font-size:21px;color:var(--ink);font-weight:700;margin-bottom:22px}
+  .gcard input{width:100%;height:48px;border:1px solid var(--line);border-radius:14px;background:var(--card-solid);
+    color:var(--ink);font-size:15px;text-align:center;letter-spacing:.18em;font-family:var(--mono);outline:none}
+  .gcard input:focus{border-color:var(--green-3)}
+  .gcard button{margin-top:12px;width:100%;height:46px;border:none;border-radius:14px;background:var(--ink);
+    color:var(--card-solid);font-weight:600;font-size:14px;cursor:pointer;transition:all .25s var(--ease)}
+  .gcard button:hover{transform:translateY(-2px)}
+  .gmsg{margin-top:12px;font-size:12px;color:#c0563c;min-height:16px}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gcard">
+    <img src="logomark.png" alt="">
+    <div class="gk">Anomaly Creative Studio</div>
+    <h2>Analytics Dashboard</h2>
+    <input id="gateIn" type="password" placeholder="········" autocomplete="off">
+    <button id="gateBtn">Unlock</button>
+    <div class="gmsg" id="gateMsg"></div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <div class="topbar">
+    <div class="brand">
+      <img src="logomark.png" alt="Anomaly" id="brandLogo">
+      <div class="brand-name"><b>Anomaly</b><span>Creative Studio</span></div>
+    </div>
+    <div class="tb-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+      <a class="backbtn" href="index.html">← Studio Hub</a>
+    </div>
+  </div>
+
+  <div class="headrow">
+    <div>
+      <div class="kicker">Revenue · 2026</div>
+      <h1>Analytics Dashboard</h1>
+    </div>
+    <div class="asof" id="asof"></div>
+  </div>
+
+  <div class="grid">
+    <div class="kpis" id="kpis"></div>
+    <div class="card c-month">
+      <h2>Revenue by month — projected vs collected</h2>
+      <svg class="chart" id="monthChart" viewBox="0 0 760 250"></svg>
+      <div class="legend">
+        <span class="lg"><i style="background:var(--green-3)"></i>Collected</span>
+        <span class="lg"><i style="background:var(--green-5)"></i>Projected</span>
+      </div>
+    </div>
+    <div class="card c-industry">
+      <h2>Revenue by industry</h2>
+      <svg class="chart" id="indChart" viewBox="0 0 260 190"></svg>
+      <div class="legend" id="indLegend"></div>
+    </div>
+    <div class="card c-services">
+      <h2>Client service breakdown</h2>
+      <div id="services"></div>
+    </div>
+    <div class="card c-clients">
+      <h2>Client revenue — annual projected</h2>
+      <div class="rank" id="rank"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── theme ── */
+const root=document.documentElement;
+function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");localStorage.setItem("hub-theme",t);
+  document.querySelectorAll("#brandLogo, .gcard img").forEach(im=>im.src=t==="dark"?"logomark-green.png":"logomark.png");}
+setTheme(localStorage.getItem("hub-theme")||"light");
+document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+
+/* ── gate + decrypt ── */
+const GATE_HASH="a85442a37b917b5463e629a4f66b0c711a1a04411b1601cdd7c109bcb70a6309";
+const BLOB="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";
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+async function decrypt(pass){
+  const raw=b64(BLOB), salt=raw.slice(0,16), nonce=raw.slice(16,28), ct=raw.slice(28);
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]);
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:nonce},key,ct);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function tryUnlock(pass,silent){
+  if(await sha("anomaly-hub|"+pass)!==GATE_HASH){
+    if(!silent)document.getElementById("gateMsg").textContent="Wrong passcode";
+    return false;
+  }
+  try{
+    const data=await decrypt(pass);
+    sessionStorage.setItem("hubKey",pass);
+    document.getElementById("gate").classList.add("off");
+    document.getElementById("app").style.visibility="visible";
+    render(data);
+    return true;
+  }catch(e){
+    if(!silent)document.getElementById("gateMsg").textContent="Decryption failed";
+    return false;
+  }
+}
+(async()=>{const k=sessionStorage.getItem("hubKey");if(k)await tryUnlock(k,true);})();
+document.getElementById("gateBtn").onclick=()=>tryUnlock(document.getElementById("gateIn").value.trim());
+document.getElementById("gateIn").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock(e.target.value.trim());});
+
+/* ── render ── */
+const fmt$=n=>"$"+n.toLocaleString("en-US");
+const fmtK=n=>n>=1000?"$"+Math.round(n/1000)+"k":"$"+n;
+function render(d){
+  document.getElementById("asof").textContent="Deal Tracker · as of "+d.asOf;
+  const s=d.summary, rate=Math.round(s.collectionRate*1000)/10;
+  document.getElementById("kpis").innerHTML=`
+    <div class="kpi hero"><div class="lbl">Collected Revenue</div><div class="val">${fmt$(s.collected)}</div>
+      <div class="sub">${rate}% of projected</div><div class="meter"><i style="width:${rate}%"></i></div></div>
+    <div class="kpi"><div class="lbl">Projected Revenue</div><div class="val">${fmt$(s.projected)}</div><div class="sub">2026 full year</div></div>
+    <div class="kpi"><div class="lbl">Outstanding</div><div class="val">${fmt$(s.outstanding)}</div><div class="sub">projected − collected</div></div>
+    <div class="kpi"><div class="lbl">Active Clients</div><div class="val">${s.clients}</div><div class="sub">on the roster</div></div>`;
+
+  /* monthly grouped bars */
+  const W=760,H=250,padL=44,padB=26,cw=(W-padL-10)/12;
+  const max=Math.max(...d.projected,...d.collected);
+  const y=v=>H-padB-(v/max)*(H-padB-24);
+  let m="";
+  for(let g=0;g<=4;g++){const gv=max/4*g,gy=y(gv);
+    m+=`<line x1="${padL}" y1="${gy}" x2="${W-6}" y2="${gy}" stroke="rgba(127,127,127,.14)" stroke-width="1"/>
+        <text x="${padL-6}" y="${gy+3}" text-anchor="end">${fmtK(Math.round(gv))}</text>`;}
+  d.months.forEach((mo,i)=>{
+    const x=padL+i*cw, bw=Math.min(16,cw/2-4);
+    m+=`<rect x="${x+cw/2-bw-2}" y="${y(d.projected[i])}" width="${bw}" height="${H-padB-y(d.projected[i])}" rx="3" fill="var(--green-5)"/>`;
+    m+=`<rect x="${x+cw/2+2}" y="${y(d.collected[i])}" width="${bw}" height="${H-padB-y(d.collected[i])}" rx="3" fill="var(--green-3)"/>`;
+    m+=`<text x="${x+cw/2}" y="${H-8}" text-anchor="middle">${mo}</text>`;
+  });
+  document.getElementById("monthChart").innerHTML=m;
+
+  /* industry donut */
+  const tot=d.industries.reduce((a,[,v])=>a+v,0);
+  const cols=["var(--green-2)","var(--green-3)","var(--green-4)","var(--green-5)","var(--faint)"];
+  let a0=-Math.PI/2, seg="";
+  const cx=95,cy=95,R=72,r=46;
+  d.industries.forEach(([name,v],i)=>{
+    const a1=a0+v/tot*Math.PI*2, la=(a1-a0)>Math.PI?1:0;
+    const p=(ang,rad)=>`${cx+Math.cos(ang)*rad} ${cy+Math.sin(ang)*rad}`;
+    seg+=`<path d="M ${p(a0,R)} A ${R} ${R} 0 ${la} 1 ${p(a1,R)} L ${p(a1,r)} A ${r} ${r} 0 ${la} 0 ${p(a0,r)} Z" fill="${cols[i%cols.length]}" stroke="var(--card-solid)" stroke-width="2"/>`;
+    a0=a1;
+  });
+  seg+=`<text x="${cx}" y="${cy-4}" text-anchor="middle" class="vlabel" style="font-size:15px;fill:var(--ink);font-weight:700">${fmtK(tot)}</text>
+        <text x="${cx}" y="${cy+13}" text-anchor="middle">total</text>`;
+  document.getElementById("indChart").innerHTML=seg;
+  document.getElementById("indLegend").innerHTML=d.industries.map(([n,v],i)=>
+    `<span class="lg"><i style="background:${cols[i%cols.length]}"></i>${n} · ${Math.round(v/tot*100)}%</span>`).join("");
+
+  /* services */
+  const smax=Math.max(...d.services.map(x=>x[1]));
+  document.getElementById("services").innerHTML=d.services.map(([n,v])=>`
+    <div class="srow"><span class="name">${n}</span>
+      <span class="bar"><i style="width:${v/smax*100}%"></i></span>
+      <span class="pct">${v} client${v===1?"":"s"}</span></div>`).join("");
+
+  /* client ranking */
+  const cmax=d.clientRanking[0][1];
+  document.getElementById("rank").innerHTML=d.clientRanking.map(([n,v],i)=>`
+    <div class="rblock"><div class="rrow">
+      <span class="n">${String(i+1).padStart(2,"0")}</span>
+      <span class="name">${n}</span><span class="amt">${fmt$(v)}</span>
+      <span class="barwrap"><i style="width:${Math.max(v/cmax*100,1.5)}%"></i></span>
+    </div></div>`).join("");
+}
+</script>
+
+</body>
+</html>

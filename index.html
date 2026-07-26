@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anomaly · Studio Hub</title>
-<meta name="description" content="Central hub for every Anomaly Creative Studio platform — pipelines, dashboards, planners, and client tools.">
+<meta name="description" content="Anomaly Creative Studio — internal platform hub.">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="logomark.png">
 <style>
   :root{
@@ -17,291 +18,335 @@
     --line:rgba(17,20,23,.07);
     --shadow:0 18px 40px -18px rgba(17,20,23,.22), 0 4px 12px -6px rgba(17,20,23,.08);
     --shadow-sm:0 10px 24px -14px rgba(17,20,23,.25);
-    --pill-r:999px;
-    --r:20px;
+    --green:#4E6A63; --green-mid:#6D8F88; --green-soft:#91ABA5; --green-pale:#B5C6C2;
+    --bg:radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #f2f3f4 45%, #e3e5e7 100%);
+    --strip:rgba(255,255,255,.95);
+    --pill-r:999px; --r:20px;
     --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
     --mono:ui-monospace,"SF Mono","Menlo",monospace;
     --ease:cubic-bezier(.2,.7,.2,1);
   }
+  html[data-theme="dark"]{
+    --ink:#f2f5f4;
+    --body:#c3cecb;
+    --muted:#7e8f8b;
+    --faint:#54615e;
+    --card:rgba(22,28,27,.72);
+    --card-solid:#181e1d;
+    --line:rgba(181,198,194,.1);
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7), 0 4px 12px -6px rgba(0,0,0,.5);
+    --shadow-sm:0 10px 24px -14px rgba(0,0,0,.7);
+    --green:#91ABA5; --green-mid:#8fb5ac; --green-soft:#6D8F88; --green-pale:#3C554F;
+    --bg:radial-gradient(120% 90% at 50% -10%, #10201c 0%, #0a100f 45%, #050807 100%);
+    --strip:rgba(145,171,165,.5);
+  }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
   body{
-    font-family:var(--sans);
-    color:var(--body);
-    -webkit-font-smoothing:antialiased;
-    background:
-      radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #f2f3f4 45%, #e3e5e7 100%);
-    overflow-x:hidden;
+    font-family:var(--sans);color:var(--body);-webkit-font-smoothing:antialiased;
+    background:var(--bg);overflow-x:hidden;transition:background .4s;
   }
-  ::selection{background:#111417;color:#fff}
+  ::selection{background:var(--green);color:#fff}
   a{text-decoration:none;color:inherit}
+  button{font-family:inherit}
 
-  /* showroom room lines */
   .room{position:fixed;inset:0;pointer-events:none;z-index:0}
-  .room::before{ /* ceiling light strip */
+  .room::before{
     content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
     width:min(880px,80vw);height:10px;border-radius:0 0 12px 12px;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.95) 20%,rgba(255,255,255,.95) 80%,transparent);
-    box-shadow:0 12px 60px 8px rgba(255,255,255,.85);
-    opacity:.9;
+    background:linear-gradient(90deg,transparent,var(--strip) 20%,var(--strip) 80%,transparent);
+    box-shadow:0 12px 60px 8px var(--strip);opacity:.9;
   }
-  .room::after{ /* floor */
+  .room::after{
     content:"";position:absolute;left:0;right:0;bottom:0;height:26vh;
-    background:linear-gradient(180deg,transparent,rgba(17,20,23,.045));
+    background:linear-gradient(180deg,transparent,rgba(17,20,23,.05));
   }
 
   .stage{position:relative;z-index:1;max-width:1440px;margin:0 auto;min-height:100vh;padding:24px 40px 40px}
 
   /* ── Top bar ─────────────────────── */
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;z-index:5}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;z-index:6}
   .brand{display:flex;align-items:center;gap:11px}
   .brand img{width:30px;height:30px;object-fit:contain}
-  .brand-name{line-height:1.15}
-  .brand-name b{display:block;font-size:14px;letter-spacing:.02em;color:var(--ink);font-weight:700}
+  .brand-name b{display:block;font-size:14px;letter-spacing:.02em;color:var(--ink);font-weight:700;line-height:1.15}
   .brand-name span{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
   .navpills{display:flex;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
-  .navpills a{
-    font-size:13px;font-weight:600;color:var(--body);
+  .navpills a,.navpills button{
+    font-size:13px;font-weight:600;color:var(--body);cursor:pointer;
     background:var(--card);backdrop-filter:blur(10px);
     border:1px solid var(--line);border-radius:var(--pill-r);
-    padding:10px 22px;box-shadow:var(--shadow-sm);
-    transition:all .25s var(--ease);
+    padding:10px 22px;box-shadow:var(--shadow-sm);transition:all .25s var(--ease);
   }
-  .navpills a:hover{transform:translateY(-2px);color:var(--ink)}
-  .navpills a.active{background:#111417;color:#fff;border-color:#111417}
+  .navpills a:hover,.navpills button:hover{transform:translateY(-2px);color:var(--ink)}
+  .navpills .active{background:var(--ink);color:var(--card-solid);border-color:var(--ink)}
+  .tb-right{display:flex;align-items:center;gap:10px}
+  .theme-btn{
+    width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:15px;
+    background:var(--card);border:1px solid var(--line);color:var(--muted);
+    box-shadow:var(--shadow-sm);transition:all .25s var(--ease);
+  }
+  .theme-btn:hover{color:var(--ink);transform:translateY(-2px)}
   .userchip{
-    display:flex;align-items:center;gap:10px;
-    background:var(--card);backdrop-filter:blur(10px);
-    border:1px solid var(--line);border-radius:var(--pill-r);
-    padding:6px 16px 6px 6px;box-shadow:var(--shadow-sm);
+    display:flex;align-items:center;gap:10px;background:var(--card);backdrop-filter:blur(10px);
+    border:1px solid var(--line);border-radius:var(--pill-r);padding:6px 16px 6px 6px;box-shadow:var(--shadow-sm);
   }
-  .userchip .avatar{
-    width:32px;height:32px;border-radius:50%;background:#111417;color:#fff;
-    display:grid;place-items:center;font-size:12px;font-weight:700;letter-spacing:.04em;
-  }
+  .userchip .avatar{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--card-solid);display:grid;place-items:center;font-size:12px;font-weight:700}
   .userchip .who b{display:block;font-size:12.5px;color:var(--ink);line-height:1.2}
   .userchip .who span{font-size:10.5px;color:var(--muted)}
 
-  /* ── Hero canvas ─────────────────── */
-  .canvas{position:relative;min-height:max(calc(100vh - 120px), 660px);margin-top:8px}
+  .canvas{position:relative;min-height:max(calc(100vh - 120px), 680px);margin-top:8px}
 
-  /* title block */
-  .titleblock{position:absolute;left:2%;top:9%;max-width:360px;z-index:4}
-  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-  h1{font-size:clamp(38px,4.6vw,60px);line-height:1.02;letter-spacing:-.02em;color:var(--ink);font-weight:700}
-  .sub{margin-top:10px;font-size:13px;color:var(--muted);letter-spacing:.04em}
-  .bigstat{margin-top:26px;font-size:34px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
-  .bigstat small{font-size:14px;color:var(--muted);font-weight:500;margin-left:6px;letter-spacing:0}
-  .loc{margin-top:16px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
-  .loc svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8}
+  /* title */
+  .titleblock{position:absolute;left:2%;top:6%;max-width:360px;z-index:4}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  h1{font-size:clamp(38px,4.4vw,58px);line-height:1.02;letter-spacing:-.02em;color:var(--ink);font-weight:700}
+  .sub{margin-top:8px;font-size:13px;color:var(--muted);letter-spacing:.04em}
 
   /* ── 3D logomark ─────────────────── */
-  .scene{
-    position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
-    width:min(400px,38vw);aspect-ratio:1;perspective:1400px;z-index:2;
-  }
-  .spinner{
-    position:absolute;inset:0;transform-style:preserve-3d;
-    animation:spin 14s linear infinite;
-  }
-  .spinner img{
-    position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-    backface-visibility:visible;
-  }
-  @keyframes spin{
-    from{transform:rotateX(6deg) rotateY(0deg)}
-    to{transform:rotateX(6deg) rotateY(360deg)}
-  }
-  .podium{
-    position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
-    width:min(560px,52vw);aspect-ratio:1;z-index:1;pointer-events:none;
-  }
-  .podium .ring{
-    position:absolute;left:50%;bottom:2%;transform:translateX(-50%);
-    width:100%;height:24%;border-radius:50%;
-    background:radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0) 72%);
-    box-shadow:inset 0 0 0 1px rgba(17,20,23,.04);
-  }
-  .podium .shade{
-    position:absolute;left:50%;bottom:9%;transform:translateX(-50%);
-    width:46%;height:7%;border-radius:50%;
-    background:radial-gradient(closest-side, rgba(17,20,23,.28), transparent 70%);
-    filter:blur(6px);
-  }
+  .scene{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(380px,36vw);aspect-ratio:1;perspective:1400px;z-index:2}
+  .spinner{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 14s linear infinite}
+  .spinner img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+  @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
+  .podium{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(540px,50vw);aspect-ratio:1;z-index:1;pointer-events:none}
+  .podium .ring{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);width:100%;height:24%;border-radius:50%;
+    background:radial-gradient(closest-side, var(--strip), transparent 72%);opacity:.85}
+  .podium .shade{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);width:46%;height:7%;border-radius:50%;
+    background:radial-gradient(closest-side, rgba(0,0,0,.3), transparent 70%);filter:blur(6px)}
 
-  /* ── Floating cards ──────────────── */
-  .fcard{
-    position:absolute;z-index:3;
-    background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    border:1px solid var(--line);border-radius:var(--r);
-    box-shadow:var(--shadow);
-    padding:16px 18px;width:212px;
+  /* ── Analytics strip (left) ──────── */
+  .astrip{position:absolute;left:2%;top:34%;width:250px;z-index:4;display:flex;flex-direction:column;gap:12px}
+  .acard{
+    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
+    border-radius:var(--r);box-shadow:var(--shadow);padding:16px 17px;
+  }
+  .acard .ahead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .acard .ahead span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .acard .ahead b{font-size:12px;color:var(--green);font-weight:700}
+  .kpirow{display:flex;gap:8px;flex-wrap:wrap}
+  .kpi{flex:1;min-width:64px;text-align:center;background:var(--card-solid);border:1px solid var(--line);border-radius:12px;padding:8px 4px}
+  .kpi b{display:block;font-size:17px;color:var(--ink);letter-spacing:-.01em}
+  .kpi span{font-size:9.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
+  .kpi.warn b{color:#c0563c}
+  .connect{
+    display:block;width:100%;padding:11px 0;border:none;border-radius:12px;cursor:pointer;
+    background:var(--green);color:#fff;font-weight:600;font-size:12.5px;transition:all .25s var(--ease);
+  }
+  .connect:hover{transform:translateY(-2px);box-shadow:0 10px 20px -10px var(--green)}
+  .amsg{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;text-align:center}
+  .chart{width:100%;display:block}
+  .chart .bar{fill:var(--green-mid);transition:fill .2s}
+  .chart .bar:hover{fill:var(--green)}
+  .chart .bar2{fill:var(--green-pale)}
+  .chart text{font-family:var(--mono);font-size:8px;fill:var(--muted)}
+  .chart .vlabel{font-size:8.5px;fill:var(--body);font-weight:600}
+
+  /* ── Category cards (right) ──────── */
+  .catcol{position:absolute;right:2%;top:10%;width:250px;z-index:4;display:flex;flex-direction:column;gap:14px}
+  .cat{
+    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
+    border-radius:var(--r);box-shadow:var(--shadow);padding:20px;cursor:pointer;text-align:left;
     transition:all .3s var(--ease);
   }
-  .fcard:hover{transform:translateY(-4px) scale(1.02);background:var(--card-solid)}
-  .fcard .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .fcard .label{font-size:11.5px;color:var(--muted);letter-spacing:.05em}
-  .fcard .ico{
-    width:28px;height:28px;border-radius:50%;background:#fff;border:1px solid var(--line);
-    display:grid;place-items:center;box-shadow:0 2px 6px rgba(17,20,23,.06);
+  .cat:hover{transform:translateY(-4px);background:var(--card-solid);border-color:var(--green-soft)}
+  .cat .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .cat .num{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.14em}
+  .cat .arrow{color:var(--faint);transition:all .3s var(--ease);font-size:15px}
+  .cat:hover .arrow{color:var(--green);transform:translate(3px,-3px)}
+  .cat h3{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .cat p{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .cat .count{
+    display:inline-block;margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--green);border:1px solid var(--line);border-radius:99px;padding:4px 10px;
   }
-  .fcard .ico svg{width:13px;height:13px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .fcard .val{font-size:16.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;line-height:1.25}
-  .fcard .foot{margin-top:4px;font-size:11px;color:var(--faint);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase}
 
-  /* positions — stats left/right like the reference, pills bottom */
-  .p-left1{left:2%;top:52%}
-  .p-left2{left:2%;top:73%}
-  .p-right1{right:2%;top:12%}
-  .p-right2{right:2%;top:33%}
-  .p-right3{right:2%;top:54%}
-
-  /* bottom pill row */
-  .pillrow{
-    position:absolute;left:50%;bottom:4%;transform:translateX(-50%);
-    display:flex;gap:12px;z-index:3;flex-wrap:wrap;justify-content:center;
-  }
+  /* ── Bottom pills ────────────────── */
+  .pillrow{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);display:flex;gap:12px;z-index:3;flex-wrap:wrap;justify-content:center}
   .pill{
-    display:flex;align-items:center;gap:10px;
-    background:var(--card);backdrop-filter:blur(12px);
-    border:1px solid var(--line);border-radius:var(--pill-r);
-    padding:11px 20px 11px 12px;box-shadow:var(--shadow-sm);
-    transition:all .25s var(--ease);white-space:nowrap;
+    display:flex;align-items:center;gap:10px;background:var(--card);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:var(--pill-r);padding:11px 20px 11px 12px;
+    box-shadow:var(--shadow-sm);transition:all .25s var(--ease);white-space:nowrap;
   }
   .pill:hover{transform:translateY(-3px);background:var(--card-solid)}
-  .pill .ico{
-    width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid var(--line);
-    display:grid;place-items:center;
-  }
+  .pill .ico{width:26px;height:26px;border-radius:50%;background:var(--card-solid);border:1px solid var(--line);display:grid;place-items:center}
   .pill .ico svg{width:12px;height:12px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .pill .t small{display:block;font-size:10px;color:var(--muted);letter-spacing:.05em}
   .pill .t b{font-size:12.5px;color:var(--ink);font-weight:700}
 
-  /* CTA card bottom-right */
-  .cta{
-    position:absolute;right:2%;bottom:2%;z-index:3;width:224px;
-    background:var(--card);backdrop-filter:blur(12px);
-    border:1px solid var(--line);border-radius:var(--r);
-    box-shadow:var(--shadow);padding:18px;
+  /* ── Ares switch ─────────────────── */
+  .ares-switch{
+    position:fixed;right:26px;bottom:26px;z-index:40;
+    display:flex;align-items:center;gap:9px;cursor:pointer;
+    background:#0a0a0a;border:1px solid #2a2a2a;border-radius:var(--pill-r);
+    padding:8px 18px 8px 9px;box-shadow:0 14px 34px -12px rgba(0,0,0,.65);
+    transition:all .25s var(--ease);
   }
-  .cta b{display:block;font-size:14.5px;color:var(--ink);letter-spacing:-.01em}
-  .cta p{margin-top:5px;font-size:11.5px;color:var(--muted);line-height:1.5}
-  .cta .status{display:flex;align-items:center;gap:7px;margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-  .cta .status i{width:6px;height:6px;border-radius:50%;background:#3fae62;box-shadow:0 0 8px #3fae62;display:inline-block}
-  .cta a{
-    margin-top:13px;display:block;text-align:center;
-    background:#111417;color:#fff;font-size:13px;font-weight:600;
-    padding:11px 0;border-radius:12px;transition:all .25s var(--ease);
+  .ares-switch:hover{transform:translateY(-3px);border-color:#e3120b;box-shadow:0 16px 40px -10px rgba(227,18,11,.45)}
+  .ares-switch img{width:30px;height:30px;object-fit:contain;object-position:top}
+  .ares-switch .t small{display:block;font-size:9px;color:#8a8a8a;letter-spacing:.16em;text-transform:uppercase;font-family:var(--mono)}
+  .ares-switch .t b{font-size:12.5px;color:#fff;font-weight:700;letter-spacing:.06em}
+
+  /* ── Category overlay panel ──────── */
+  .ovl{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
+  .ovl.open{display:flex}
+  .ovl .back{position:absolute;inset:0;background:rgba(10,13,12,.45);backdrop-filter:blur(8px)}
+  .panel{
+    position:relative;width:min(560px,94vw);max-height:84vh;overflow:auto;
+    background:var(--card-solid);border:1px solid var(--line);border-radius:24px;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.5);padding:30px;
   }
-  .cta a:hover{transform:translateY(-2px);box-shadow:0 10px 20px -10px rgba(17,20,23,.5)}
+  .panel .phead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+  .panel .pkick{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--green)}
+  .panel h2{font-size:28px;color:var(--ink);letter-spacing:-.01em;margin-top:4px}
+  .panel .pdesc{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.55}
+  .pclose{border:1px solid var(--line);background:transparent;color:var(--muted);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;transition:all .2s}
+  .pclose:hover{color:var(--ink);border-color:var(--ink)}
+  .plist{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+  .prow{
+    display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:16px;
+    padding:15px 17px;transition:all .25s var(--ease);
+  }
+  .prow:hover{border-color:var(--green-soft);transform:translateX(4px)}
+  .prow .pi{width:38px;height:38px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+  .prow .pi svg{width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .prow .pt{flex:1;min-width:0}
+  .prow .pt b{display:block;font-size:15px;color:var(--ink);font-weight:700}
+  .prow .pt span{font-size:12px;color:var(--muted);line-height:1.45;display:block;margin-top:2px}
+  .prow .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 9px;flex:none}
+  .prow .go{color:var(--faint);font-size:15px;flex:none}
+  .prow:hover .go{color:var(--green)}
+
+  /* ── Gate ────────────────────────── */
+  .gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+  .gate.off{display:none}
+  .gcard{text-align:center;width:min(340px,90vw)}
+  .gcard img{width:64px;height:64px;object-fit:contain;margin-bottom:18px}
+  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .gcard h2{font-size:22px;color:var(--ink);font-weight:700;letter-spacing:-.01em;margin-bottom:22px}
+  .gcard input{
+    width:100%;height:48px;border:1px solid var(--line);border-radius:14px;background:var(--card-solid);
+    color:var(--ink);font-size:15px;text-align:center;letter-spacing:.18em;font-family:var(--mono);outline:none;
+  }
+  .gcard input:focus{border-color:var(--green)}
+  .gcard button{
+    margin-top:12px;width:100%;height:46px;border:none;border-radius:14px;background:var(--ink);
+    color:var(--card-solid);font-weight:600;font-size:14px;cursor:pointer;transition:all .25s var(--ease);
+  }
+  .gcard button:hover{transform:translateY(-2px)}
+  .gmsg{margin-top:12px;font-size:12px;color:#c0563c;min-height:16px}
 
   /* ── Mobile ──────────────────────── */
-  @media(max-width:940px){
-    .stage{padding:18px 18px 32px}
+  @media(max-width:1080px){
+    .stage{padding:18px 18px 90px}
     .navpills{display:none}
     .canvas{min-height:0;margin-top:26px}
     .titleblock{position:static;max-width:none;text-align:center;margin:0 auto}
-    .loc{justify-content:center}
-    .scene{position:relative;left:auto;top:auto;transform:none;margin:30px auto 6px;width:min(300px,72vw)}
-    .podium{position:relative;left:auto;top:auto;transform:none;margin:-46% auto 0;width:min(420px,90vw)}
-    .fcard{position:static;width:auto}
-    .cardgrid-m{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+    .scene{position:relative;left:auto;top:auto;transform:none;margin:26px auto 4px;width:min(280px,70vw)}
+    .podium{position:relative;left:auto;top:auto;transform:none;margin:-44% auto 0;width:min(400px,88vw)}
+    .astrip{position:static;width:auto;margin-top:26px}
+    .catcol{position:static;width:auto;margin-top:14px}
     .pillrow{position:static;transform:none;margin-top:16px}
-    .cta{position:static;width:auto;margin-top:16px}
   }
-  @media(max-width:520px){.cardgrid-m{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+
+<!-- access gate -->
+<div class="gate" id="gate">
+  <div class="gcard">
+    <img id="gateLogo" src="logomark.png" alt="">
+    <div class="gk">Anomaly Creative Studio</div>
+    <h2>Studio Hub</h2>
+    <input id="gateIn" type="password" placeholder="········" autocomplete="off">
+    <button id="gateBtn">Enter</button>
+    <div class="gmsg" id="gateMsg"></div>
+  </div>
+</div>
 
 <div class="room"></div>
 
 <div class="stage">
 
-  <!-- top bar -->
   <div class="topbar">
     <div class="brand">
-      <img src="logomark.png" alt="Anomaly logomark">
+      <img id="brandLogo" src="logomark.png" alt="Anomaly logomark">
       <div class="brand-name"><b>Anomaly</b><span>Creative Studio</span></div>
     </div>
     <nav class="navpills">
-      <a class="active" href="#">Platforms</a>
-      <a href="https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/">Studio Ops</a>
-      <a href="https://anomalycreativeco.github.io/Anomaly-x-RCH---Content-Planning/">Client</a>
-      <a href="https://anomalycreativeco.github.io/brand-hub/">Brand</a>
+      <button class="active">Platforms</button>
+      <button data-cat="client">Client</button>
+      <button data-cat="post">Post-Production</button>
+      <button data-cat="pre">Pre-Production</button>
       <a href="https://github.com/anomalycreativeco">GitHub</a>
     </nav>
-    <div class="userchip">
-      <div class="avatar">DP</div>
-      <div class="who"><b>Daniel Pan</b><span>Founder</span></div>
+    <div class="tb-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+      <div class="userchip">
+        <div class="avatar">DP</div>
+        <div class="who"><b>Daniel Pan</b><span>Founder</span></div>
+      </div>
     </div>
   </div>
 
-  <!-- hero canvas -->
   <div class="canvas">
 
     <div class="titleblock">
       <div class="kicker">Internal Platform Collection</div>
       <h1>Studio Hub</h1>
       <div class="sub">Every tool the studio runs on — one front door.</div>
-      <div class="bigstat">7<small>platforms · 3 firebase backends</small></div>
-      <div class="loc">
-        <svg viewBox="0 0 24 24"><path d="M12 21s-7-5.1-7-11a7 7 0 1 1 14 0c0 5.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
-        Raleigh, NC — Anomaly Creative Studio
-      </div>
     </div>
 
-    <!-- 3D spinning logomark -->
     <div class="podium"><div class="ring"></div><div class="shade"></div></div>
     <div class="scene"><div class="spinner" id="spinner"></div></div>
 
-    <!-- floating platform cards -->
-    <div class="cardgrid-m">
-      <a class="fcard p-left1" href="https://anomalycreativeco.github.io/Anomaly-Revenue-Dashboard/">
-        <div class="row"><span class="label">Revenue</span>
-          <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span></div>
-        <div class="val">Revenue Dashboard</div>
-        <div class="foot">2026 · Static</div>
-      </a>
-
-      <a class="fcard p-left2" href="https://anomalycreativeco.github.io/Anomaly-Client-Relationship-Map/">
-        <div class="row"><span class="label">Team</span>
-          <span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="7" r="2.4"/><path d="M15.5 13.6c2.9.4 5 2.9 5 6.4"/></svg></span></div>
-        <div class="val">Relationship Map</div>
-        <div class="foot">Ownership · Static</div>
-      </a>
-
-      <a class="fcard p-right1" href="https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/">
-        <div class="row"><span class="label">Pipeline</span>
-          <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9h18M7 5v4M12 5v4M17 5v4"/></svg></span></div>
-        <div class="val">Editing Pipeline</div>
-        <div class="foot">Firebase · Live</div>
-      </a>
-
-      <a class="fcard p-right2" href="https://anomalycreativeco.github.io/Anomaly-Client-Onboarding/">
-        <div class="row"><span class="label">Onboarding</span>
-          <span class="ico"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.2"/><path d="M4 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M18 6v6M15 9h6"/></svg></span></div>
-        <div class="val">Client Onboarding</div>
-        <div class="foot">Firebase · Live</div>
-      </a>
-
-      <a class="fcard p-right3" href="https://anomalycreativeco.github.io/Anomaly-x-RCH---Content-Planning/">
-        <div class="row"><span class="label">Planner</span>
-          <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M13 14h3M8 17.5h3"/></svg></span></div>
-        <div class="val">RCH Content Planner</div>
-        <div class="foot">Firebase · Client</div>
-      </a>
+    <!-- live analytics from the Editing Pipeline -->
+    <div class="astrip" id="astrip">
+      <div class="acard" id="aKpis">
+        <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
+        <div id="aBody">
+          <button class="connect" id="aConnect">Connect Pipeline</button>
+          <div class="amsg">Signs into the Editing Pipeline with Google to pull live production stats.</div>
+        </div>
+      </div>
+      <div class="acard" id="aChartCard" style="display:none">
+        <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
+        <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
+      </div>
+      <div class="acard" id="aClientCard" style="display:none">
+        <div class="ahead"><span>Open tasks · by client</span></div>
+        <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
+      </div>
     </div>
 
-    <!-- bottom pills -->
+    <!-- category cards -->
+    <div class="catcol">
+      <button class="cat" data-cat="client">
+        <div class="row"><span class="num">SEC·01</span><span class="arrow">↗</span></div>
+        <h3>Client</h3>
+        <p>Onboarding, ownership, and client-facing platforms.</p>
+        <span class="count">2 platforms</span>
+      </button>
+      <button class="cat" data-cat="post">
+        <div class="row"><span class="num">SEC·02</span><span class="arrow">↗</span></div>
+        <h3>Post-Production</h3>
+        <p>Editing pipeline — ingest to delivery, with live stats at left.</p>
+        <span class="count">1 platform</span>
+      </button>
+      <button class="cat" data-cat="pre">
+        <div class="row"><span class="num">SEC·03</span><span class="arrow">↗</span></div>
+        <h3>Pre-Production</h3>
+        <p>Planning, concepts, and content calendars before cameras roll.</p>
+        <span class="count">1 platform</span>
+      </button>
+    </div>
+
     <div class="pillrow">
+      <a class="pill" href="analytics.html">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span>
+        <span class="t"><small>Revenue · 2026</small><b>Analytics Dashboard</b></span>
+      </a>
       <a class="pill" href="https://anomalycreativeco.github.io/brand-hub/">
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5"/></svg></span>
         <span class="t"><small>Brand</small><b>Brand Hub</b></span>
-      </a>
-      <a class="pill" href="https://dash.aresdigital.store/">
-        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></span>
-        <span class="t"><small>Client · Ares Digital</small><b>Editor Dashboard</b></span>
       </a>
       <a class="pill" href="https://github.com/anomalycreativeco">
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 15.5c2 1.2 5 1.2 7 0M9 10.5v1M15 10.5v1"/></svg></span>
@@ -309,30 +354,178 @@
       </a>
     </div>
 
-    <!-- CTA -->
-    <div class="cta">
-      <b>All systems live</b>
-      <p>Seven platforms, deployed on GitHub Pages &amp; Firebase.</p>
-      <div class="status"><i></i>Operational</div>
-      <a href="https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/">Open Editing Pipeline</a>
-    </div>
+  </div>
+</div>
 
+<a class="ares-switch" href="ares.html" title="Switch to Ares Digital">
+  <img src="ares-head.png?v=3" alt="Ares Digital">
+  <span class="t"><small>Switch to</small><b>ARES</b></span>
+</a>
+
+<!-- category panel -->
+<div class="ovl" id="ovl">
+  <div class="back" id="ovlBack"></div>
+  <div class="panel">
+    <div class="phead">
+      <div><div class="pkick" id="pKick"></div><h2 id="pTitle"></h2><div class="pdesc" id="pDesc"></div></div>
+      <button class="pclose" id="pClose">✕</button>
+    </div>
+    <div class="plist" id="pList"></div>
   </div>
 </div>
 
 <script>
-  // build the 3D extruded logomark: stacked layers along Z
-  const spinner = document.getElementById('spinner');
-  const LAYERS = 24, DEPTH = 26; // px of extrusion
-  for (let i = 0; i < LAYERS; i++) {
-    const img = document.createElement('img');
-    img.src = 'logomark.png';
-    img.alt = i === 0 ? 'Anomaly logomark, rotating in 3D' : '';
-    img.style.transform = `translateZ(${(i - (LAYERS - 1) / 2) * (DEPTH / (LAYERS - 1))}px)`;
-    // black faces, gray core — the lighter side wall is what makes the extrusion read as 3D
-    if (i > 1 && i < LAYERS - 2) img.style.filter = 'invert(.42)';
+/* ───────── gate ───────── */
+const GATE_HASH = "a85442a37b917b5463e629a4f66b0c711a1a04411b1601cdd7c109bcb70a6309";
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+async function tryUnlock(pass, silent){
+  if(await sha("anomaly-hub|"+pass) === GATE_HASH){
+    sessionStorage.setItem("hubKey", pass);
+    document.getElementById("gate").classList.add("off");
+    return true;
+  }
+  if(!silent) document.getElementById("gateMsg").textContent = "Wrong passcode";
+  return false;
+}
+(async()=>{const k=sessionStorage.getItem("hubKey"); if(k) await tryUnlock(k,true);})();
+document.getElementById("gateBtn").onclick = ()=>tryUnlock(document.getElementById("gateIn").value.trim());
+document.getElementById("gateIn").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock(e.target.value.trim());});
+
+/* ───────── theme + 3D spinner ───────── */
+const root=document.documentElement, spinner=document.getElementById("spinner");
+const LAYERS=24, DEPTH=26;
+function buildSpinner(){
+  const dark = root.getAttribute("data-theme")==="dark";
+  const src = dark ? "logomark-green.png" : "logomark.png";
+  spinner.innerHTML="";
+  for(let i=0;i<LAYERS;i++){
+    const img=document.createElement("img");
+    img.src=src; img.alt=i===0?"Anomaly logomark, rotating in 3D":"";
+    img.style.transform=`translateZ(${(i-(LAYERS-1)/2)*(DEPTH/(LAYERS-1))}px)`;
+    // shaded core layers make the side wall read as machined depth
+    if(i>1&&i<LAYERS-2) img.style.filter = dark ? "brightness(.55)" : "invert(.42)";
     spinner.appendChild(img);
   }
+  document.getElementById("brandLogo").src=src;
+  document.getElementById("gateLogo").src=src;
+}
+function setTheme(t){ if(t==="dark") root.setAttribute("data-theme","dark"); else root.removeAttribute("data-theme");
+  localStorage.setItem("hub-theme",t); buildSpinner(); }
+setTheme(localStorage.getItem("hub-theme")||"light");
+document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+
+/* ───────── category panels ───────── */
+const CATS={
+  client:{kick:"SEC·01 — Client",title:"Client",desc:"Everything that touches a client relationship — from first contact to who owns the account.",
+    items:[
+      {name:"Client Onboarding",desc:"Onboarding tracker — signed contract through kickoff, nothing slips.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-Client-Onboarding/",icon:"M10 8m-3.2 0a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0-6.4 0M4 20c0-3.3 2.7-6 6-6s6 2.7 6 6M18 6v6M15 9h6"},
+      {name:"Client Relationship Map",desc:"Team responsibilities — who owns which client, account by account.",tag:"Static",url:"https://anomalycreativeco.github.io/Anomaly-Client-Relationship-Map/",icon:"M9 8m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 7m-2.4 0a2.4 2.4 0 1 0 4.8 0a2.4 2.4 0 1 0-4.8 0M15.5 13.6c2.9.4 5 2.9 5 6.4"}
+    ]},
+  post:{kick:"SEC·02 — Post-Production",title:"Post-Production",desc:"The editing engine room. Live production stats surface on the hub front page.",
+    items:[
+      {name:"Editing Pipeline",desc:"Post-production tracker — every project, editor, and delivery from ingest to final export.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/",icon:"M3 7.5h18M7 5v4M12 5v4M17 5v4M3 5.5h18v13H3z"}
+    ]},
+  pre:{kick:"SEC·03 — Pre-Production",title:"Pre-Production",desc:"Planning before cameras roll — calendars, concepts, and approvals.",
+    items:[
+      {name:"RCH Content Planner",desc:"Anomaly × Raleigh Custom Homes monthly content planner — shared calendar and approvals.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-x-RCH---Content-Planning/",icon:"M3 5.5h18v15H3zM3 10h18M8 3v4M16 3v4M8 14h3M13 14h3M8 17.5h3"}
+    ]}
+};
+const ovl=document.getElementById("ovl");
+function openCat(key){
+  const c=CATS[key]; if(!c) return;
+  document.getElementById("pKick").textContent=c.kick;
+  document.getElementById("pTitle").textContent=c.title;
+  document.getElementById("pDesc").textContent=c.desc;
+  document.getElementById("pList").innerHTML=c.items.map(it=>`
+    <a class="prow" href="${it.url}">
+      <span class="pi"><svg viewBox="0 0 24 24"><path d="${it.icon}"/></svg></span>
+      <span class="pt"><b>${it.name}</b><span>${it.desc}</span></span>
+      <span class="tag">${it.tag}</span><span class="go">↗</span>
+    </a>`).join("");
+  ovl.classList.add("open");
+}
+document.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>openCat(el.dataset.cat)));
+document.getElementById("pClose").onclick=()=>ovl.classList.remove("open");
+document.getElementById("ovlBack").onclick=()=>ovl.classList.remove("open");
+addEventListener("keydown",e=>{if(e.key==="Escape")ovl.classList.remove("open");});
+
+/* ───────── live pipeline analytics ───────── */
+const fbConfig={apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"};
+let fb=null;
+async function loadFb(){
+  if(fb) return fb;
+  const [app,auth,fs]=await Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+  ]);
+  const a=app.initializeApp(fbConfig);
+  return fb={auth:auth.getAuth(a),Auth:auth,db:fs.getFirestore(a),Fs:fs};
+}
+function fmtWk(d){return (d.getMonth()+1)+"/"+d.getDate();}
+function drawStats(tasks){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const wk=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x.getTime();}
+  const wkNow=wk(now), WEEKS=8;
+  const weeks=Array.from({length:WEEKS},(_,i)=>wkNow-(WEEKS-1-i)*6048e5);
+  const posted=weeks.map(w=>tasks.filter(t=>t.completed&&t.dueDate&&wk(new Date(t.dueDate+"T12:00"))===w).length);
+  const open=tasks.filter(t=>!t.completed&&t.type!=="filming"&&t.type!=="braindump");
+  const overdue=open.filter(t=>t.dueDate&&new Date(t.dueDate+"T12:00")<now).length;
+  const delivered=open.filter(t=>t.delivered).length;
+  const inprod=open.length-delivered;
+  document.getElementById("aState").textContent="LIVE";
+  document.getElementById("aBody").innerHTML=`<div class="kpirow">
+    <div class="kpi"><b>${inprod}</b><span>In prod</span></div>
+    <div class="kpi"><b>${delivered}</b><span>Delivered</span></div>
+    <div class="kpi ${overdue?"warn":""}"><b>${overdue}</b><span>Overdue</span></div>
+  </div>`;
+  // weekly bars
+  const max=Math.max(...posted,1), W=216,H=74,bw=W/WEEKS-6;
+  document.getElementById("aChart").innerHTML=posted.map((v,i)=>{
+    const h=Math.round(v/max*44), x=i*(W/WEEKS)+3, y=56-h;
+    return `<rect class="bar" x="${x}" y="${y}" width="${bw}" height="${h}" rx="3"></rect>
+      <text class="vlabel" x="${x+bw/2}" y="${y-3}" text-anchor="middle">${v||""}</text>
+      <text x="${x+bw/2}" y="68" text-anchor="middle">${fmtWk(new Date(weeks[i]))}</text>`;
+  }).join("");
+  document.getElementById("aChartCard").style.display="block";
+  // open by client
+  const byClient={}; open.forEach(t=>{byClient[t.clientAbbr||"—"]=(byClient[t.clientAbbr||"—"]||0)+1;});
+  const top=Object.entries(byClient).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const cm=Math.max(...top.map(x=>x[1]),1);
+  document.getElementById("aClients").innerHTML=top.map(([c,v],i)=>{
+    const y=i*19+4, w=Math.round(v/cm*130);
+    return `<text x="0" y="${y+9}" class="vlabel">${c}</text>
+      <rect class="bar" x="46" y="${y}" width="${w}" height="12" rx="3"></rect>
+      <text x="${50+w}" y="${y+9}">${v}</text>`;
+  }).join("");
+  document.getElementById("aClientCard").style.display="block";
+}
+async function pullStats(){
+  const {db,Fs}=await loadFb();
+  const snap=await Fs.getDocs(Fs.collection(db,"tasks"));
+  const tasks=snap.docs.map(d=>d.data());
+  sessionStorage.setItem("hubStats",JSON.stringify({at:Date.now(),tasks:tasks.map(t=>({completed:!!t.completed,delivered:!!t.delivered,dueDate:t.dueDate||null,type:t.type||null,clientAbbr:t.clientAbbr||null}))}));
+  drawStats(tasks);
+}
+document.getElementById("aConnect").onclick=async()=>{
+  try{
+    document.getElementById("aState").textContent="…";
+    const {auth,Auth}=await loadFb();
+    await Auth.signInWithPopup(auth,new Auth.GoogleAuthProvider());
+    await pullStats();
+  }catch(e){
+    document.getElementById("aState").textContent="—";
+    document.querySelector(".amsg").textContent="Sign-in failed: "+(e.code||e.message);
+  }
+};
+(async()=>{
+  const cached=sessionStorage.getItem("hubStats");
+  if(cached){try{drawStats(JSON.parse(cached).tasks);}catch(e){}}
+  try{
+    const {auth,Auth}=await loadFb();
+    Auth.onAuthStateChanged(auth,u=>{if(u&&!cached)pullStats().catch(()=>{});});
+  }catch(e){}
+})();
 </script>
 
 </body>
