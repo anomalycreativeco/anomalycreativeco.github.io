@@ -52,10 +52,10 @@
 
   .room{position:fixed;inset:0;pointer-events:none;z-index:0}
   .room::before{
-    content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
-    width:min(880px,80vw);height:10px;border-radius:0 0 12px 12px;
-    background:linear-gradient(90deg,transparent,var(--strip) 20%,var(--strip) 80%,transparent);
-    box-shadow:0 12px 60px 8px var(--strip);opacity:.9;
+    content:"";position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+    width:min(880px,80vw);height:160px;pointer-events:none;
+    background:radial-gradient(50% 100% at 50% 0%, var(--strip), transparent 68%);
+    opacity:.45;filter:blur(18px);
   }
   .room::after{
     content:"";position:absolute;left:0;right:0;bottom:0;height:26vh;
@@ -417,10 +417,6 @@
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span>
         <span class="t"><small>Revenue · 2026</small><b>Analytics Dashboard</b></span>
       </a>
-      <a class="pill" id="pillBrand" href="https://anomalycreativeco.github.io/brand-hub/" target="_blank" rel="noopener" style="display:none">
-        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5"/></svg></span>
-        <span class="t"><small>Brand</small><b>Brand Hub</b></span>
-      </a>
     </div>
 
   </div>
@@ -478,7 +474,6 @@ const PLATFORMS={
   onboarding:{name:"Client Onboarding",cat:"client",def:"everyone"},
   relmap:{name:"Client Relationship Map",cat:"client",def:"everyone"},
   rchplanner:{name:"RCH Content Planner",cat:"pre",def:"everyone"},
-  brandhub:{name:"Brand Hub",cat:null,def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
   automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
   ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"}
@@ -598,7 +593,6 @@ function applyAccess(){
   });
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
-  document.getElementById("pillBrand").style.display=canSee("brandhub")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
   document.getElementById("astrip").style.display="flex";
   document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
