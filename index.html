@@ -249,6 +249,27 @@
   .anote{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55}
   .anote.err{color:#c0563c}
 
+  /* ── Embedded app viewer ─────────── */
+  .viewer{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:var(--bg)}
+  .viewer.open{display:flex;animation:vup .45s var(--ease)}
+  @keyframes vup{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+  .vbar{
+    display:flex;align-items:center;gap:12px;padding:9px 16px;flex:none;
+    background:var(--card);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+  }
+  .vbadge{width:26px;height:26px;border-radius:50%;background:#92ABA7;flex:none;display:grid;place-items:center}
+  .vbadge img{width:14px;height:14px;object-fit:contain}
+  .vtitle b{display:block;font-size:12.5px;color:var(--ink);font-weight:700;line-height:1.15}
+  .vtitle span{font-size:10px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em}
+  .vspacer{flex:1}
+  .vbtn{
+    width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+    background:var(--card-solid);border:1px solid var(--line);color:var(--muted);
+    font-size:13px;transition:all .2s var(--ease);text-decoration:none;
+  }
+  .vbtn:hover{color:var(--ink);transform:translateY(-1px)}
+  .viewer iframe{flex:1;width:100%;border:0;background:#fff}
+
   /* ── Auth gate — team photo backdrop ── */
   .gate{
     position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
@@ -426,6 +447,18 @@
   <img src="ares-head.png?v=3" alt="Ares Digital">
   <span class="t"><small>Switch to</small><b>ARES</b></span>
 </a>
+
+<!-- embedded app viewer -->
+<div class="viewer" id="viewer">
+  <div class="vbar">
+    <span class="vbadge"><img src="logomark-white.png" alt=""></span>
+    <div class="vtitle"><b id="vName">—</b><span id="vHost"></span></div>
+    <span class="vspacer"></span>
+    <a class="vbtn" id="vExt" target="_blank" rel="noopener" title="Open in its own tab">↗</a>
+    <button class="vbtn" id="vClose" title="Back to hub">✕</button>
+  </div>
+  <iframe id="vFrame" src="about:blank" allow="clipboard-write; clipboard-read"></iframe>
+</div>
 
 <!-- category panel -->
 <div class="ovl" id="ovl">
@@ -648,13 +681,40 @@ function openCat(key){
   document.getElementById("pDesc").textContent=c.desc;
   const items=visibleItems(key);
   document.getElementById("pList").innerHTML=items.length?items.map(it=>`
-    <a class="prow" href="${it.url}" target="_blank" rel="noopener">
+    <a class="prow" href="${it.url}" data-name="${it.name}" target="_blank" rel="noopener">
       <span class="pi"><svg viewBox="0 0 24 24"><path d="${it.icon}"/></svg></span>
       <span class="pt"><b>${it.name}</b><span>${it.desc}</span></span>
       <span class="tag">${it.tag}</span><span class="go">↗</span>
     </a>`).join(""):`<div class="pempty">Nothing here for your account yet.</div>`;
+  // normal click = open inside the hub; ⌘/ctrl-click or middle-click still opens a real tab
+  document.querySelectorAll("#pList .prow").forEach(a=>a.addEventListener("click",e=>{
+    if(e.metaKey||e.ctrlKey||e.shiftKey) return;
+    e.preventDefault();
+    ovl.classList.remove("open");
+    openApp(a.dataset.name, a.href);
+  }));
   ovl.classList.add("open");
 }
+
+/* ── embedded app viewer ── */
+const viewer=document.getElementById("viewer"), vFrame=document.getElementById("vFrame");
+function openApp(name,url){
+  document.getElementById("vName").textContent=name;
+  const abs=new URL(url,location.href);
+  document.getElementById("vHost").textContent=abs.host+abs.pathname.replace(/\/$/,"");
+  document.getElementById("vExt").href=abs.href;
+  if(vFrame.src!==abs.href) vFrame.src=abs.href;
+  viewer.classList.add("open");
+}
+document.getElementById("vClose").onclick=()=>viewer.classList.remove("open");
+["pillAnalytics","pillAutomations"].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener("click",e=>{
+    if(e.metaKey||e.ctrlKey||e.shiftKey) return;
+    e.preventDefault();
+    openApp(el.querySelector(".t b").textContent, el.getAttribute("href"));
+  });
+});
 document.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>openCat(el.dataset.cat)));
 document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",()=>ovl.classList.remove("open")));
 
@@ -662,7 +722,7 @@ document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click
 const adminOvl=document.getElementById("adminOvl");
 document.getElementById("gearBtn").onclick=()=>{buildAdmin();adminOvl.classList.add("open");};
 document.querySelectorAll("[data-aclose]").forEach(el=>el.addEventListener("click",()=>adminOvl.classList.remove("open")));
-addEventListener("keydown",e=>{if(e.key==="Escape"){ovl.classList.remove("open");adminOvl.classList.remove("open");}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){ovl.classList.remove("open");adminOvl.classList.remove("open");viewer.classList.remove("open");}});
 function buildAdmin(){
   document.getElementById("adminList").innerHTML=Object.entries(PLATFORMS).map(([k,p])=>{
     const m=modeOf(k), em=emailsOf(k).join(", ");
