@@ -249,29 +249,53 @@
   .anote{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55}
   .anote.err{color:#c0563c}
 
-  /* ── Auth gate ───────────────────── */
-  .gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+  /* ── Auth gate — team photo backdrop ── */
+  .gate{
+    position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+    background:#050505 url("login-bg.jpg") center 30%/cover no-repeat;
+  }
+  .gate::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 40%, rgba(5,5,5,.38) 0%, rgba(5,5,5,.82) 78%, rgba(5,5,5,.95) 100%)}
   .gate.off{display:none}
-  .gcard{text-align:center;width:min(360px,90vw)}
-  .gcard>img{width:64px;height:64px;object-fit:contain;margin-bottom:18px}
-  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-  .gcard h2{font-size:22px;color:var(--ink);font-weight:700;letter-spacing:-.01em;margin-bottom:24px}
+  .gcard{position:relative;text-align:center;width:min(360px,90vw)}
+  .gcard>img{width:64px;height:64px;object-fit:contain;margin-bottom:18px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.6))}
+  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:6px}
+  .gcard h2{font-size:24px;color:#fff;font-weight:700;letter-spacing:-.01em;margin-bottom:26px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
   .gbtn{
     width:100%;height:48px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;
     display:flex;align-items:center;justify-content:center;gap:10px;
-    background:var(--card-solid);color:var(--ink);border:1px solid var(--line);
-    box-shadow:var(--shadow-sm);transition:all .25s var(--ease);
+    background:#fff;color:#111417;border:1px solid rgba(255,255,255,.3);
+    box-shadow:0 14px 34px -12px rgba(0,0,0,.8);transition:all .25s var(--ease);
   }
   .gbtn:hover{transform:translateY(-2px)}
   .gbtn .gdot{width:16px;height:16px;border-radius:50%;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
-  .gmsg{margin-top:14px;font-size:12px;color:var(--muted);min-height:16px;line-height:1.5}
-  .gmsg.err{color:#c0563c}
-  .gsub{margin-top:18px;font-size:11.5px;color:var(--faint);line-height:1.6}
+  .gmsg{margin-top:14px;font-size:12px;color:rgba(255,255,255,.75);min-height:16px;line-height:1.5}
+  .gmsg.err{color:#ff8a70}
+  .gsub{margin-top:18px;font-size:11.5px;color:rgba(255,255,255,.45);line-height:1.6}
   .gout{
-    margin-top:14px;background:transparent;border:1px solid var(--line);color:var(--muted);
+    margin-top:14px;background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);
     border-radius:99px;padding:8px 18px;font-size:12px;cursor:pointer;display:none;
   }
   .gout.show{display:inline-block}
+
+  /* ── Entrance animation (post-login, ~3s total) ── */
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes riseC{from{opacity:0;transform:translate(-50%,-46%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  body.enter .topbar{animation:rise .7s var(--ease) .1s backwards}
+  body.enter .titleblock{animation:rise .8s var(--ease) .35s backwards}
+  body.enter .scene{animation:riseC 1.1s var(--ease) .55s backwards}
+  body.enter .podium{animation:fadeIn 1.2s var(--ease) .9s backwards}
+  body.enter .astrip .acard:nth-child(1){animation:rise .7s var(--ease) 1.05s backwards}
+  body.enter .astrip .acard:nth-child(2){animation:rise .7s var(--ease) 1.25s backwards}
+  body.enter .astrip .acard:nth-child(3){animation:rise .7s var(--ease) 1.45s backwards}
+  body.enter .astrip .acard:nth-child(4){animation:rise .7s var(--ease) 1.6s backwards}
+  body.enter .catcol .cat:nth-child(1){animation:rise .7s var(--ease) 1.15s backwards}
+  body.enter .catcol .cat:nth-child(2){animation:rise .7s var(--ease) 1.35s backwards}
+  body.enter .catcol .cat:nth-child(3){animation:rise .7s var(--ease) 1.55s backwards}
+  body.enter .pillrow .pill:nth-child(1){animation:rise .6s var(--ease) 1.9s backwards}
+  body.enter .pillrow .pill:nth-child(2){animation:rise .6s var(--ease) 2.05s backwards}
+  body.enter .pillrow .pill:nth-child(3){animation:rise .6s var(--ease) 2.2s backwards}
+  body.enter .ares-switch.show{animation:rise .7s var(--ease) 2.5s backwards}
 
   /* ── Mobile ──────────────────────── */
   @media(max-width:1080px){
@@ -292,8 +316,8 @@
 <!-- auth gate -->
 <div class="gate" id="gate">
   <div class="gcard">
-    <img id="gateLogo" src="logomark.png" alt="">
-    <div class="gk">Anomaly Creative Studio</div>
+    <img id="gateLogo" src="logomark-white.png" alt="">
+    <div class="gk">Anomaly Creative &amp; Co.</div>
     <h2 id="gateTitle">Studio Hub</h2>
     <button class="gbtn" id="gGoogle"><span class="gdot"></span>Continue with Google</button>
     <div class="gmsg" id="gMsg"></div>
@@ -308,7 +332,7 @@
 
   <div class="topbar">
     <div class="brand">
-      <span class="badge"><img id="brandLogo" src="logomark.png" alt="Anomaly logomark"></span>
+      <span class="badge"><img id="brandLogo" src="logomark-white.png" alt="Anomaly logomark"></span>
       <div class="brand-name"><b>Anomaly</b><span>Studio Hub</span></div>
     </div>
     <nav class="navpills">
@@ -486,7 +510,7 @@ const LAYERS=24, DEPTH=26;
 function buildSpinner(){
   const dark=root.getAttribute("data-theme")==="dark";
   // dark mode spins the fuzzy AI mark (soft volumetric stack); light mode the machined black mark
-  const src=dark?"logomark-fuzzy.png":"logomark.png";
+  const src=dark?"logomark-fuzzy.png?v=2":"logomark.png";
   spinner.innerHTML="";
   for(let i=0;i<LAYERS;i++){
     const img=document.createElement("img");
@@ -495,7 +519,6 @@ function buildSpinner(){
     if(!dark && i>1&&i<LAYERS-2) img.style.filter="invert(.42)";
     spinner.appendChild(img);
   }
-  document.getElementById("gateLogo").src=dark?"logomark-fuzzy.png":"logomark.png";
 }
 function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");
   localStorage.setItem("hub-theme",t);buildSpinner();}
@@ -515,6 +538,7 @@ document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
   if(!u){ USER=null; MYEMAIL=""; MYROLE="none";
     gate.classList.remove("off"); gOut.classList.remove("show");
+    document.body.classList.remove("enter");
     document.getElementById("gateTitle").textContent="Studio Hub";
     gMsg.className="gmsg"; gMsg.textContent="";
     return; }
@@ -530,6 +554,9 @@ onAuthStateChanged(auth,async u=>{
   }
   ACCESS=await loadAccess();
   gate.classList.add("off");
+  // cinematic entrance — restart the stagger on every login
+  document.body.classList.remove("enter"); void document.body.offsetWidth;
+  document.body.classList.add("enter");
   renderUser(); applyAccess(); pullStats().catch(()=>{});
 });
 

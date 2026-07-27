@@ -128,7 +128,7 @@
 <div class="gate" id="gate">
   <div class="gcard">
     <img src="logomark.png" alt="" id="gateLogo">
-    <div class="gk">Anomaly Creative Studio</div>
+    <div class="gk">Anomaly Creative &amp; Co.</div>
     <h2 id="gateTitle">Client Automations</h2>
     <div id="stepAuth">
       <button class="gbtn" id="gGoogle"><span class="gdot"></span>Continue with Google</button>
@@ -142,7 +142,7 @@
 <div class="wrap" id="app" style="visibility:hidden">
   <div class="topbar">
     <div class="brand">
-      <span class="bdg"><img id="brandLogo" src="logomark.png" alt="Anomaly"></span>
+      <span class="bdg"><img id="brandLogo" src="logomark-white.png" alt="Anomaly"></span>
       <div class="brand-name"><b>Anomaly</b><span>Client Automations</span></div>
     </div>
     <div class="tb-right">
@@ -180,7 +180,7 @@ import {getFirestore,doc,getDoc,setDoc} from "https://www.gstatic.com/firebasejs
 
 const root=document.documentElement;
 function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");localStorage.setItem("hub-theme",t);
-  document.getElementById("gateLogo").src=t==="dark"?"logomark-fuzzy.png":"logomark.png";}
+  document.getElementById("gateLogo").src=t==="dark"?"logomark-fuzzy.png?v=2":"logomark.png";}
 setTheme(localStorage.getItem("hub-theme")||"light");
 document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
 
