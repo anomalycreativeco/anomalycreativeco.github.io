@@ -12,16 +12,35 @@
     --ink:#1c1e1f; --body:#3c4043; --muted:#8b9095; --faint:#b9bec2;
     --dark:#2a2c2d; --dark-2:#1f2122;
     --frost:rgba(255,255,255,.62); --frost-2:rgba(255,255,255,.42);
+    --frostline:rgba(255,255,255,.65);
     --line:rgba(28,30,31,.08);
+    --gridline:rgba(28,30,31,.08);
+    --pill:rgba(255,255,255,.7); --pillline:rgba(255,255,255,.8);
+    --pagebg:linear-gradient(160deg,#e8eaed 0%,#dfe2e6 45%,#d4d8dd 100%);
+    --liquid:#1c1e1f; --liquid-2:#3c4043;
+    --bar2:#ffffff; --g1:#9aa1a7; --g2:#6d7378; --g3:#3c4043;
     --r:26px;
     --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
     --mono:ui-monospace,"SF Mono","Menlo",monospace;
     --ease:cubic-bezier(.2,.7,.2,1);
   }
+  html[data-theme="dark"]{
+    --ink:#eef1f1; --body:#c2c8c8; --muted:#8b9494; --faint:#5a6363;
+    --dark:#232626; --dark-2:#191c1c;
+    --frost:rgba(32,36,37,.6); --frost-2:rgba(26,29,30,.44);
+    --frostline:rgba(255,255,255,.09);
+    --line:rgba(255,255,255,.08);
+    --gridline:rgba(255,255,255,.08);
+    --pill:rgba(40,44,45,.75); --pillline:rgba(255,255,255,.1);
+    --pagebg:linear-gradient(160deg,#151a1b 0%,#101415 45%,#0a0d0e 100%);
+    --liquid:#91ABA5; --liquid-2:#6D8F88;
+    --bar2:rgba(255,255,255,.28); --g1:#6f7878; --g2:#9aa4a4; --g3:#ccd4d4;
+  }
+  html[data-theme="dark"] .blob{opacity:.22}
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     font-family:var(--sans);color:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;
-    background:linear-gradient(160deg,#e8eaed 0%,#dfe2e6 45%,#d4d8dd 100%);overflow-x:hidden;
+    background:var(--pagebg);overflow-x:hidden;transition:background .4s;
   }
   ::selection{background:var(--dark);color:#fff}
   a{text-decoration:none;color:inherit}
@@ -40,14 +59,14 @@
   /* the big glass sheet */
   .sheet{
     background:var(--frost-2);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-    border:1px solid rgba(255,255,255,.55);border-radius:38px;
+    border:1px solid var(--frostline);border-radius:38px;
     box-shadow:0 40px 90px -40px rgba(30,34,38,.35), inset 0 1px 0 rgba(255,255,255,.6);
     padding:24px;
   }
 
   .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
   .fc,.dc{border-radius:var(--r);padding:22px;position:relative}
-  .fc{background:var(--frost);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.65);box-shadow:0 18px 40px -26px rgba(30,34,38,.35)}
+  .fc{background:var(--frost);backdrop-filter:blur(18px);border:1px solid var(--frostline);box-shadow:0 18px 40px -26px rgba(30,34,38,.35)}
   .dc{background:linear-gradient(165deg,var(--dark),var(--dark-2));color:#e8eaec;box-shadow:0 24px 50px -26px rgba(20,22,24,.6)}
   .dc .lbl,.dc .sub{color:rgba(255,255,255,.55)}
 
@@ -76,7 +95,7 @@
   .bignum small{font-size:15px;color:var(--muted);font-weight:600}
   .mbars{display:flex;align-items:flex-end;gap:7px;height:200px;margin-top:18px}
   .mb{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
-  .mb i{display:block;width:9px;border-radius:99px;background:#fff;box-shadow:inset 0 0 0 1px rgba(28,30,31,.1);min-height:5px}
+  .mb i{display:block;width:9px;border-radius:99px;background:var(--bar2);box-shadow:inset 0 0 0 1px var(--gridline);min-height:5px}
   .mb.hot i{background:var(--ink);width:11px}
   .mb b{font-family:var(--mono);font-size:8.5px;color:var(--muted);font-weight:400}
 
@@ -84,7 +103,7 @@
   .rings{display:flex;justify-content:space-around;align-items:center;margin-top:8px}
   .ringbox{text-align:center}
   .ring{transform:rotate(-90deg)}
-  .ring .bgc{stroke:rgba(28,30,31,.1);fill:none}
+  .ring .bgc{stroke:var(--gridline);fill:none}
   .ring .fgc{stroke:var(--ink);fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease)}
   .dc .ring .bgc{stroke:rgba(255,255,255,.16)}
   .dc .ring .fgc{stroke:#fff}
@@ -95,7 +114,7 @@
   .prow{margin-top:13px}
   .prow .pt{display:flex;justify-content:space-between;font-size:11px;color:var(--body);margin-bottom:5px}
   .prow .pt b{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400}
-  .prow .bar{height:6px;border-radius:99px;background:rgba(28,30,31,.09);overflow:hidden}
+  .prow .bar{height:6px;border-radius:99px;background:var(--gridline);overflow:hidden}
   .prow .bar i{display:block;height:100%;border-radius:99px;background:var(--ink)}
   .dc .prow .pt{color:rgba(255,255,255,.8)}
   .dc .prow .bar{background:rgba(255,255,255,.14)}
@@ -112,7 +131,7 @@
 
   /* center grouped chart */
   .centerhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
-  .pillbtn{font-size:11.5px;font-weight:600;color:var(--body);background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);border-radius:99px;padding:6px 16px;box-shadow:0 6px 14px -8px rgba(30,34,38,.3)}
+  .pillbtn{font-size:11.5px;font-weight:600;color:var(--body);background:var(--pill);border:1px solid var(--pillline);border-radius:99px;padding:6px 16px;box-shadow:0 6px 14px -8px rgba(30,34,38,.3)}
   .ctitle{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
   .chart{width:100%;display:block}
   .chart text{font-family:var(--mono);font-size:9px;fill:var(--muted)}
@@ -127,7 +146,49 @@
   .rrow .n{font-family:var(--mono);font-size:9.5px;color:var(--faint)}
   .rrow .nm{font-size:12.5px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .rrow .amt{font-family:var(--mono);font-size:11px;color:var(--body)}
-  .badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);background:rgba(255,255,255,.7);border-radius:99px;padding:5px 12px}
+  .badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);background:var(--pill);border-radius:99px;padding:5px 12px}
+
+  /* capsule */
+  .capwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:14px;padding-top:16px}
+  .capsule{
+    position:relative;width:96px;height:230px;border-radius:52px;overflow:hidden;
+    background:var(--pill);border:1.5px solid var(--frostline);
+    box-shadow:inset 0 4px 18px rgba(28,30,31,.12), 0 14px 30px -18px rgba(30,34,38,.4);
+  }
+  .cap-liquid{
+    position:absolute;left:0;right:0;bottom:0;height:0%;
+    background:linear-gradient(180deg,var(--liquid) 0%,var(--liquid-2) 100%);
+    transition:height 2.4s cubic-bezier(.3,.8,.3,1);
+  }
+  .wave{position:absolute;left:0;width:200%;height:14px;top:-13px;fill:var(--liquid)}
+  .wave.w1{animation:waveX 3.2s linear infinite}
+  .wave.w2{animation:waveX 4.7s linear infinite reverse;opacity:.55;top:-10px}
+  @keyframes waveX{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .cap-liquid i{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);opacity:0}
+  .bub1{width:6px;height:6px;left:28%;animation:bubUp 3.4s ease-in infinite 1s}
+  .bub2{width:4px;height:4px;left:55%;animation:bubUp 4.2s ease-in infinite 2s}
+  .bub3{width:5px;height:5px;left:70%;animation:bubUp 3.8s ease-in infinite 2.8s}
+  @keyframes bubUp{0%{bottom:4%;opacity:0}15%{opacity:.8}100%{bottom:92%;opacity:0}}
+  .cap-goal{position:absolute;top:8px;left:0;right:0;text-align:center}
+  .cap-goal span{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--muted)}
+  .cap-read{text-align:center}
+  .cap-read b{display:block;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+  .cap-read span{font-size:11px;color:var(--muted)}
+
+  /* entrance animation */
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  body.enter .topbar{animation:rise .6s var(--ease) .05s backwards}
+  body.enter .sheet{animation:rise .7s var(--ease) .15s backwards}
+  body.enter .grid>*:nth-child(1){animation:rise .6s var(--ease) .35s backwards}
+  body.enter .grid>*:nth-child(2){animation:rise .6s var(--ease) .45s backwards}
+  body.enter .grid>*:nth-child(3){animation:rise .6s var(--ease) .55s backwards}
+  body.enter .grid>*:nth-child(4){animation:rise .6s var(--ease) .65s backwards}
+  body.enter .grid>*:nth-child(5){animation:rise .6s var(--ease) .75s backwards}
+  body.enter .grid>*:nth-child(6){animation:rise .6s var(--ease) .85s backwards}
+  body.enter .grid>*:nth-child(7){animation:rise .6s var(--ease) .95s backwards}
+  body.enter .grid>*:nth-child(8){animation:rise .6s var(--ease) 1.05s backwards}
+  body.enter .grid>*:nth-child(9){animation:rise .6s var(--ease) 1.15s backwards}
+  body.enter .bnav{animation:rise .6s var(--ease) 1.35s backwards}
 
   /* hub-style top bar */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;position:relative}
@@ -139,14 +200,14 @@
   .navpills{display:flex;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
   .navpills a{
     font-size:13px;font-weight:600;color:var(--body);
-    background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);border-radius:99px;
+    background:var(--pill);border:1px solid var(--pillline);border-radius:99px;
     padding:10px 22px;box-shadow:0 8px 20px -12px rgba(30,34,38,.4);transition:all .25s var(--ease);
   }
   .navpills a:hover{transform:translateY(-2px);color:var(--ink)}
-  .navpills a.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .navpills a.active{background:var(--ink);color:var(--dark-2);border-color:var(--ink)}
   .outbtn{
     width:38px;height:38px;border-radius:50%;cursor:pointer;display:grid;place-items:center;
-    background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);color:var(--muted);
+    background:var(--pill);border:1px solid var(--pillline);color:var(--muted);
     box-shadow:0 8px 20px -12px rgba(30,34,38,.4);transition:all .25s var(--ease);
   }
   .outbtn:hover{color:var(--ink);transform:translateY(-2px)}
@@ -229,19 +290,22 @@
       <a href="index.html?cat=post">Post-Production</a>
       <a class="active" href="analytics.html">Revenue</a>
     </nav>
-    <button class="outbtn" id="topOut" title="Sign out">
-      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-    </button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="outbtn" id="themeBtn" title="Light / dark" style="font-size:14px">◐</button>
+      <button class="outbtn" id="topOut" title="Sign out">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
   </div>
   <div class="asof" id="asof"></div>
   <div class="sheet">
     <div class="grid">
 
-      <!-- brand -->
-      <div class="dc s3 brandcard">
-        <div><div class="lbl">Revenue 2026</div><div class="sub">Ordered chaos, measured monthly</div></div>
-        <div class="blobimg"><img src="logomark-fuzzy.png?v=2" alt=""></div>
-        <div class="foot">Anomaly Creative &amp; Co.</div>
+      <!-- industry pie -->
+      <div class="dc s3">
+        <div class="lbl">Revenue by industry</div><div class="sub">share of projected 2026</div>
+        <svg class="chart" id="pieChart" viewBox="0 0 200 200" style="max-width:190px;margin:14px auto 8px;display:block"></svg>
+        <div id="pieLegend"></div>
       </div>
 
       <!-- collected + month bars -->
@@ -266,10 +330,20 @@
         <div class="bubbles" style="flex-direction:column;gap:10px;margin-top:14px" id="bubbles"></div>
       </div>
 
-      <!-- projected area -->
-      <div class="fc s3">
-        <div class="lbl">Run rate</div><div class="sub">cumulative collected vs projected</div>
-        <svg class="chart" id="areaChart" viewBox="0 0 250 130" style="margin-top:12px"></svg>
+      <!-- the capsule -->
+      <div class="fc s3" style="display:flex;flex-direction:column">
+        <div class="lbl">Road to $1M</div><div class="sub">collected, filling toward the moderate goal</div>
+        <div class="capwrap">
+          <div class="capsule">
+            <div class="cap-liquid" id="capLiquid">
+              <svg class="wave w1" viewBox="0 0 240 20" preserveAspectRatio="none"><path d="M0 10 Q 30 0 60 10 T 120 10 T 180 10 T 240 10 V20 H0 Z"/></svg>
+              <svg class="wave w2" viewBox="0 0 240 20" preserveAspectRatio="none"><path d="M0 10 Q 30 20 60 10 T 120 10 T 180 10 T 240 10 V20 H0 Z"/></svg>
+              <i class="bub1"></i><i class="bub2"></i><i class="bub3"></i>
+            </div>
+            <div class="cap-goal"><span>$1M</span></div>
+          </div>
+          <div class="cap-read"><b id="capPct">0%</b><span id="capLabel"></span></div>
+        </div>
       </div>
 
       <!-- center: grouped by month -->
@@ -281,8 +355,8 @@
         </div>
         <svg class="chart" id="groupChart" viewBox="0 0 640 240"></svg>
         <div class="legend">
-          <span class="lg"><i style="background:#1c1e1f"></i>Collected</span>
-          <span class="lg"><i style="background:#ffffff;box-shadow:inset 0 0 0 1px rgba(28,30,31,.2)"></i>Projected</span>
+          <span class="lg"><i style="background:var(--ink)"></i>Collected</span>
+          <span class="lg"><i style="background:var(--bar2);box-shadow:inset 0 0 0 1px var(--gridline)"></i>Projected</span>
         </div>
       </div>
 
@@ -297,10 +371,10 @@
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
           <div><div class="lbl">2026 projected vs goals</div><div class="sub">cumulative projected collections — nothing in here we aren't confident we execute</div></div>
           <div class="legend" style="margin:0">
-            <span class="lg"><i style="background:#1c1e1f;border-radius:99px;width:14px;height:3px"></i>Projected</span>
-            <span class="lg"><i style="background:#9aa1a7;border-radius:99px;width:14px;height:3px"></i>Conservative</span>
-            <span class="lg"><i style="background:#6d7378;border-radius:99px;width:14px;height:3px"></i>Moderate</span>
-            <span class="lg"><i style="background:#3c4043;border-radius:99px;width:14px;height:3px"></i>Aggressive</span>
+            <span class="lg"><i style="background:var(--ink);border-radius:99px;width:14px;height:3px"></i>Projected</span>
+            <span class="lg"><i style="background:var(--g1);border-radius:99px;width:14px;height:3px"></i>Conservative</span>
+            <span class="lg"><i style="background:var(--g2);border-radius:99px;width:14px;height:3px"></i>Moderate</span>
+            <span class="lg"><i style="background:var(--g3);border-radius:99px;width:14px;height:3px"></i>Aggressive</span>
           </div>
         </div>
         <svg class="chart" id="goalChart" viewBox="0 0 1180 280" style="margin-top:14px"></svg>
@@ -337,6 +411,12 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ── theme (shared with hub) ── */
+const root=document.documentElement;
+function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");localStorage.setItem("hub-theme",t);}
+setTheme(localStorage.getItem("hub-theme")||"light");
+document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
 
 /* ── auth: same login as hub, requires the "analytics" permission ── */
 const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
@@ -407,6 +487,8 @@ async function tryUnlock(pass,silent){
     document.getElementById("gate").classList.add("off");
     document.getElementById("app").style.visibility="visible";
     document.getElementById("bnav").style.display="flex";
+    document.body.classList.remove("enter"); void document.body.offsetWidth;
+    document.body.classList.add("enter");
     render(data);
     return true;
   }catch(e){
@@ -432,6 +514,7 @@ function render(d){
   document.getElementById("asof").textContent="Deal Tracker · as of "+d.asOf;
   document.getElementById("collectedBig").innerHTML=fmtK(s.collected);
 
+  const tot0=d.industries.reduce((a,[,v])=>a+v,0);
   /* month bars (collected) */
   const maxC=Math.max(...d.collected,1), best=d.collected.indexOf(Math.max(...d.collected));
   document.getElementById("mbars").innerHTML=d.months.map((m,i)=>`
@@ -456,17 +539,36 @@ function render(d){
     <div class="bub"><b>${fmtK(s.outstanding)}</b><span>Outstanding</span></div>
     <div class="bub"><b>${s.clients}</b><span>Clients</span></div>`;
 
-  /* run-rate area */
-  let cumC=0,cumP=0; const cc=[],pp=[];
-  d.months.forEach((_,i)=>{cumC+=d.collected[i];cumP+=d.projected[i];cc.push(cumC);pp.push(cumP);});
-  const W=250,H=130,pad=6,maxA=cumP;
-  const pt=(v,i)=>`${pad+i*(W-2*pad)/11},${H-14-(v/maxA)*(H-30)}`;
-  const areaPath=cc.map((v,i)=>(i?"L":"M")+pt(v,i)).join(" ");
-  document.getElementById("areaChart").innerHTML=`
-    <path d="${pp.map((v,i)=>(i?"L":"M")+pt(v,i)).join(" ")}" fill="none" stroke="rgba(28,30,31,.25)" stroke-width="2" stroke-dasharray="4 4"/>
-    <path d="${areaPath} L${W-pad},${H-14} L${pad},${H-14} Z" fill="rgba(28,30,31,.1)"/>
-    <path d="${areaPath}" fill="none" stroke="#1c1e1f" stroke-width="2.5" stroke-linecap="round"/>
-    <text x="${pad}" y="${H-2}">Jan</text><text x="${W-30}" y="${H-2}">Dec</text>`;
+  /* industry pie (dark card) */
+  {
+    const cols=["#ffffff","#c3cbcb","#96a1a1","#6b7676","#4a5454"];
+    const cx=100,cy=100,R=86;
+    let a0=-Math.PI/2, seg="";
+    d.industries.forEach(([name,v],i)=>{
+      const a1=a0+v/tot0*Math.PI*2, la=(a1-a0)>Math.PI?1:0;
+      const p=(a,r)=>`${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}`;
+      seg+=`<path d="M ${cx} ${cy} L ${p(a0,R)} A ${R} ${R} 0 ${la} 1 ${p(a1,R)} Z" fill="${cols[i%cols.length]}" stroke="var(--dark-2)" stroke-width="2"/>`;
+      a0=a1;
+    });
+    document.getElementById("pieChart").innerHTML=seg;
+    document.getElementById("pieLegend").innerHTML=d.industries.map(([n,v],i)=>`
+      <div class="prow" style="margin-top:9px"><div class="pt"><span style="display:flex;align-items:center;gap:7px"><i style="width:9px;height:9px;border-radius:3px;background:${cols[i%cols.length]};display:inline-block"></i>${n}</span><b>${Math.round(v/tot0*100)}%</b></div></div>`).join("");
+  }
+
+  /* capsule — fills from empty on every load */
+  {
+    const goal=(d.goals&&d.goals.moderate)||1000000;
+    const pct=Math.min(1,s.collected/goal);
+    document.getElementById("capLabel").textContent=fmtK(s.collected)+" of "+fmtK(goal)+" moderate goal";
+    const liquid=document.getElementById("capLiquid"), pctEl=document.getElementById("capPct");
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ liquid.style.height=(pct*100)+"%"; }));
+    const t0=performance.now(), dur=2400;
+    (function tick(now){
+      const k=Math.min(1,(now-t0)/dur), ease=1-Math.pow(1-k,3);
+      pctEl.textContent=Math.round(pct*100*ease)+"%";
+      if(k<1) requestAnimationFrame(tick);
+    })(t0);
+  }
 
   /* center grouped bars */
   const W2=640,H2=240,padL=46,padB=26,cw=(W2-padL-12)/12;
@@ -474,40 +576,40 @@ function render(d){
   const y2=v=>H2-padB-(v/max2)*(H2-padB-20);
   let g="";
   for(let i=0;i<=4;i++){const gv=max2/4*i,gy=y2(gv);
-    g+=`<line x1="${padL}" y1="${gy}" x2="${W2-8}" y2="${gy}" stroke="rgba(28,30,31,.08)"/>
+    g+=`<line x1="${padL}" y1="${gy}" x2="${W2-8}" y2="${gy}" style="stroke:var(--gridline)"/>
         <text x="${padL-6}" y="${gy+3}" text-anchor="end">${fmtK(Math.round(gv))}</text>`;}
   d.months.forEach((mo,i)=>{
     const x=padL+i*cw, bw=Math.min(15,cw/2-4);
-    g+=`<rect x="${x+cw/2-bw-2}" y="${y2(d.projected[i])}" width="${bw}" height="${H2-padB-y2(d.projected[i])}" rx="5" fill="#ffffff" stroke="rgba(28,30,31,.14)"/>`;
-    g+=`<rect x="${x+cw/2+2}" y="${y2(d.collected[i])}" width="${bw}" height="${H2-padB-y2(d.collected[i])}" rx="5" fill="#1c1e1f"/>`;
+    g+=`<rect x="${x+cw/2-bw-2}" y="${y2(d.projected[i])}" width="${bw}" height="${H2-padB-y2(d.projected[i])}" rx="5" style="fill:var(--bar2);stroke:var(--gridline)"/>`;
+    g+=`<rect x="${x+cw/2+2}" y="${y2(d.collected[i])}" width="${bw}" height="${H2-padB-y2(d.collected[i])}" rx="5" style="fill:var(--ink)"/>`;
     g+=`<text x="${x+cw/2}" y="${H2-8}" text-anchor="middle">${mo}</text>`;
   });
   document.getElementById("groupChart").innerHTML=g;
 
   /* actual vs goals */
   if(d.goals){
-    const G=[["conservative","#9aa1a7"],["moderate","#6d7378"],["aggressive","#3c4043"]];
+    const G=[["conservative","var(--g1)"],["moderate","var(--g2)"],["aggressive","var(--g3)"]];
     const W3=1180,H3=280,pL=56,pR=120,pB=28,pT=12;
     const maxG=d.goals.aggressive*1.05;
     const gx=i=>pL+i*(W3-pL-pR)/11;
     const gy=v=>H3-pB-(v/maxG)*(H3-pB-pT);
     let s="";
     for(let i=0;i<=4;i++){const gv=maxG/4*i,yy=gy(gv);
-      s+=`<line x1="${pL}" y1="${yy}" x2="${W3-pR+30}" y2="${yy}" stroke="rgba(28,30,31,.07)"/>
+      s+=`<line x1="${pL}" y1="${yy}" x2="${W3-pR+30}" y2="${yy}" style="stroke:var(--gridline)"/>
           <text x="${pL-8}" y="${yy+3}" text-anchor="end">${fmtK(Math.round(gv))}</text>`;}
     d.months.forEach((mo,i)=>{s+=`<text x="${gx(i)}" y="${H3-8}" text-anchor="middle">${mo}</text>`;});
     G.forEach(([k,col])=>{
       const t=d.goals[k];
-      s+=`<line x1="${gx(0)}" y1="${gy(t/12)}" x2="${gx(11)}" y2="${gy(t)}" stroke="${col}" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
+      s+=`<line x1="${gx(0)}" y1="${gy(t/12)}" x2="${gx(11)}" y2="${gy(t)}" style="stroke:${col}" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
           <text x="${gx(11)+10}" y="${gy(t)+3}" style="fill:${col};font-weight:600">${fmtK(t)} ${k[0].toUpperCase()+k.slice(1)}</text>`;
     });
     // "actual" = cumulative PROJECTED collections (Daniel only projects what he's confident executes)
     let run=0; const apts=[];
     d.months.forEach((_,i)=>{run+=d.projected[i];apts.push([gx(i),gy(run)]);});
-    s+=`<path d="${apts.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" stroke="#1c1e1f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    s+=`<path d="${apts.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" style="stroke:var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
     const [lx,ly]=apts[apts.length-1];
-    s+=`<circle cx="${lx}" cy="${ly}" r="5.5" fill="#1c1e1f" stroke="#fff" stroke-width="2.5"/>
-        <text x="${lx+10}" y="${ly-10}" style="fill:#1c1e1f;font-weight:700;font-size:12px">${fmtK(run)}</text>`;
+    s+=`<circle cx="${lx}" cy="${ly}" r="5.5" style="fill:var(--ink);stroke:var(--frost)" stroke-width="2.5"/>
+        <text x="${lx+10}" y="${ly-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(run)}</text>`;
     document.getElementById("goalChart").innerHTML=s;
   }
 
