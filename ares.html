@@ -26,10 +26,10 @@
     --ease:cubic-bezier(.2,.7,.2,1);
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%}
+  html{height:100%}body{min-height:100%}
   body{
     font-family:var(--sans);color:var(--body);-webkit-font-smoothing:antialiased;
-    background:radial-gradient(120% 90% at 50% -10%, #1b1b1b 0%, #0d0d0d 45%, #050505 100%);
+    background:radial-gradient(120% 90% at 50% -10%, #1b1b1b 0%, #0d0d0d 45%, #050505 100%) fixed;
     overflow-x:hidden;
   }
   ::selection{background:var(--red);color:#fff}
