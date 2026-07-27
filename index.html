@@ -395,7 +395,7 @@
       <div class="brand-name"><b>Anomaly</b><span>Studio Hub</span></div>
     </div>
     <nav class="navpills">
-      <button class="active">Home</button>
+      <button class="active" id="navHome">Home</button>
       <button data-cat="client">Client</button>
       <button data-cat="pre">Pre-Production</button>
       <button data-cat="post">Post-Production</button>
@@ -633,8 +633,10 @@ onAuthStateChanged(auth,async u=>{
   document.body.classList.remove("enter"); void document.body.offsetWidth;
   document.body.classList.add("enter");
   renderUser(); applyAccess(); pullStats().catch(()=>{});
-  const catParam=new URLSearchParams(location.search).get("cat");
-  if(catParam&&CATMETA[catParam]) openCat(catParam);
+  if(!restoreFromHash()){
+    const catParam=new URLSearchParams(location.search).get("cat");
+    if(catParam&&CATMETA[catParam]) openCat(catParam);
+  }
 });
 
 async function resolveRole(){
@@ -779,8 +781,9 @@ function renderTodayTasks(tasks){
 
 /* category panels */
 const ovl=document.getElementById("ovl");
-function openCat(key){
+function openCat(key,skipHash){
   const c=CATMETA[key];
+  if(!skipHash) location.hash="cat="+key;
   document.getElementById("pKick").textContent=c.kick;
   document.getElementById("pTitle").textContent=c.title;
   document.getElementById("pDesc").textContent=c.desc;
@@ -803,15 +806,18 @@ function openCat(key){
 
 /* ── embedded app viewer ── */
 const viewer=document.getElementById("viewer"), vFrame=document.getElementById("vFrame");
-function openApp(name,url){
+function openApp(name,url,skipHash){
   document.getElementById("vName").textContent=name;
   const abs=new URL(url,location.href);
   document.getElementById("vHost").textContent=abs.host+abs.pathname.replace(/\/$/,"");
   document.getElementById("vExt").href=abs.href;
   if(vFrame.src!==abs.href) vFrame.src=abs.href;
   viewer.classList.add("open");
+  // remember where we are so a refresh restores this app instead of Home
+  if(!skipHash) location.hash="app="+encodeURIComponent(abs.href)+"&name="+encodeURIComponent(name);
 }
-document.getElementById("vClose").onclick=()=>viewer.classList.remove("open");
+function closeApp(){viewer.classList.remove("open");if(location.hash)history.replaceState(null,"",location.pathname+location.search);}
+document.getElementById("vClose").onclick=closeApp;
 ["pillAnalytics","pillAutomations"].forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener("click",e=>{
@@ -821,13 +827,27 @@ document.getElementById("vClose").onclick=()=>viewer.classList.remove("open");
   });
 });
 document.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>openCat(el.dataset.cat)));
-document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",()=>ovl.classList.remove("open")));
+function goHome(){ ovl.classList.remove("open"); if(viewer.classList.contains("open"))closeApp(); else clearHash(); }
+const _nh=document.getElementById("navHome"); if(_nh)_nh.onclick=goHome;
+const _brand=document.querySelector(".brand"); if(_brand){_brand.style.cursor="pointer";_brand.onclick=goHome;}
+document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",()=>{ovl.classList.remove("open");clearHash();}));
 
 /* admin panel */
 const adminOvl=document.getElementById("adminOvl");
 document.getElementById("gearBtn").onclick=()=>{buildAdmin();adminOvl.classList.add("open");};
 document.querySelectorAll("[data-aclose]").forEach(el=>el.addEventListener("click",()=>adminOvl.classList.remove("open")));
-addEventListener("keydown",e=>{if(e.key==="Escape"){ovl.classList.remove("open");adminOvl.classList.remove("open");viewer.classList.remove("open");}});
+addEventListener("keydown",e=>{if(e.key==="Escape"){const wasCat=ovl.classList.contains("open");ovl.classList.remove("open");adminOvl.classList.remove("open");if(viewer.classList.contains("open"))closeApp();else if(wasCat)clearHash();}});
+function clearHash(){ if(location.hash) history.replaceState(null,"",location.pathname+location.search); }
+// restore the embedded app after a refresh (hash carries the app url + name)
+function restoreFromHash(){
+  const h=location.hash.replace(/^#/,"");
+  if(!h) return false;
+  const p=new URLSearchParams(h);
+  if(p.get("app")){ openApp(p.get("name")||"App", p.get("app"), true); return true; }
+  const c=p.get("cat");
+  if(c&&CATMETA[c]){ openCat(c,true); return true; }
+  return false;
+}
 function buildAdmin(){
   document.getElementById("adminList").innerHTML=Object.entries(PLATFORMS).map(([k,p])=>{
     const m=modeOf(k), em=emailsOf(k).join(", ");
