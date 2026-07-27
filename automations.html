@@ -92,6 +92,15 @@
   .fld input:focus,.fld textarea:focus{border-color:var(--green-3)}
   .fld textarea{min-height:44px}
   .notemeta{font-size:10.5px;color:var(--faint);font-family:var(--mono);margin-top:5px}
+  .flow{display:flex;align-items:center;gap:9px;margin-top:13px;flex-wrap:wrap}
+  .fchip{
+    display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
+    border-radius:11px;padding:6px 11px 6px 7px;box-shadow:0 4px 10px -6px rgba(17,20,23,.25);
+  }
+  html[data-theme="dark"] .fchip{background:#f2f4f4}
+  .fchip img,.fchip svg{width:20px;height:20px;object-fit:contain;display:block}
+  .fchip span{font-size:11px;font-weight:600;color:#26292b;white-space:nowrap}
+  .farrow{color:var(--muted);font-size:15px;font-weight:600}
   .ro .fld input,.ro .fld textarea{pointer-events:none;opacity:.7}
   .ro .statusbtn{pointer-events:none}
 
@@ -199,6 +208,25 @@ const SEEDS=[
   {id:"inspiration-folder-digest",client:"Anomaly · Studio",name:"Inspiration Digest",engine:"Scheduled · Mon 9:09 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Hunts trending carousel/design references into the inspiration folders and digests them into STYLE-INDEX.md."}
 ];
 
+/* visual pipelines — app logos per automation (presentation only) */
+const GENERIC={
+  pdf:'<svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="#4E6A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>'
+};
+const FLOWS={
+  "cdf-weekly-carousel":[{img:"logomark.png",label:"Carousel Engine"},{img:"logos/slack.png",label:"Slack"}],
+  "currin-weekly-seo-update":[{img:"logos/docs.png",label:"Ranking doc"},{svg:"pdf",label:"Weekly PDF"}],
+  "beechwood-eblast-carousel":[{img:"logos/gmail.png",label:"Chloe's e-blast"},{img:"logos/instagram.png",label:"IG carousel"}],
+  "bhi-ig-pipeline":[{img:"logos/frame.png",label:"Frame.io"},{img:"logos/instagram.png",label:"Instagram"}],
+  "frameio-captions-pipeline":[{img:"logos/frame.png",label:"Frame.io"},{img:"logos/captions.png",label:"Captions.ai"},{img:"logos/frame.png",label:"Frame.io"}],
+  "weekly-carousel":[{img:"logomark.png",label:"Anomaly"},{img:"logos/instagram.png",label:"Instagram"}],
+  "inspiration-folder-digest":[{img:"logos/pinterest.png",label:"Reference hunt"},{svg:"folder",label:"Inspo folders"}]
+};
+function flowHTML(id){
+  const f=FLOWS[id];if(!f)return "";
+  return `<div class="flow">${f.map(c=>`<span class="fchip">${c.img?`<img src="${c.img}" alt="">`:GENERIC[c.svg]}<span>${c.label}</span></span>`).join('<span class="farrow">→</span>')}</div>`;
+}
+
 let USER=null, MYEMAIL="", LIST=null, isOwner=false;
 const gMsg=document.getElementById("gateMsg"), gOut=document.getElementById("gOut");
 document.getElementById("gGoogle").onclick=async()=>{
@@ -259,6 +287,7 @@ function render(){
           <button class="statusbtn ${a.status==="active"?"active":"paused"}" data-toggle="${esc(a.id)}">${a.status==="active"?"● Active":"❚❚ Paused"}</button>
         </div>
         <div class="a-desc">${esc(a.desc)}</div>
+        ${flowHTML(a.id)}
         <div class="a-grid">
           <div class="fld"><label>Frequency</label><input data-f="freq" value="${esc(a.freq)}"></div>
           <div class="fld"><label>Note for Claude — read before each run</label>
