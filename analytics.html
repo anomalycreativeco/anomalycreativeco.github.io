@@ -129,20 +129,29 @@
   .rrow .amt{font-family:var(--mono);font-size:11px;color:var(--body)}
   .badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);background:rgba(255,255,255,.7);border-radius:99px;padding:5px 12px}
 
-  /* left dock */
-  .dock{
-    position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:30;
-    background:var(--dark);border-radius:99px;padding:14px 10px;display:flex;flex-direction:column;gap:6px;
-    box-shadow:0 20px 44px -18px rgba(20,22,24,.7);
+  /* hub-style top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;position:relative}
+  .brand{display:flex;align-items:center;gap:11px}
+  .bdg{width:34px;height:34px;border-radius:50%;background:#92ABA7;flex:none;display:grid;place-items:center;box-shadow:0 1px 4px rgba(28,33,31,.25)}
+  .bdg img{width:19px;height:19px;object-fit:contain}
+  .brand-name b{display:block;font-size:13px;letter-spacing:.14em;color:var(--ink);font-weight:700;line-height:1.15;text-transform:uppercase}
+  .brand-name span{font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .navpills{display:flex;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
+  .navpills a{
+    font-size:13px;font-weight:600;color:var(--body);
+    background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);border-radius:99px;
+    padding:10px 22px;box-shadow:0 8px 20px -12px rgba(30,34,38,.4);transition:all .25s var(--ease);
   }
-  .dock a,.dock button{
-    width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
-    background:transparent;border:none;color:rgba(255,255,255,.65);transition:all .25s var(--ease);
+  .navpills a:hover{transform:translateY(-2px);color:var(--ink)}
+  .navpills a.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .outbtn{
+    width:38px;height:38px;border-radius:50%;cursor:pointer;display:grid;place-items:center;
+    background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.8);color:var(--muted);
+    box-shadow:0 8px 20px -12px rgba(30,34,38,.4);transition:all .25s var(--ease);
   }
-  .dock .active{background:#fff;color:var(--ink)}
-  .dock a:hover,.dock button:hover{color:#fff;transform:scale(1.08)}
-  .dock svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  @media(max-width:900px){.dock{display:none}}
+  .outbtn:hover{color:var(--ink);transform:translateY(-2px)}
+  .outbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  @media(max-width:1000px){.navpills{display:none}}
 
   /* bottom nav pill */
   .bnav{
@@ -208,6 +217,22 @@
 <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
 
 <div class="wrap" id="app" style="visibility:hidden">
+  <div class="topbar">
+    <div class="brand">
+      <span class="bdg"><img src="logomark-white.png" alt="Anomaly"></span>
+      <div class="brand-name"><b>Anomaly</b><span>Revenue · 2026</span></div>
+    </div>
+    <nav class="navpills">
+      <a href="index.html">Home</a>
+      <a href="index.html?cat=client">Client</a>
+      <a href="index.html?cat=pre">Pre-Production</a>
+      <a href="index.html?cat=post">Post-Production</a>
+      <a class="active" href="analytics.html">Revenue</a>
+    </nav>
+    <button class="outbtn" id="topOut" title="Sign out">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </button>
+  </div>
   <div class="asof" id="asof"></div>
   <div class="sheet">
     <div class="grid">
@@ -270,9 +295,9 @@
       <!-- actual vs goals -->
       <div class="fc" style="grid-column:span 12">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-          <div><div class="lbl">2026 actual vs goals</div><div class="sub">cumulative collected against the three targets</div></div>
+          <div><div class="lbl">2026 projected vs goals</div><div class="sub">cumulative projected collections — nothing in here we aren't confident we execute</div></div>
           <div class="legend" style="margin:0">
-            <span class="lg"><i style="background:#1c1e1f;border-radius:99px;width:14px;height:3px"></i>Actual</span>
+            <span class="lg"><i style="background:#1c1e1f;border-radius:99px;width:14px;height:3px"></i>Projected</span>
             <span class="lg"><i style="background:#9aa1a7;border-radius:99px;width:14px;height:3px"></i>Conservative</span>
             <span class="lg"><i style="background:#6d7378;border-radius:99px;width:14px;height:3px"></i>Moderate</span>
             <span class="lg"><i style="background:#3c4043;border-radius:99px;width:14px;height:3px"></i>Aggressive</span>
@@ -300,18 +325,6 @@
   </div>
 </div>
 
-<!-- left dock -->
-<nav class="dock" id="dock" style="display:none">
-  <a class="active" href="analytics.html" title="Revenue">
-    <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></a>
-  <a href="index.html" title="Studio Hub">
-    <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 9.5V20h14V9.5"/></svg></a>
-  <a href="automations.html" title="Automations">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></a>
-  <button id="dockOut" title="Sign out">
-    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
-</nav>
-
 <!-- bottom nav -->
 <nav class="bnav" id="bnav" style="display:none">
   <a class="active" href="analytics.html">Revenue</a>
@@ -336,13 +349,12 @@ document.getElementById("gGoogle").onclick=async()=>{
   catch(e){ gMsgEl.textContent="Sign-in failed: "+(e.code||e.message); }
 };
 gOut.onclick=()=>signOut(auth);
-document.getElementById("dockOut").onclick=()=>signOut(auth);
+document.getElementById("topOut").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
   if(!u){ document.getElementById("stepAuth").style.display="block";
     document.getElementById("stepKey").style.display="none";
     document.getElementById("gate").classList.remove("off"); gOut.classList.remove("show");
     document.getElementById("app").style.visibility="hidden";
-    document.getElementById("dock").style.display="none";
     document.getElementById("bnav").style.display="none";
     return; }
   const email=(u.email||"").toLowerCase();
@@ -394,7 +406,6 @@ async function tryUnlock(pass,silent){
     localStorage.setItem("hubKey",pass);
     document.getElementById("gate").classList.add("off");
     document.getElementById("app").style.visibility="visible";
-    document.getElementById("dock").style.display="flex";
     document.getElementById("bnav").style.display="flex";
     render(data);
     return true;
@@ -490,13 +501,13 @@ function render(d){
       s+=`<line x1="${gx(0)}" y1="${gy(t/12)}" x2="${gx(11)}" y2="${gy(t)}" stroke="${col}" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
           <text x="${gx(11)+10}" y="${gy(t)+3}" style="fill:${col};font-weight:600">${fmtK(t)} ${k[0].toUpperCase()+k.slice(1)}</text>`;
     });
-    const lastM=Math.max(...d.collected.map((v,i)=>v>0?i:0));
+    // "actual" = cumulative PROJECTED collections (Daniel only projects what he's confident executes)
     let run=0; const apts=[];
-    for(let i=0;i<=lastM;i++){run+=d.collected[i];apts.push([gx(i),gy(run)]);}
+    d.months.forEach((_,i)=>{run+=d.projected[i];apts.push([gx(i),gy(run)]);});
     s+=`<path d="${apts.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" stroke="#1c1e1f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
     const [lx,ly]=apts[apts.length-1];
     s+=`<circle cx="${lx}" cy="${ly}" r="5.5" fill="#1c1e1f" stroke="#fff" stroke-width="2.5"/>
-        <text x="${lx+12}" y="${ly-8}" style="fill:#1c1e1f;font-weight:700;font-size:12px">${fmtK(run)}</text>`;
+        <text x="${lx+10}" y="${ly-10}" style="fill:#1c1e1f;font-weight:700;font-size:12px">${fmtK(run)}</text>`;
     document.getElementById("goalChart").innerHTML=s;
   }
 

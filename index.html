@@ -249,6 +249,37 @@
   .anote{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55}
   .anote.err{color:#c0563c}
 
+  /* ── Preview mode ────────────────── */
+  .pvbanner{
+    position:fixed;top:0;left:0;right:0;z-index:95;display:none;align-items:center;justify-content:center;gap:14px;
+    padding:9px 16px;font-size:12.5px;font-weight:600;color:#3a2c10;
+    background:repeating-linear-gradient(-45deg,#f5c869,#f5c869 14px,#eebd54 14px,#eebd54 28px);
+    box-shadow:0 6px 18px -8px rgba(0,0,0,.35);
+  }
+  .pvbanner.on{display:flex}
+  .pvbanner b{font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+  .pvbanner button{
+    border:1.5px solid #3a2c10;background:transparent;color:#3a2c10;border-radius:99px;
+    padding:5px 14px;font-size:11.5px;font-weight:700;cursor:pointer;
+  }
+  .pvbanner button:hover{background:#3a2c10;color:#f5c869}
+  body.previewing .stage{padding-top:64px}
+  .umenu{
+    position:absolute;top:calc(100% + 10px);right:0;min-width:250px;z-index:70;display:none;
+    background:var(--card-solid);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 30px 60px -24px rgba(0,0,0,.4);padding:8px;
+  }
+  .umenu.open{display:block}
+  .umenu .uh{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+  .umenu button{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:none;border-radius:11px;padding:9px 12px;
+    font-size:12.5px;color:var(--ink);transition:background .15s;
+  }
+  .umenu button:hover{background:var(--card)}
+  .umenu button small{color:var(--muted);font-size:10.5px;margin-left:auto;font-family:var(--mono)}
+  .umenu .eye{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
   /* ── Embedded app viewer ─────────── */
   .viewer{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:var(--bg)}
   .viewer.open{display:flex;animation:vup .45s var(--ease)}
@@ -347,6 +378,13 @@
   </div>
 </div>
 
+<div class="pvbanner" id="pvBanner">
+  <b>👁 Preview mode</b>
+  <span id="pvWho"></span>
+  <span>— this is only a preview of what they see; nothing you do here acts as them.</span>
+  <button id="pvExit">Exit preview</button>
+</div>
+
 <div class="room"></div>
 
 <div class="stage">
@@ -365,9 +403,12 @@
     <div class="tb-right">
       <button class="gear-btn" id="gearBtn" title="Access control" aria-label="Access control">⚙</button>
       <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
-      <div class="userchip" id="userChip" title="Account">
-        <div class="avatar" id="uAvatar">·</div>
-        <div class="who"><b id="uName">—</b><span id="uRole">—</span></div>
+      <div style="position:relative">
+        <div class="userchip" id="userChip" title="Account">
+          <div class="avatar" id="uAvatar">·</div>
+          <div class="who"><b id="uName">—</b><span id="uRole">—</span></div>
+        </div>
+        <div class="umenu" id="uMenu"></div>
       </div>
       <button class="theme-btn logout-btn" id="logoutBtn" title="Sign out" aria-label="Sign out">
         <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -529,8 +570,12 @@ const CATMETA={
   post:{kick:"SEC·03 — Post-Production",title:"Post-Production",desc:"The editing engine room. Live production stats surface on the hub front page."}
 };
 
-let USER=null, MYEMAIL="", MYROLE="none", ACCESS=null;
+let USER=null, MYEMAIL="", MYROLE="none", ACCESS=null, PREVIEW=null, LASTTASKS=null;
 const isOwner=()=>OWNERS.includes(MYEMAIL);
+// effective identity — the person whose view is being rendered (preview-aware)
+const effEmail=()=>PREVIEW?PREVIEW.email:MYEMAIL;
+const effRole=()=>PREVIEW?PREVIEW.role:MYROLE;
+const effOwner=()=>!PREVIEW&&isOwner();
 
 /* ───────── theme + spinner ───────── */
 const root=document.documentElement, spinner=document.getElementById("spinner");
@@ -586,6 +631,8 @@ onAuthStateChanged(auth,async u=>{
   document.body.classList.remove("enter"); void document.body.offsetWidth;
   document.body.classList.add("enter");
   renderUser(); applyAccess(); pullStats().catch(()=>{});
+  const catParam=new URLSearchParams(location.search).get("cat");
+  if(catParam&&CATMETA[catParam]) openCat(catParam);
 });
 
 async function resolveRole(){
@@ -601,22 +648,75 @@ async function loadAccess(){
 function modeOf(key){ return (ACCESS&&ACCESS[key]&&ACCESS[key].mode)||PLATFORMS[key].def; }
 function emailsOf(key){ return (ACCESS&&ACCESS[key]&&ACCESS[key].emails)||[]; }
 function canSee(key){
-  if(isOwner()) return true;
+  if(effOwner()) return true;
   const m=modeOf(key);
   if(m==="everyone") return true;
-  if(m==="managers") return MYROLE==="manager"||MYROLE==="admin";
-  if(m==="custom") return emailsOf(key).map(e=>e.toLowerCase()).includes(MYEMAIL);
+  if(m==="managers") return effRole()==="manager"||effRole()==="admin";
+  if(m==="custom") return emailsOf(key).map(e=>e.toLowerCase()).includes(effEmail());
   return false; // owners
 }
+
+/* ── preview-as-team-member (founder only) ── */
+async function buildUserMenu(){
+  const menu=document.getElementById("uMenu");
+  let rows="";
+  try{
+    const rs=await getDocs(collection(db,"roles"));
+    rows=rs.docs.map(x=>{
+      const em=x.id.toLowerCase(), role=(x.data()||{}).role||"contractor";
+      if(OWNERS.includes(em)) return "";
+      return `<button data-pv="${em}" data-role="${role}">
+        <svg class="eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        ${em}<small>${role}</small></button>`;
+    }).join("");
+  }catch(e){}
+  menu.innerHTML=`<div class="uh">Preview the hub as…</div>${rows||'<div class="uh">No team roles found</div>'}`;
+  menu.querySelectorAll("[data-pv]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    enterPreview(b.dataset.pv,b.dataset.role);
+    menu.classList.remove("open");
+  });
+}
+function enterPreview(email,role){
+  PREVIEW={email,role};
+  document.body.classList.add("previewing");
+  document.getElementById("pvBanner").classList.add("on");
+  document.getElementById("pvWho").innerHTML="viewing as <b style='font-family:inherit;text-transform:none;font-size:12.5px'>"+email+"</b> ("+role+")";
+  renderUser(); applyAccess(); renderTodayTasks(LASTTASKS);
+}
+function exitPreview(){
+  PREVIEW=null;
+  document.body.classList.remove("previewing");
+  document.getElementById("pvBanner").classList.remove("on");
+  renderUser(); applyAccess(); renderTodayTasks(LASTTASKS);
+}
+document.getElementById("pvExit").onclick=exitPreview;
+document.getElementById("userChip").onclick=async()=>{
+  if(!isOwner()) return;
+  const menu=document.getElementById("uMenu");
+  if(!menu.classList.contains("open")){ await buildUserMenu(); menu.classList.add("open"); }
+  else menu.classList.remove("open");
+};
+addEventListener("click",e=>{
+  const menu=document.getElementById("uMenu");
+  if(menu.classList.contains("open") && !e.target.closest("#userChip") && !e.target.closest("#uMenu"))
+    menu.classList.remove("open");
+});
 
 /* ───────── render ───────── */
 function renderUser(){
   const av=document.getElementById("uAvatar");
-  if(USER.photoURL){av.innerHTML=`<img src="${USER.photoURL}" alt="" referrerpolicy="no-referrer">`;}
-  else{av.textContent=(USER.displayName||MYEMAIL||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();}
-  document.getElementById("uName").textContent=USER.displayName||MYEMAIL.split("@")[0];
-  document.getElementById("uRole").textContent=isOwner()?"Founder":MYROLE.charAt(0).toUpperCase()+MYROLE.slice(1);
-  document.getElementById("gearBtn").style.display=isOwner()?"block":"none";
+  if(PREVIEW){
+    av.innerHTML=""; av.textContent="👁";
+    document.getElementById("uName").textContent=PREVIEW.email.split("@")[0];
+    document.getElementById("uRole").textContent="Preview · "+PREVIEW.role;
+  }else{
+    if(USER.photoURL){av.innerHTML=`<img src="${USER.photoURL}" alt="" referrerpolicy="no-referrer">`;}
+    else{av.innerHTML="";av.textContent=(USER.displayName||MYEMAIL||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();}
+    document.getElementById("uName").textContent=USER.displayName||MYEMAIL.split("@")[0];
+    document.getElementById("uRole").textContent=isOwner()?"Founder":MYROLE.charAt(0).toUpperCase()+MYROLE.slice(1);
+  }
+  document.getElementById("gearBtn").style.display=effOwner()?"block":"none";
 }
 function visibleItems(cat){ return ITEMS[cat].filter(it=>canSee(it.key)); }
 function applyAccess(){
@@ -634,7 +734,10 @@ function applyAccess(){
 
 /* ── Today: personal to-dos + Filming / Meetings calendar ── */
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function firstName(){return ((USER&&USER.displayName)||MYEMAIL.split("@")[0]).trim().split(/\s+/)[0].toLowerCase();}
+function firstName(){
+  if(PREVIEW) return PREVIEW.email.split("@")[0].split(/[.\-_]/)[0].toLowerCase();
+  return ((USER&&USER.displayName)||MYEMAIL.split("@")[0]).trim().split(/\s+/)[0].toLowerCase();
+}
 async function loadToday(){
   const d=new Date();
   document.getElementById("todayLabel").textContent=d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"});
@@ -795,6 +898,7 @@ function drawStats(tasks){
       <text x="${50+w}" y="${y+9}">${v}</text>`;
   }).join("");
   document.getElementById("aClientCard").style.display="block";
+  LASTTASKS=tasks;
   renderTodayTasks(tasks);
 }
 async function pullStats(){
