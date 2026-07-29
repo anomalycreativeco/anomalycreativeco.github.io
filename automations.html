@@ -94,6 +94,12 @@
   .cbadge i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
   .cbadge img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
     padding:3px;background:var(--card-solid)}
+  /* the badge sits on a dark surface in dark mode, where the black Anomaly
+     mark disappears — swap to the white one. (Flow chips keep the black mark:
+     .fchip forces a light background in dark mode.) */
+  .cbadge .lm-dark{display:none}
+  html[data-theme="dark"] .cbadge .lm-light{display:none}
+  html[data-theme="dark"] .cbadge .lm-dark{display:block}
   .clientgroup{margin-top:26px}
   .cg-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;margin-bottom:12px}
   .cg-title{display:flex;align-items:center;gap:9px}
@@ -300,10 +306,16 @@ function clientBadge(client){
   const src=CLIENT_LOGOS[client];
   /* the <i> is always present; a loaded logo sits on top and covers it, and
      onerror strips the image so the monogram shows through */
+  let img="";
+  if(src==="logomark.png"){
+    /* Anomaly's own mark ships in two colourways — CSS picks per theme */
+    img=`<img class="lm-light" src="logomark.png" alt="" onerror="this.remove()">`
+       +`<img class="lm-dark" src="logomark-white.png" alt="" onerror="this.remove()">`;
+  }else if(src){
+    img=`<img src="${src}" alt="" onerror="this.remove()">`;
+  }
   return `<span class="cbadge" title="${esc(client)}">`
-    + `<i>${esc(initials(client))}</i>`
-    + (src?`<img src="${src}" alt="" onerror="this.remove()">`:"")
-    + `</span>`;
+    + `<i>${esc(initials(client))}</i>` + img + `</span>`;
 }
 
 /* every distinct application an automation touches */
