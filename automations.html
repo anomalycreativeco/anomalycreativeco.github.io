@@ -65,6 +65,15 @@
   .savemsg{font-size:12px;color:var(--muted)}
   .savemsg.err{color:#c0563c}
 
+  .groupbar{display:flex;align-items:center;gap:10px;margin:20px 0 2px}
+  .groupbar .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .seg button{
+    font:inherit;font-size:12px;font-weight:600;color:var(--muted);background:none;border:0;
+    padding:6px 14px;border-radius:999px;cursor:pointer;transition:color .15s,background .15s}
+  .seg button.on{background:var(--card-solid);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .seg button:hover:not(.on){color:var(--ink)}
+  .groupnote{font-size:11.5px;color:var(--faint);margin:8px 0 0}
   .clientgroup{margin-top:26px}
   .cg-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;margin-bottom:12px}
   .auto{
@@ -173,6 +182,15 @@
     <span class="savemsg" id="saveMsg"></span>
   </div>
 
+  <div class="groupbar">
+    <span class="lbl">Group by</span>
+    <span class="seg" id="seg">
+      <button data-mode="client">Client</button>
+      <button data-mode="app">Application</button>
+    </span>
+  </div>
+  <div class="groupnote" id="groupNote"></div>
+
   <div id="list"></div>
 
   <div class="howto">
@@ -203,6 +221,7 @@ const SEEDS=[
   {id:"currin-weekly-seo-update",client:"Currin Outdoor Living",name:"Weekly SEO Report",engine:"Scheduled · Mon 9:02 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Pulls the SEO partner's ranking doc, refreshes the keyword dashboard artifact, and saves the weekly PDF into Weekly SEO Reports."},
   {id:"beechwood-eblast-carousel",client:"Beechwood Homes",name:"E-blast → IG Carousel",engine:"Skill · /loop 20m",freq:"On demand — 20-min poll loop",status:"active",note:"",desc:"Watches for Chloe's BeeFree e-blasts, mirrors each into an on-brand carousel in the right community folder, and applies client revisions from the thread. Draft-only."},
   {id:"bhi-ig-pipeline",client:"Big Hitters International",name:"Frame.io → Instagram",engine:"Skill · staged rollout",freq:"On demand — poll runs",status:"paused",note:"",desc:"Approved Frame.io assets get an on-brand caption and publish to IG. Currently in dry-run rollout; connectors pending."},
+  {id:"bhi-weekly-carousel",client:"Big Hitters International",name:"Weekly Carousel",engine:"Scheduled · Thu 9:05 AM",freq:"Weekly — Thursday morning",status:"active",note:"",desc:"Builds the next carousel from the Big Hitters queue in the Scoreboard design system and auto-posts the 9 slides + caption to Slack #big-hitters-international. First real run Aug 6."},
   {id:"frameio-captions-pipeline",client:"Josh Holyfield",name:"Frame.io → Captions",engine:"Skill · config pending",freq:"On demand — poll runs",status:"paused",note:"",desc:"Approved videos run through the Captions (Mirage) API with the client's template and return captioned to Frame.io."},
   {id:"weekly-carousel",client:"Anomaly · Studio",name:"Weekly Anomaly Carousel",engine:"Scheduled · Mon 9:06 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"9-slide Anomaly Creative carousel — 1080×1350 PNGs plus caption, ready to post."},
   {id:"inspiration-folder-digest",client:"Anomaly · Studio",name:"Inspiration Digest",engine:"Scheduled · Mon 9:09 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Hunts trending carousel/design references into the inspiration folders and digests them into STYLE-INDEX.md."}
@@ -220,8 +239,28 @@ const FLOWS={
   "bhi-ig-pipeline":[{img:"logos/frame.png",label:"Frame.io"},{img:"logos/instagram.png",label:"Instagram"}],
   "frameio-captions-pipeline":[{img:"logos/frame.png",label:"Frame.io"},{img:"logos/captions.png",label:"Captions.ai"},{img:"logos/frame.png",label:"Frame.io"}],
   "weekly-carousel":[{img:"logomark.png",label:"Anomaly"},{img:"logos/instagram.png",label:"Instagram"}],
-  "inspiration-folder-digest":[{img:"logos/pinterest.png",label:"Reference hunt"},{svg:"folder",label:"Inspo folders"}]
+  "inspiration-folder-digest":[{img:"logos/pinterest.png",label:"Reference hunt"},{svg:"folder",label:"Inspo folders"}],
+  "bhi-weekly-carousel":[{img:"logomark.png",label:"Carousel build"},{img:"logos/slack.png",label:"Slack"}]
 };
+
+/* asset → application name, used for the "group by application" view */
+const APP_NAMES={
+  "logomark.png":"Anomaly Engine","logos/slack.png":"Slack","logos/instagram.png":"Instagram",
+  "logos/frame.png":"Frame.io","logos/captions.png":"Captions.ai","logos/gmail.png":"Gmail",
+  "logos/docs.png":"Google Docs","logos/pinterest.png":"Pinterest",
+  "svg:pdf":"PDF export","svg:folder":"Local folders"
+};
+/* every distinct application an automation touches */
+function appsFor(id){
+  const f=FLOWS[id]; if(!f) return ["Unmapped"];
+  const seen=[];
+  f.forEach(c=>{
+    const key=c.img||("svg:"+c.svg);
+    const name=APP_NAMES[key]||key;
+    if(!seen.includes(name)) seen.push(name);
+  });
+  return seen.length?seen:["Unmapped"];
+}
 function flowHTML(id){
   const f=FLOWS[id];if(!f)return "";
   return `<div class="flow">${f.map(c=>`<span class="fchip">${c.img?`<img src="${c.img}" alt="">`:GENERIC[c.svg]}<span>${c.label}</span></span>`).join('<span class="farrow">→</span>')}</div>`;
@@ -270,13 +309,29 @@ async function load(){
     LIST=d.exists()?JSON.parse((d.data()||{}).list||"[]"):SEEDS;
     if(!LIST.length) LIST=SEEDS;
   }catch(e){ LIST=SEEDS; }
+  /* Saved doc wins for anything it already knows about, but SEEDS is still the
+     inventory of record — without this merge a newly added automation would
+     never surface once the doc exists, and it would look like it just vanished. */
+  const known=new Set(LIST.map(a=>a.id));
+  SEEDS.forEach(s=>{ if(!known.has(s.id)) LIST.push({...s}); });
   render();
 }
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+let MODE=localStorage.getItem("hub-auto-group")||"client";
 function render(){
   const groups={};
-  LIST.forEach(a=>{(groups[a.client]=groups[a.client]||[]).push(a);});
-  document.getElementById("list").innerHTML=Object.entries(groups).map(([client,items])=>`
+  if(MODE==="app"){
+    /* one automation can touch several apps, so it appears under each one */
+    LIST.forEach(a=>appsFor(a.id).forEach(app=>{(groups[app]=groups[app]||[]).push(a);}));
+  }else{
+    LIST.forEach(a=>{(groups[a.client]=groups[a.client]||[]).push(a);});
+  }
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.mode===MODE));
+  document.getElementById("groupNote").textContent = MODE==="app"
+    ? "Grouped by the applications each automation touches — one automation can appear under more than one app. Edits stay in sync across copies."
+    : "";
+  const keys=Object.keys(groups).sort((a,b)=>a.localeCompare(b));
+  document.getElementById("list").innerHTML=keys.map(client=>[client,groups[client]]).map(([client,items])=>`
     <div class="clientgroup ${isOwner?"":"ro"}">
       <div class="cg-title">${esc(client)}</div>
       ${items.map(a=>`
@@ -299,12 +354,28 @@ function render(){
     </div>`).join("");
   document.getElementById("saverow").style.display=isOwner?"flex":"none";
   document.querySelectorAll("[data-toggle]").forEach(b=>b.onclick=()=>{
-    const a=LIST.find(x=>x.id===b.dataset.toggle);
+    const id=b.dataset.toggle, a=LIST.find(x=>x.id===id);
     a.status=a.status==="active"?"paused":"active";
-    b.className="statusbtn "+(a.status==="active"?"active":"paused");
-    b.textContent=a.status==="active"?"● Active":"❚❚ Paused";
+    /* mirror onto every card for this id — in app view there may be several */
+    document.querySelectorAll(`[data-toggle="${CSS.escape(id)}"]`).forEach(btn=>{
+      btn.className="statusbtn "+(a.status==="active"?"active":"paused");
+      btn.textContent=a.status==="active"?"● Active":"❚❚ Paused";
+    });
+  });
+  /* keep duplicate cards' inputs in sync, otherwise saving reads whichever
+     copy happens to be last in the DOM and silently discards the other edit */
+  document.querySelectorAll(".auto [data-f]").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      const id=inp.closest(".auto").dataset.id, f=inp.dataset.f;
+      document.querySelectorAll(`.auto[data-id="${CSS.escape(id)}"] [data-f="${f}"]`)
+        .forEach(o=>{ if(o!==inp) o.value=inp.value; });
+    });
   });
 }
+document.getElementById("seg").onclick=e=>{
+  const b=e.target.closest("button[data-mode]"); if(!b) return;
+  MODE=b.dataset.mode; localStorage.setItem("hub-auto-group",MODE); render();
+};
 document.getElementById("saveBtn").onclick=async()=>{
   document.querySelectorAll(".auto").forEach(el=>{
     const a=LIST.find(x=>x.id===el.dataset.id); if(!a) return;
