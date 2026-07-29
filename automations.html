@@ -74,8 +74,31 @@
   .seg button.on{background:var(--card-solid);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
   .seg button:hover:not(.on){color:var(--ink)}
   .groupnote{font-size:11.5px;color:var(--faint);margin:8px 0 0}
+  .search{position:relative;flex:1;max-width:320px}
+  .search input{
+    width:100%;font:inherit;font-size:13px;color:var(--ink);background:var(--card);
+    border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;outline:none}
+  .search input::placeholder{color:var(--faint)}
+  .search input:focus{border-color:var(--muted)}
+  .search .clr{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;
+    color:var(--faint);font-size:15px;cursor:pointer;padding:4px 6px;line-height:1;display:none}
+  .search .clr.on{display:block}
+  .search .clr:hover{color:var(--ink)}
+  .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:40px 0}
+  /* client identity — real logo when we have one, initials monogram when we don't */
+  .cbadge{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:8px;overflow:hidden;flex:0 0 auto;
+    background:var(--card-solid);border:1px solid var(--line)}
+  .cbadge i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+  .cbadge img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+    padding:3px;background:var(--card-solid)}
   .clientgroup{margin-top:26px}
   .cg-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;margin-bottom:12px}
+  .cg-title{display:flex;align-items:center;gap:9px}
+  .cg-title .cbadge{width:22px;height:22px;border-radius:6px}
+  .cg-title .cbadge i{font-size:8.5px}
   .auto{
     background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--r);
     box-shadow:var(--shadow);padding:20px 22px;margin-bottom:12px;
@@ -188,6 +211,10 @@
       <button data-mode="client">Client</button>
       <button data-mode="app">Application</button>
     </span>
+    <span class="search">
+      <input id="q" type="search" placeholder="Search automations, clients, apps…" autocomplete="off">
+      <button class="clr" id="qClear" aria-label="Clear search">×</button>
+    </span>
   </div>
   <div class="groupnote" id="groupNote"></div>
 
@@ -250,6 +277,31 @@ const APP_NAMES={
   "logos/docs.png":"Google Docs","logos/pinterest.png":"Pinterest",
   "svg:pdf":"PDF export","svg:folder":"Local folders"
 };
+/* Client logos. Drop a file in logos/clients/ and add it here — anything not
+   listed (or that fails to load) falls back to an initials monogram, so the
+   page never shows a broken image. */
+const CLIENT_LOGOS={
+  "Capital Discount Furniture":"logos/clients/capital-discount-furniture.png",
+  "Anomaly · Studio":"logomark.png"
+};
+/* plain initials collide for Beechwood Homes / Big Hitters International — both
+   land on "BH" — so ambiguous ones get an explicit override */
+const CLIENT_INITIALS={"Beechwood Homes":"BW","Big Hitters International":"BHI"};
+function initials(c){
+  if(CLIENT_INITIALS[c]) return CLIENT_INITIALS[c];
+  return String(c||"?").replace(/[·]/g," ").split(/\s+/).filter(Boolean)
+    .slice(0,2).map(w=>w[0]).join("").toUpperCase();
+}
+function clientBadge(client){
+  const src=CLIENT_LOGOS[client];
+  /* the <i> is always present; a loaded logo sits on top and covers it, and
+     onerror strips the image so the monogram shows through */
+  return `<span class="cbadge" title="${esc(client)}">`
+    + `<i>${esc(initials(client))}</i>`
+    + (src?`<img src="${src}" alt="" onerror="this.remove()">`:"")
+    + `</span>`;
+}
+
 /* every distinct application an automation touches */
 function appsFor(id){
   const f=FLOWS[id]; if(!f) return ["Unmapped"];
@@ -317,26 +369,58 @@ async function load(){
   render();
 }
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
-let MODE=localStorage.getItem("hub-auto-group")||"client";
+let MODE=localStorage.getItem("hub-auto-group")||"client", Q="";
+/* Pull whatever is currently typed into the cards back into LIST. Every
+   re-render rebuilds from LIST, so without this an unsaved note or frequency
+   would be wiped the moment you searched or switched grouping. */
+function syncFromDOM(){
+  document.querySelectorAll(".auto").forEach(el=>{
+    const a=LIST.find(x=>x.id===el.dataset.id); if(!a) return;
+    const fq=el.querySelector('[data-f="freq"]'), nt=el.querySelector('[data-f="note"]');
+    if(!fq||!nt) return;
+    const note=nt.value.trim();
+    if(note!==(a.note||"")) a.noteAt=Date.now();
+    a.freq=fq.value.trim(); a.note=note;
+  });
+}
+/* free-text match across everything visible on a card, plus its apps and id */
+function matches(a,q){
+  if(!q) return true;
+  const hay=[a.name,a.client,a.desc,a.engine,a.freq,a.note,a.id,...appsFor(a.id)]
+    .filter(Boolean).join(" ").toLowerCase();
+  return q.split(/\s+/).filter(Boolean).every(t=>hay.includes(t));
+}
 function render(){
+  const q=Q.trim().toLowerCase();
+  const shown=LIST.filter(a=>matches(a,q));
   const groups={};
   if(MODE==="app"){
     /* one automation can touch several apps, so it appears under each one */
-    LIST.forEach(a=>appsFor(a.id).forEach(app=>{(groups[app]=groups[app]||[]).push(a);}));
+    shown.forEach(a=>appsFor(a.id).forEach(app=>{(groups[app]=groups[app]||[]).push(a);}));
   }else{
-    LIST.forEach(a=>{(groups[a.client]=groups[a.client]||[]).push(a);});
+    shown.forEach(a=>{(groups[a.client]=groups[a.client]||[]).push(a);});
   }
   document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.mode===MODE));
-  document.getElementById("groupNote").textContent = MODE==="app"
+  document.getElementById("qClear").classList.toggle("on",!!q);
+  const note = MODE==="app"
     ? "Grouped by the applications each automation touches — one automation can appear under more than one app. Edits stay in sync across copies."
     : "";
+  document.getElementById("groupNote").textContent =
+    q ? `${shown.length} of ${LIST.length} automations match “${Q.trim()}”.` + (note?" "+note:"") : note;
   const keys=Object.keys(groups).sort((a,b)=>a.localeCompare(b));
+  if(!keys.length){
+    document.getElementById("list").innerHTML=
+      `<div class="empty">No automations match “${esc(Q.trim())}”.</div>`;
+    document.getElementById("saverow").style.display=isOwner?"flex":"none";
+    return;
+  }
   document.getElementById("list").innerHTML=keys.map(client=>[client,groups[client]]).map(([client,items])=>`
     <div class="clientgroup ${isOwner?"":"ro"}">
-      <div class="cg-title">${esc(client)}</div>
+      <div class="cg-title">${MODE==="client"?clientBadge(client):""}${esc(client)}</div>
       ${items.map(a=>`
       <div class="auto" data-id="${esc(a.id)}">
         <div class="a-top">
+          ${clientBadge(a.client)}
           <span class="a-name">${esc(a.name)}</span>
           <span class="engine">${esc(a.engine)}</span>
           <button class="statusbtn ${a.status==="active"?"active":"paused"}" data-toggle="${esc(a.id)}">${a.status==="active"?"● Active":"❚❚ Paused"}</button>
@@ -374,16 +458,21 @@ function render(){
 }
 document.getElementById("seg").onclick=e=>{
   const b=e.target.closest("button[data-mode]"); if(!b) return;
+  syncFromDOM();
   MODE=b.dataset.mode; localStorage.setItem("hub-auto-group",MODE); render();
 };
+const qBox=document.getElementById("q");
+qBox.addEventListener("input",()=>{
+  syncFromDOM();
+  Q=qBox.value; render();
+  qBox.focus();  /* re-render replaces the list, not the box, but keep caret safe */
+});
+document.getElementById("qClear").onclick=()=>{
+  syncFromDOM(); Q=""; qBox.value=""; render(); qBox.focus();
+};
 document.getElementById("saveBtn").onclick=async()=>{
-  document.querySelectorAll(".auto").forEach(el=>{
-    const a=LIST.find(x=>x.id===el.dataset.id); if(!a) return;
-    const freq=el.querySelector('[data-f="freq"]').value.trim();
-    const note=el.querySelector('[data-f="note"]').value.trim();
-    if(note!==(a.note||"")) a.noteAt=Date.now();
-    a.freq=freq; a.note=note;
-  });
+  /* saves the whole LIST, including anything filtered out of view right now */
+  syncFromDOM();
   const msg=document.getElementById("saveMsg");
   try{
     await setDoc(doc(db,"hub","automations"),{list:JSON.stringify(LIST),updatedBy:MYEMAIL,at:Date.now()});
