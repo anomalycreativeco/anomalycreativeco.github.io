@@ -385,16 +385,9 @@
         <svg class="chart" id="goalChart" viewBox="0 0 1180 280" style="margin-top:14px"></svg>
       </div>
 
-      <!-- run rate vs stretch goal -->
+      <!-- run rate -->
       <div class="fc" style="grid-column:span 12">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-          <div><div class="lbl">Run rate vs stretch goal</div><div class="sub">trailing 3-month average of projected collections, annualised against the stretch goal</div></div>
-          <div class="legend" style="margin:0">
-            <span class="lg"><i style="background:var(--bar2);box-shadow:inset 0 0 0 1px var(--gridline)"></i>Projected</span>
-            <span class="lg"><i style="background:var(--ink);border-radius:99px;width:14px;height:3px"></i>3-month average</span>
-            <span class="lg"><i style="background:var(--g3);border-radius:99px;width:14px;height:3px"></i>Stretch pace</span>
-          </div>
-        </div>
+        <div><div class="lbl">Run rate</div><div class="sub">mean of the last 3 months of projected collections, annualised</div></div>
         <div class="rrstats" id="rrStats"></div>
         <svg class="chart" id="runrateChart" viewBox="0 0 1180 260" style="margin-top:10px"></svg>
       </div>
@@ -485,7 +478,7 @@ onAuthStateChanged(auth,async u=>{
 
 /* ── data passcode + decrypt ── */
 const GATE_HASH="a85442a37b917b5463e629a4f66b0c711a1a04411b1601cdd7c109bcb70a6309";
-const BLOB="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";
+const BLOB="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";
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function decrypt(pass){
@@ -632,28 +625,27 @@ function render(d){
     document.getElementById("goalChart").innerHTML=s;
   }
 
-  /* run rate — trailing 3-month average of PROJECTED collections vs the stretch goal */
+  /* run rate — mean of the last 3 months of projected collections, annualised */
   {
     // complete months only; older blobs without `elapsed` fall back to months with money in them
     const el=Math.max(1,Math.min(12,d.elapsed||d.collected.filter(v=>v>0).length));
-    const stretch=(d.goals&&d.goals.aggressive)||1200000, pace=stretch/12;
     const win=Math.min(3,el);
     const avg3=d.projected.slice(el-win,el).reduce((a,b)=>a+b,0)/win;
-    const rr=avg3*12, gap=rr-stretch;
+    const rr=avg3*12;
 
     document.getElementById("rrStats").innerHTML=`
       <div class="rrstat"><b>${fmtK(Math.round(rr))}</b><span>Annualised run rate</span></div>
-      <div class="rrstat"><b>${Math.round(rr/stretch*100)}%</b><span>of the ${fmtK(stretch)} stretch goal</span></div>
-      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Avg projected, ${d.months[el-win]}–${d.months[el-1]}</span></div>
-      <div class="rrstat"><b>${(gap>=0?"+":"−")+fmtK(Math.abs(Math.round(gap)))}</b><span>${gap>=0?"ahead of":"short of"} the stretch goal</span></div>`;
+      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Mean of ${d.months[el-win]}–${d.months[el-1]} projected</span></div>
+      <div class="rrstat"><b>${win}</b><span>months in the mean</span></div>`;
 
-    // rolling 3-month average through the elapsed months
+    // the same calculation walked month by month: each point is that month's
+    // trailing 3-month mean, annualised
     const roll=[];
     for(let i=0;i<el;i++){const w=Math.min(3,i+1);
-      roll.push(d.projected.slice(i-w+1,i+1).reduce((a,b)=>a+b,0)/w);}
+      roll.push(d.projected.slice(i-w+1,i+1).reduce((a,b)=>a+b,0)/w*12);}
 
-    const W4=1180,H4=260,qL=56,qR=130,qB=28,qT=14;
-    const max4=Math.max(pace,...d.projected)*1.12;
+    const W4=1180,H4=260,qL=64,qR=120,qB=28,qT=14;
+    const max4=Math.max(...roll)*1.15;
     const qx=i=>qL+i*(W4-qL-qR)/11;
     const qy=v=>H4-qB-(v/max4)*(H4-qB-qT);
     let r="";
@@ -661,15 +653,13 @@ function render(d){
       r+=`<line x1="${qL}" y1="${yy}" x2="${W4-qR+30}" y2="${yy}" style="stroke:var(--gridline)"/>
           <text x="${qL-8}" y="${yy+3}" text-anchor="end">${fmtK(Math.round(gv))}</text>`;}
     d.months.forEach((mo,i)=>{r+=`<text x="${qx(i)}" y="${H4-8}" text-anchor="middle">${mo}</text>`;});
-    for(let i=0;i<el;i++){const bw=26,yy=qy(d.projected[i]);
-      r+=`<rect x="${qx(i)-bw/2}" y="${yy}" width="${bw}" height="${H4-qB-yy}" rx="6" style="fill:var(--bar2);stroke:var(--gridline)"/>`;}
-    r+=`<line x1="${qx(0)}" y1="${qy(pace)}" x2="${qx(11)}" y2="${qy(pace)}" style="stroke:var(--g3)" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
-        <text x="${qx(11)+10}" y="${qy(pace)+3}" style="fill:var(--g3);font-weight:600">${fmtK(Math.round(pace))}/mo stretch pace</text>`;
     const rp=roll.map((v,i)=>[qx(i),qy(v)]);
+    r+=`<path d="${rp.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")} L${rp[rp.length-1][0]},${H4-qB} L${rp[0][0]},${H4-qB} Z" style="fill:var(--gridline)"/>`;
     r+=`<path d="${rp.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" style="stroke:var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    rp.forEach(([px,py])=>{r+=`<circle cx="${px}" cy="${py}" r="3.5" style="fill:var(--frost);stroke:var(--ink)" stroke-width="2"/>`;});
     const [rx,ry]=rp[rp.length-1];
     r+=`<circle cx="${rx}" cy="${ry}" r="5.5" style="fill:var(--ink);stroke:var(--frost)" stroke-width="2.5"/>
-        <text x="${rx+10}" y="${ry-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(Math.round(avg3))}</text>`;
+        <text x="${rx+10}" y="${ry-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(Math.round(rr))}</text>`;
     document.getElementById("runrateChart").innerHTML=r;
   }
 
