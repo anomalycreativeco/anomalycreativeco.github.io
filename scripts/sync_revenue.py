@@ -2,17 +2,21 @@
 """
 Resync the Studio Hub revenue dashboard (analytics.html) from the Excel Deal Tracker.
 
-Reads the "Analytics Dashboard" sheet of the Deal Tracker workbook, rebuilds the
-payload that analytics.html's render() expects, encrypts it with the dashboard
-passcode (AES-GCM / PBKDF2-SHA256, matching the WebCrypto code in the page), and
-rewrites the `const BLOB="..."` line in place.
+Every figure is derived from the raw deal rows on the "2026 ACTUAL" sheet — one row
+per deal — NOT from the "Analytics Dashboard" summary tab. That summary tab keeps
+hand-typed lists of clients, industries and services, so anything new silently drops
+out of it; reading the deal rows means a new client shows up the moment their first
+deal is entered, with no maintenance.
+
+The payload is encrypted with the dashboard passcode (AES-GCM / PBKDF2-SHA256,
+matching the WebCrypto code in the page) and written over the `const BLOB="..."` line.
 
 The passcode is never stored in this repo. It is read from, in order:
   1. $HUB_KEY
   2. macOS Keychain:  security find-generic-password -s anomaly-hub-key -w
 
 Store it once with:
-  security add-generic-password -a "$USER" -s anomaly-hub-key -w 'THE_PASSCODE'
+  security add-generic-password -a "$USER" -s anomaly-hub-key -w
 
 Usage:
   python3 scripts/sync_revenue.py              # write analytics.html
@@ -37,10 +41,15 @@ warnings.filterwarnings("ignore")
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGE = os.path.join(REPO, "analytics.html")
 XLSX = "/Users/danielpan/Dropbox/Anomaly Creative LLC/Deal Tracker.xlsx"
-SHEET = "Analytics Dashboard"
+DEALS = "2026 ACTUAL"          # one row per deal — the source of truth
+SUMMARY = "Analytics Dashboard"  # hand-maintained; used only as a cross-check
 
-# Yearly collection goals shown on the "projected vs goals" chart.
-# `aggressive` is the stretch goal the run-rate card is measured against.
+# Columns on the DEALS sheet (0-based).
+CLIENT, MONTH, AMOUNT, INDUSTRY = 0, 2, 3, 4
+SERVICES = range(5, 10)        # Service 1 … Service 5
+COLLECTED = 10                 # "Payment Collected"
+
+# Yearly collection goals for the "projected vs goals" chart.
 GOALS = {"conservative": 800_000, "moderate": 1_000_000, "aggressive": 1_200_000}
 
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -64,7 +73,7 @@ def get_passcode() -> str:
         sys.exit(
             "No dashboard passcode found.\n"
             "  Store it once:  security add-generic-password -a \"$USER\" "
-            "-s anomaly-hub-key -w 'THE_PASSCODE'\n"
+            "-s anomaly-hub-key -w\n"
             "  Or export HUB_KEY for a one-off run."
         )
 
@@ -76,121 +85,98 @@ def gate_hash_from_page(html: str) -> str:
     return m.group(1)
 
 
-# ── workbook parsing ──────────────────────────────────────────────────────────
-def load_grid():
-    import openpyxl
-    wb = openpyxl.load_workbook(XLSX, data_only=True)
-    if SHEET not in wb.sheetnames:
-        sys.exit(f'Sheet "{SHEET}" not found in {XLSX}')
-    ws = wb[SHEET]
-    return [list(r) for r in ws.iter_rows(values_only=True)]
-
-
-def cell(row, i):
-    return row[i] if i < len(row) else None
-
-
+# ── workbook ──────────────────────────────────────────────────────────────────
 def txt(v):
     return str(v).strip() if v is not None else ""
 
 
-def num(v):
-    return round(float(v)) if isinstance(v, (int, float)) else 0
+def is_true(v):
+    return v is True or txt(v).upper() == "TRUE"
 
 
-def find_row(grid, col, label, start=0):
-    for i in range(start, len(grid)):
-        if txt(cell(grid[i], col)).upper().startswith(label.upper()):
-            return i
-    return -1
+def build_payload():
+    import openpyxl
+    wb = openpyxl.load_workbook(XLSX, data_only=True)
+    if DEALS not in wb.sheetnames:
+        sys.exit(f'Sheet "{DEALS}" not found in {XLSX}')
 
+    projected = [0] * 12
+    collected = [0] * 12
+    by_client, by_industry, by_service = {}, {}, {}
+    skipped = 0
 
-def pairs_after(grid, header_row, name_col, val_col):
-    """Rows following a header row, until the name column goes blank."""
-    out = []
-    for r in grid[header_row + 1:]:
-        n = txt(cell(r, name_col))
-        if not n:
-            break
-        out.append([n, num(cell(r, val_col))])
-    return out
+    for r in wb[DEALS].iter_rows(min_row=2, values_only=True):
+        client = txt(r[CLIENT]) if len(r) > CLIENT else ""
+        amount = r[AMOUNT] if len(r) > AMOUNT and isinstance(r[AMOUNT], (int, float)) else 0
+        month = r[MONTH] if len(r) > MONTH else None
+        if not client or not amount:
+            continue
+        if not isinstance(month, (dt.datetime, dt.date)):
+            skipped += 1          # a deal with no usable date can't land in a month
+            continue
 
+        i = month.month - 1
+        projected[i] += amount
+        if is_true(r[COLLECTED] if len(r) > COLLECTED else None):
+            collected[i] += amount
 
-def build_payload(grid):
-    # summary
-    def summary_val(label):
-        i = find_row(grid, 0, label)
-        return num(cell(grid[i], 1)) if i >= 0 else 0
+        by_client[client] = by_client.get(client, 0) + amount
+        ind = txt(r[INDUSTRY]) if len(r) > INDUSTRY else ""
+        if ind:
+            by_industry[ind] = by_industry.get(ind, 0) + amount
+        for c in SERVICES:
+            s = txt(r[c]) if len(r) > c else ""
+            if s:
+                by_service.setdefault(s, set()).add(client)
 
-    projected = summary_val("Total Projected Revenue")
-    collected = summary_val("Total Collected Revenue")
-    outstanding = summary_val("Outstanding Revenue")
+    if not by_client:
+        sys.exit(f'No usable deal rows found on "{DEALS}".')
 
-    clients = 0
-    for r in grid:
-        for c in range(len(r)):
-            if txt(cell(r, c)).upper().startswith("TOTAL CLIENTS"):
-                clients = num(cell(r, c + 1))
-                break
-        if clients:
-            break
-
-    # months — rows whose first cell is a date
-    proj_m, coll_m, month_dates = [], [], []
-    for r in grid:
-        v = cell(r, 0)
-        if isinstance(v, dt.datetime) or isinstance(v, dt.date):
-            month_dates.append(v)
-            proj_m.append(num(cell(r, 1)))
-            coll_m.append(num(cell(r, 2)))
-        if len(proj_m) == 12:
-            break
-    if len(proj_m) != 12:
-        sys.exit(f"Expected 12 month rows in '{SHEET}', found {len(proj_m)}.")
+    total_p, total_c = sum(projected), sum(collected)
 
     # complete months only — the month in progress would drag the run rate down
     today = dt.date.today()
-    elapsed = sum(
-        1 for d in month_dates
-        if (d.year, d.month) < (today.year, today.month)
-    )
-    elapsed = max(1, min(12, elapsed))
+    year = max((r[MONTH].year for r in wb[DEALS].iter_rows(min_row=2, values_only=True)
+                if len(r) > MONTH and isinstance(r[MONTH], (dt.datetime, dt.date))),
+               default=today.year)
+    elapsed = 12 if year < today.year else max(1, min(12, today.month - 1))
 
-    # industries
-    i = find_row(grid, 0, "REVENUE BY INDUSTRY")
-    industries = pairs_after(grid, find_row(grid, 0, "Industry", i), 0, 1) if i >= 0 else []
-    industries.sort(key=lambda x: -x[1])
-
-    # service mix
-    i = find_row(grid, 0, "CLIENT SERVICE BREAKDOWN")
-    services = pairs_after(grid, find_row(grid, 0, "Service Type", i), 0, 1) if i >= 0 else []
-    services.sort(key=lambda x: -x[1])
-
-    # client ranking (column E/F block)
-    i = find_row(grid, 4, "Client", 0)
-    ranking = pairs_after(grid, i, 4, 5) if i >= 0 else []
-    ranking = [c for c in ranking if c[1] > 0]
-    ranking.sort(key=lambda x: -x[1])
-
-    as_of = dt.date.fromtimestamp(os.path.getmtime(XLSX)).strftime("%b %-d, %Y")
-
-    return {
-        "asOf": as_of,
+    payload = {
+        "asOf": dt.date.fromtimestamp(os.path.getmtime(XLSX)).strftime("%b %-d, %Y"),
         "elapsed": elapsed,
         "summary": {
-            "projected": projected,
-            "collected": collected,
-            "outstanding": outstanding,
-            "clients": clients,
+            "projected": round(total_p),
+            "collected": round(total_c),
+            "outstanding": round(total_p - total_c),
+            "clients": len(by_client),
         },
         "months": MONTHS,
-        "projected": proj_m,
-        "collected": coll_m,
-        "industries": industries,
-        "services": services,
-        "clientRanking": ranking,
+        "projected": [round(v) for v in projected],
+        "collected": [round(v) for v in collected],
+        "industries": sorted(([k, round(v)] for k, v in by_industry.items()),
+                             key=lambda x: -x[1]),
+        "services": sorted(([k, len(v)] for k, v in by_service.items()),
+                           key=lambda x: -x[1]),
+        "clientRanking": sorted(([k, round(v)] for k, v in by_client.items()),
+                                key=lambda x: -x[1]),
         "goals": GOALS,
     }
+
+    # cross-check against the hand-maintained summary tab and say so if they diverge
+    notes = []
+    if skipped:
+        notes.append(f"{skipped} deal row(s) had no usable date and were skipped")
+    if SUMMARY in wb.sheetnames:
+        ad = wb[SUMMARY]
+        for label, got in (("Total Projected Revenue", total_p),
+                           ("Total Collected Revenue", total_c)):
+            for row in ad.iter_rows(max_col=2, values_only=True):
+                if txt(row[0]) == label and isinstance(row[1], (int, float)):
+                    if round(row[1]) != round(got):
+                        notes.append(f"{label}: deals say ${got:,.0f}, "
+                                     f"summary tab says ${row[1]:,.0f}")
+                    break
+    return payload, notes
 
 
 # ── crypto (mirrors the WebCrypto code in analytics.html) ─────────────────────
@@ -209,6 +195,21 @@ def decrypt(blob: str, passcode: str) -> dict:
     return json.loads(AESGCM(key).decrypt(raw[16:28], raw[28:], None))
 
 
+def previous_payload(html: str, passcode: str):
+    """The payload currently published, so we can report what changed. None if unreadable."""
+    m = re.search(r'const BLOB="([^"]*)"', html)
+    try:
+        return decrypt(m.group(1), passcode) if m else None
+    except Exception:
+        return None
+
+
+def run_rate(p):
+    win = min(3, p["elapsed"])
+    avg = sum(p["projected"][p["elapsed"] - win:p["elapsed"]]) / win
+    return avg, avg * 12, win
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 def main():
     ap = argparse.ArgumentParser()
@@ -216,16 +217,15 @@ def main():
     ap.add_argument("--push", action="store_true", help="commit analytics.html and push")
     args = ap.parse_args()
 
-    grid = load_grid()
-    payload = build_payload(grid)
+    payload, notes = build_payload()
+    avg, rr, win = run_rate(payload)
 
     if args.dry_run:
         print(json.dumps(payload, indent=2))
-        rr = sum(payload["projected"][max(0, payload["elapsed"] - 3):payload["elapsed"]])
-        rr = rr / min(3, payload["elapsed"]) * 12
-        print(f"\nrun rate (3-mo avg projected, annualised): ${rr:,.0f}  "
-              f"= {rr / GOALS['aggressive'] * 100:.0f}% of the "
-              f"${GOALS['aggressive']:,} stretch goal")
+        print(f"\nrun rate: mean of the last {win} complete months of projected "
+              f"collections (${avg:,.0f}) x 12 = ${rr:,.0f}")
+        for n in notes:
+            print("NOTE:", n)
         return
 
     with open(PAGE, encoding="utf-8") as f:
@@ -235,6 +235,15 @@ def main():
     if hashlib.sha256(("anomaly-hub|" + passcode).encode()).hexdigest() != gate_hash_from_page(html):
         sys.exit("Passcode does not match the dashboard gate — refusing to write. "
                  "Nothing was changed.")
+
+    # what's new since the version currently published
+    prev = previous_payload(html, passcode)
+    new_clients, gone_clients = [], []
+    if prev:
+        was = {c[0] for c in prev.get("clientRanking", [])}
+        now = {c[0] for c in payload["clientRanking"]}
+        new_clients = sorted(now - was, key=lambda n: -dict(payload["clientRanking"])[n])
+        gone_clients = sorted(was - now)
 
     blob = encrypt(payload, passcode)
     if decrypt(blob, passcode) != payload:          # round-trip before we touch the page
@@ -250,6 +259,17 @@ def main():
     print(f"analytics.html resynced — as of {payload['asOf']}: "
           f"${s['collected']:,} collected of ${s['projected']:,} projected, "
           f"{s['clients']} clients, {payload['elapsed']} months elapsed.")
+    print(f"run rate: ${avg:,.0f} x 12 = ${rr:,.0f}")
+    if new_clients:
+        rank = dict(payload["clientRanking"])
+        print(f"NEW CLIENTS ({len(new_clients)}): "
+              + ", ".join(f"{c} (${rank[c]:,})" for c in new_clients))
+    if gone_clients:
+        print(f"NO LONGER PRESENT ({len(gone_clients)}): " + ", ".join(gone_clients))
+    if prev is None:
+        print("NOTE: could not read the previously published data, so no new-client diff.")
+    for note in notes:
+        print("NOTE:", note)
 
     if args.push:
         git = ["git", "-C", REPO]
