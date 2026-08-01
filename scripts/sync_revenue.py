@@ -221,9 +221,9 @@ def main():
 
     if args.dry_run:
         print(json.dumps(payload, indent=2))
-        rr = sum(payload["collected"][max(0, payload["elapsed"] - 3):payload["elapsed"]])
+        rr = sum(payload["projected"][max(0, payload["elapsed"] - 3):payload["elapsed"]])
         rr = rr / min(3, payload["elapsed"]) * 12
-        print(f"\nrun rate (3-mo avg annualised): ${rr:,.0f}  "
+        print(f"\nrun rate (3-mo avg projected, annualised): ${rr:,.0f}  "
               f"= {rr / GOALS['aggressive'] * 100:.0f}% of the "
               f"${GOALS['aggressive']:,} stretch goal")
         return
