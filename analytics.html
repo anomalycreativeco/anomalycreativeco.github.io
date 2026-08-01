@@ -137,6 +137,11 @@
   .chart text{font-family:var(--mono);font-size:9px;fill:var(--muted)}
   .legend{display:flex;gap:14px;justify-content:center;margin-top:10px}
   .lg{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
+  /* run rate */
+  .rrstats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .rrstat{flex:1 1 150px;background:var(--pill);border-radius:16px;padding:12px 14px}
+  .rrstat b{display:block;font-size:clamp(20px,2vw,26px);font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:1.1}
+  .rrstat span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
   .lg i{width:9px;height:9px;border-radius:3px}
 
   /* ranking */
@@ -380,6 +385,20 @@
         <svg class="chart" id="goalChart" viewBox="0 0 1180 280" style="margin-top:14px"></svg>
       </div>
 
+      <!-- run rate vs stretch goal -->
+      <div class="fc" style="grid-column:span 12">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div><div class="lbl">Run rate vs stretch goal</div><div class="sub">trailing 3-month average collections, annualised against the stretch goal</div></div>
+          <div class="legend" style="margin:0">
+            <span class="lg"><i style="background:var(--bar2);box-shadow:inset 0 0 0 1px var(--gridline)"></i>Collected</span>
+            <span class="lg"><i style="background:var(--ink);border-radius:99px;width:14px;height:3px"></i>3-month average</span>
+            <span class="lg"><i style="background:var(--g3);border-radius:99px;width:14px;height:3px"></i>Stretch pace</span>
+          </div>
+        </div>
+        <div class="rrstats" id="rrStats"></div>
+        <svg class="chart" id="runrateChart" viewBox="0 0 1180 260" style="margin-top:10px"></svg>
+      </div>
+
       <!-- bottom rings -->
       <div class="fc s3">
         <div class="lbl">Split</div>
@@ -611,6 +630,47 @@ function render(d){
     s+=`<circle cx="${lx}" cy="${ly}" r="5.5" style="fill:var(--ink);stroke:var(--frost)" stroke-width="2.5"/>
         <text x="${lx+10}" y="${ly-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(run)}</text>`;
     document.getElementById("goalChart").innerHTML=s;
+  }
+
+  /* run rate — trailing 3-month average vs the stretch goal */
+  {
+    // complete months only; older blobs without `elapsed` fall back to months with money in them
+    const el=Math.max(1,Math.min(12,d.elapsed||d.collected.filter(v=>v>0).length));
+    const stretch=(d.goals&&d.goals.aggressive)||1200000, pace=stretch/12;
+    const win=Math.min(3,el);
+    const avg3=d.collected.slice(el-win,el).reduce((a,b)=>a+b,0)/win;
+    const rr=avg3*12, gap=rr-stretch;
+
+    document.getElementById("rrStats").innerHTML=`
+      <div class="rrstat"><b>${fmtK(Math.round(rr))}</b><span>Annualised run rate</span></div>
+      <div class="rrstat"><b>${Math.round(rr/stretch*100)}%</b><span>of the ${fmtK(stretch)} stretch goal</span></div>
+      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Avg collections, ${d.months[el-win]}–${d.months[el-1]}</span></div>
+      <div class="rrstat"><b>${(gap>=0?"+":"−")+fmtK(Math.abs(Math.round(gap)))}</b><span>${gap>=0?"ahead of":"short of"} the stretch goal</span></div>`;
+
+    // rolling 3-month average through the elapsed months
+    const roll=[];
+    for(let i=0;i<el;i++){const w=Math.min(3,i+1);
+      roll.push(d.collected.slice(i-w+1,i+1).reduce((a,b)=>a+b,0)/w);}
+
+    const W4=1180,H4=260,qL=56,qR=130,qB=28,qT=14;
+    const max4=Math.max(pace,...d.collected)*1.12;
+    const qx=i=>qL+i*(W4-qL-qR)/11;
+    const qy=v=>H4-qB-(v/max4)*(H4-qB-qT);
+    let r="";
+    for(let i=0;i<=4;i++){const gv=max4/4*i,yy=qy(gv);
+      r+=`<line x1="${qL}" y1="${yy}" x2="${W4-qR+30}" y2="${yy}" style="stroke:var(--gridline)"/>
+          <text x="${qL-8}" y="${yy+3}" text-anchor="end">${fmtK(Math.round(gv))}</text>`;}
+    d.months.forEach((mo,i)=>{r+=`<text x="${qx(i)}" y="${H4-8}" text-anchor="middle">${mo}</text>`;});
+    for(let i=0;i<el;i++){const bw=26,yy=qy(d.collected[i]);
+      r+=`<rect x="${qx(i)-bw/2}" y="${yy}" width="${bw}" height="${H4-qB-yy}" rx="6" style="fill:var(--bar2);stroke:var(--gridline)"/>`;}
+    r+=`<line x1="${qx(0)}" y1="${qy(pace)}" x2="${qx(11)}" y2="${qy(pace)}" style="stroke:var(--g3)" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
+        <text x="${qx(11)+10}" y="${qy(pace)+3}" style="fill:var(--g3);font-weight:600">${fmtK(Math.round(pace))}/mo stretch pace</text>`;
+    const rp=roll.map((v,i)=>[qx(i),qy(v)]);
+    r+=`<path d="${rp.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" style="stroke:var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const [rx,ry]=rp[rp.length-1];
+    r+=`<circle cx="${rx}" cy="${ry}" r="5.5" style="fill:var(--ink);stroke:var(--frost)" stroke-width="2.5"/>
+        <text x="${rx+10}" y="${ry-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(Math.round(avg3))}</text>`;
+    document.getElementById("runrateChart").innerHTML=r;
   }
 
   /* services (dark card) */

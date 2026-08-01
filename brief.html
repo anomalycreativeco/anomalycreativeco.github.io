@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pre-Production Brief — Anomaly Creative & Co.</title>
+<style>
+:root{
+  --sage:#97AAA7; --sage-deep:#6E8B84; --rule:#A9B9B6;
+  --bar:#DEE6E4; --zebra:#F2F5F4; --quote:#EAF0EE;
+  --ink:#1E2422; --text:#454B49; --muted:#7A817E; --faint:#9AA3A0;
+  --line:#E4E8E7; --page:#FFFFFF; --shell:#DDE3E1;
+  --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --warn:#B4524A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--shell);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.45}
+button,input,textarea,select{font:inherit;color:inherit}
+.hidden{display:none !important}
+
+/* ---------- chrome ---------- */
+.top{position:sticky;top:0;z-index:20;background:rgba(221,227,225,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top .brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;font-size:11px;color:var(--ink)}
+.top .brand .mk{width:20px;height:20px;border-radius:50%;background:var(--sage-deep);display:block;flex:none}
+.top .sp{flex:1}
+.btn{background:var(--page);border:1px solid var(--rule);border-radius:8px;padding:7px 13px;
+  font-size:12px;font-weight:700;letter-spacing:.04em;cursor:pointer;color:var(--ink)}
+.btn:hover{border-color:var(--sage-deep)}
+.btn.primary{background:var(--sage-deep);border-color:var(--sage-deep);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.msg{font-size:11.5px;color:var(--muted)}
+.msg.err{color:var(--warn)}
+.msg.ok{color:var(--sage-deep)}
+
+/* ---------- gate ---------- */
+.gate{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:40px}
+.gate h1{font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin:0}
+.gate p{max-width:380px;color:var(--muted);font-size:12.5px;margin:0}
+
+/* ---------- library ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding:22px 20px 60px}
+.libhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.libhead h2{margin:0;font-size:13px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--ink)}
+.libhead .n{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.search{flex:1 1 200px;max-width:280px;background:var(--page);border:1px solid var(--line);
+  border-radius:8px;padding:7px 11px;font-size:12.5px;outline:none}
+.search:focus{border-color:var(--sage)}
+.lib{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lrow{background:var(--page);display:grid;grid-template-columns:1fr 130px 96px 150px;gap:12px;
+  align-items:center;padding:11px 14px;cursor:pointer}
+.lrow:hover{background:var(--zebra)}
+.lrow .t{font-weight:700;color:var(--ink)}
+.lrow .c{font-size:11.5px;color:var(--muted)}
+.lrow .d{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.lrow .st{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sage-deep);background:var(--quote);border-radius:999px;padding:3px 8px;justify-self:start}
+.lrow .st.final{background:var(--sage-deep);color:#fff}
+.lrow .acts{display:flex;gap:6px;justify-content:flex-end}
+.lrow .acts .btn{padding:4px 9px;font-size:11px}
+.empty{background:var(--page);padding:26px;text-align:center;color:var(--muted);font-size:12.5px}
+@media(max-width:720px){ .lrow{grid-template-columns:1fr;gap:4px} .lrow .acts{justify-content:flex-start} }
+
+/* ---------- the document ---------- */
+.sheet{background:var(--page);margin:0 auto;max-width:8.5in;padding:8.8%;
+  box-shadow:0 10px 34px -18px rgba(0,0,0,.35);border-radius:2px}
+.dochead{background:var(--sage);color:#fff;padding:15px 18px;display:flex;align-items:flex-start;
+  justify-content:space-between;gap:16px;flex-wrap:wrap}
+.dochead .lock{display:flex;align-items:center;gap:9px;font-weight:800;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase}
+.dochead .lock .mk{width:22px;height:22px;border-radius:50%;background:#fff;opacity:.92;display:block;flex:none}
+.dochead .kind{font-weight:800;font-size:15px;letter-spacing:.1em;text-transform:uppercase;text-align:right}
+.dochead .who{font-size:11px;letter-spacing:.05em;opacity:.9;text-align:right;font-weight:600;margin-top:2px}
+.purpose{font-size:12.5px;color:var(--text);padding:12px 2px 2px;line-height:1.5}
+
+.sec{margin-top:22px;break-inside:avoid}
+.sec > h3{display:flex;align-items:baseline;gap:9px;margin:0 0 2px;font-size:12px;
+  font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--ink)}
+.sec > h3 .num{color:var(--sage-deep)}
+.sec > h3 .rule{flex:1;height:1px;background:var(--rule);opacity:.55}
+.sec .lede{font-style:italic;color:var(--muted);font-size:12px;margin:3px 0 9px}
+
+/* snapshot / logistics grid */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);margin-top:8px}
+.cell{background:var(--zebra);padding:8px 10px;min-height:52px}
+.cell .lab{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-deep);display:block;margin-bottom:3px}
+.cell input{width:100%;border:0;background:none;outline:none;font-size:12.5px;color:var(--ink);font-weight:600;padding:0}
+.cell input::placeholder{color:var(--faint);font-weight:400}
+@media(max-width:640px){ .grid4{grid-template-columns:repeat(2,1fr)} }
+
+/* direction block */
+.direction{background:var(--quote);border-left:3px solid var(--sage-deep);padding:13px 15px;margin-top:8px}
+.direction textarea{width:100%;border:0;background:none;outline:none;resize:vertical;min-height:66px;
+  font-size:13px;font-weight:700;color:var(--ink);line-height:1.5}
+.direction .attr{text-align:right;margin-top:6px}
+.direction .attr input{border:0;background:none;outline:none;text-align:right;font-size:11.5px;
+  font-style:italic;color:var(--muted);width:60%}
+
+/* prose */
+.prose{margin-top:8px;position:relative}
+.prose textarea{width:100%;border:1px solid var(--line);background:var(--page);border-radius:8px;
+  padding:10px 34px 10px 11px;outline:none;resize:vertical;min-height:64px;font-size:12.5px;line-height:1.55;color:var(--ink)}
+.prose textarea:focus{border-color:var(--sage)}
+
+/* group bar + check rows */
+.gbar{background:var(--bar);padding:6px 10px;margin-top:12px;display:flex;align-items:center;gap:8px}
+.gbar input{flex:1;border:0;background:none;outline:none;font-weight:700;font-size:12px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.gbar .cnt{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.gbar .x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px}
+.gbar .x:hover{color:var(--warn)}
+.crow{display:flex;align-items:flex-start;gap:9px;padding:7px 10px;border-bottom:1px solid var(--line)}
+/* striping is set per row at render time — nth-child would count the group bars
+   and add-row buttons that sit between rows, striping them unevenly */
+.crow.alt{background:var(--zebra)}
+.crow input[type=checkbox]{margin-top:3px;flex:none;accent-color:var(--sage-deep);width:13px;height:13px}
+.crow .f{flex:1;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
+.crow .f .lab{border:0;background:none;outline:none;font-weight:700;color:var(--ink);font-size:12.5px;flex:0 1 34%;min-width:120px}
+.crow .f .desc{border:0;background:none;outline:none;color:var(--text);font-size:12.5px;flex:1 1 46%;min-width:150px}
+.crow .f .sub{border:0;background:none;outline:none;color:var(--muted);font-size:11px;flex:1 0 100%}
+.crow .x{border:0;background:none;color:var(--faint);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px}
+.crow .x:hover{color:var(--warn)}
+.addrow{margin-top:8px;background:none;border:1px dashed var(--rule);border-radius:8px;
+  padding:7px 14px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+.addrow:hover{border-color:var(--sage-deep);color:var(--sage-deep)}
+
+/* mic */
+.mic{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);
+  background:var(--page);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.mic svg{width:12px;height:12px}
+.mic:hover{border-color:var(--sage-deep);color:var(--sage-deep)}
+.mic.live{background:var(--sage-deep);border-color:var(--sage-deep);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(110,139,132,.45)}50%{box-shadow:0 0 0 5px rgba(110,139,132,0)}}
+.interim{color:var(--faint);font-style:italic}
+
+/* client/internal divider */
+.split{margin-top:26px;display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.split::before,.split::after{content:"";flex:1;height:1px;background:var(--rule);opacity:.5}
+
+.foot{margin-top:26px;padding-top:9px;border-top:1px solid var(--rule);display:flex;
+  justify-content:space-between;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint)}
+
+/* ---------- print ---------- */
+@media print{
+  @page{size:letter;margin:0}
+  body{background:#fff}
+  .top,.addrow,.crow .x,.gbar .x,.mic,.libwrap{display:none !important}
+  .sheet{box-shadow:none;max-width:none;margin:0;padding:8.8%;border-radius:0}
+  .wrap{padding:0;max-width:none}
+  .sec{break-inside:avoid}
+  input,textarea{border-color:transparent !important;background:none !important}
+  .prose textarea{padding-right:11px}
+  textarea{resize:none;overflow:hidden}
+}
+body.clientview .internal{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="top" id="top">
+  <div class="brand"><span class="mk"></span>Anomaly Creative &amp; Co.</div>
+  <div class="sp"></div>
+  <span class="msg" id="saveMsg"></span>
+  <button class="btn" id="backBtn" hidden>← Library</button>
+  <button class="btn" id="clientBtn" hidden>Client view</button>
+  <button class="btn" id="printBtn" hidden>Print / PDF</button>
+  <button class="btn primary" id="saveBtn" hidden>Save</button>
+  <button class="btn primary" id="newBtn" hidden>New brief</button>
+</div>
+
+<div class="gate" id="gate">
+  <h1>Pre-Production Brief</h1>
+  <p>Sign in with your Anomaly account to open the brief library.</p>
+  <button class="btn primary" id="signin">Sign in with Google</button>
+  <span class="msg" id="gateMsg"></span>
+</div>
+
+<div class="wrap hidden" id="app">
+  <!-- library -->
+  <div id="libwrap" class="libwrap">
+    <div class="libhead">
+      <h2>Brief library</h2><span class="n" id="libCount"></span>
+      <input class="search" id="libSearch" placeholder="Search client, project…">
+    </div>
+    <div class="lib" id="lib"></div>
+  </div>
+
+  <!-- editor -->
+  <div id="editwrap" class="hidden">
+    <div class="sheet" id="sheet">
+      <div class="dochead">
+        <div class="lock"><span class="mk"></span>Anomaly Creative &amp; Co.</div>
+        <div>
+          <div class="kind">Pre-Production Brief</div>
+          <div class="who" id="docWho">—</div>
+        </div>
+      </div>
+      <div class="purpose"><input id="fPurpose" style="width:100%;border:0;outline:none;background:none;font-size:12.5px"
+        placeholder="One sentence: what this shoot is for. If it needs two, the shoot needs scoping."></div>
+
+      <div id="sections"></div>
+
+      <div class="foot">
+        <span>Anomaly Creative &amp; Co.</span>
+        <span id="footWho">—</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",
+  projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
+const auth=getAuth(app), db=getFirestore(app);
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>"b"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let MYEMAIL="", LIST=[], CUR=null, Q="";
+
+/* ---------------------------------------------------------------- storage
+   Briefs live in one hub/briefs doc as a JSON string — the same shape and the
+   same path family as hub/automations, which this project already writes to
+   successfully. A dedicated `briefs` collection would have been tidier, but it
+   would need a security-rules change published by hand, and a code-only feature
+   should never depend on that. ~200 briefs fit comfortably under the 1MB cap. */
+const DOC=()=>doc(db,"hub","briefs");
+async function load(){
+  try{
+    const d=await getDoc(DOC());
+    LIST=d.exists()?JSON.parse((d.data()||{}).list||"[]"):[];
+  }catch(e){ LIST=[]; note("Couldn't load the library ("+(e.code||e.message)+").","err"); }
+}
+async function save(){
+  const payload=JSON.stringify(LIST);
+  if(payload.length>800000){ note("Library is near the 1MB document cap — archive old briefs.","err"); return false; }
+  try{
+    await setDoc(DOC(),{list:payload,updatedBy:MYEMAIL,at:Date.now()});
+    note("Saved.","ok"); return true;
+  }catch(e){
+    // a silent permission-denied is indistinguishable from a dead button
+    note("Couldn't save ("+(e.code||e.message)+").","err"); return false;
+  }
+}
+let noteT=null;
+function note(t,cls){ const m=$("#saveMsg"); m.textContent=t; m.className="msg"+(cls?" "+cls:"");
+  clearTimeout(noteT); if(cls==="ok") noteT=setTimeout(()=>{m.textContent="";},2600); }
+
+/* ---------------------------------------------------------------- model */
+function blank(){
+  return { id:uid(), client:"", contact:"", project:"", format:"", use:"",
+    shootDate:"", callTime:"", location:"", status:"draft", purpose:"",
+    direction:"", directionBy:"", objective:"", audience:"", success:"",
+    concept:"", references:"",
+    deliverables:[row()], shots:[group()], logistics:{access:"",crew:"",gear:"",wardrobe:""},
+    talent:[row()], approvals:[row()], notes:["","",""],
+    createdBy:MYEMAIL, createdAt:Date.now(), updatedBy:MYEMAIL, updatedAt:Date.now() };
+}
+const row =()=>({label:"",desc:"",sub:"",checked:false});
+const group=()=>({name:"",rows:[row()]});
+
+/* ---------------------------------------------------------------- library view */
+function renderLib(){
+  const q=Q.trim().toLowerCase();
+  const rows=LIST.filter(b=>!q||((b.client||"")+" "+(b.project||"")).toLowerCase().includes(q))
+    .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  $("#libCount").textContent=LIST.length?`${rows.length} of ${LIST.length}`:"";
+  $("#lib").innerHTML = rows.length ? rows.map(b=>`
+    <div class="lrow" data-id="${b.id}">
+      <div><div class="t">${esc(b.project||"Untitled brief")}</div><div class="c">${esc(b.client||"No client yet")}</div></div>
+      <div class="d">${esc(b.shootDate||"—")}</div>
+      <div class="st ${b.status==="final"?"final":""}">${b.status==="final"?"Final":"Draft"}</div>
+      <div class="acts">
+        <button class="btn" data-act="dup">Duplicate</button>
+        <button class="btn" data-act="del">Delete</button>
+      </div>
+    </div>`).join("")
+    : `<div class="empty">${LIST.length?"Nothing matches that search.":"No briefs yet — start one with <b>New brief</b>."}</div>`;
+}
+
+/* ---------------------------------------------------------------- editor
+   Inputs write straight into CUR on the way through; the DOM is only rebuilt
+   when rows are added or removed. Re-rendering on every keystroke would tear
+   the field out from under whoever is typing (or dictating) into it. */
+function secOpen(n,title,lede,internal){
+  return `<div class="sec ${internal?"internal":""}"><h3><span class="num">${n}</span>${title}<span class="rule"></span></h3>`+
+    (lede?`<div class="lede">${lede}</div>`:"");
+}
+function cellHTML(k,lab,ph,type){
+  return `<div class="cell"><span class="lab">${lab}</span>
+    <input data-f="${k}" type="${type||"text"}" value="${esc(CUR[k]||"")}" placeholder="${ph||""}"></div>`;
+}
+function proseHTML(k,ph){
+  return `<div class="prose"><textarea data-f="${k}" placeholder="${ph}">${esc(CUR[k]||"")}</textarea>${micHTML()}</div>`;
+}
+function micHTML(){
+  return SR ? `<button class="mic" data-mic title="Dictate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>` : "";
+}
+function rowsHTML(list,path,ph){
+  return list.map((r,i)=>`<div class="crow${i%2?" alt":""}" data-path="${path}" data-i="${i}">
+    <input type="checkbox" data-rf="checked" ${r.checked?"checked":""}>
+    <div class="f">
+      <input class="lab" data-rf="label" value="${esc(r.label)}" placeholder="${ph[0]}">
+      <input class="desc" data-rf="desc" value="${esc(r.desc)}" placeholder="${ph[1]}">
+      <input class="sub" data-rf="sub" value="${esc(r.sub)}" placeholder="${ph[2]||"Note (optional)"}">
+    </div>
+    <button class="x" data-del title="Remove">✕</button></div>`).join("");
+}
+function renderEditor(){
+  $("#docWho").textContent=(CUR.client||"Client")+" · "+(CUR.project||"Project");
+  $("#footWho").textContent=(CUR.client||"—")+" · "+(CUR.project||"—");
+  $("#fPurpose").value=CUR.purpose||"";
+  const L=CUR.logistics||{};
+  $("#sections").innerHTML=
+    /* 01 */ secOpen("01","Snapshot","")+
+      `<div class="grid4">
+        ${cellHTML("client","Client","Beechwood Homes")}
+        ${cellHTML("contact","Contact","Name / phone")}
+        ${cellHTML("project","Project","Ferncliff spring reel")}
+        ${cellHTML("format","Format","Vertical reel")}
+        ${cellHTML("use","Use","Instagram / site")}
+        ${cellHTML("shootDate","Shoot date","","date")}
+        ${cellHTML("callTime","Call time","","time")}
+        ${cellHTML("location","Location","Address")}
+      </div></div>`+
+    /* 02 */ secOpen("02","The Direction","The client's own words — one block, no paraphrase.")+
+      `<div class="direction">
+        <textarea data-f="direction" placeholder="Paste or dictate what the client actually asked for.">${esc(CUR.direction||"")}</textarea>
+        <div class="attr">— <input data-f="directionBy" value="${esc(CUR.directionBy||"")}" placeholder="who said it"></div>
+      </div></div>`+
+    /* 03 */ secOpen("03","Objective &amp; Audience","")+
+      proseHTML("objective","Why this exists — the job this content has to do.")+
+      proseHTML("audience","Who it's for.")+
+      proseHTML("success","What success looks like.")+`</div>`+
+    /* 04 */ secOpen("04","Deliverables","Every item we hand over — count, ratio, platform, date.")+
+      `<div id="delvRows">${rowsHTML(CUR.deliverables,"deliverables",["Item — 3× reel","Ratio / platform / due",""])}</div>
+       <button class="addrow" data-add="deliverables">+ Add deliverable</button></div>`+
+    /* 05 */ secOpen("05","Concept &amp; Treatment","")+
+      proseHTML("concept","Look, tone, pacing — how this should feel.")+
+      proseHTML("references","Reference links, one per line.")+`</div>`+
+    `<div class="split">Internal — execution</div>`+
+    /* 06 */ secOpen("06","Shot List","Every line the crew must capture gets a box. No box, no shot.",1)+
+      `<div id="shotGroups">${CUR.shots.map((g,gi)=>`
+        <div class="gbar" data-g="${gi}">
+          <input data-gname value="${esc(g.name)}" placeholder="Group — establishing / action / detail">
+          <span class="cnt">${g.rows.length}</span>
+          <button class="x" data-gdel title="Remove group">✕</button>
+        </div>
+        ${g.rows.map((r,i)=>`<div class="crow${i%2?" alt":""}" data-path="shots" data-g="${gi}" data-i="${i}">
+          <input type="checkbox" data-rf="checked" ${r.checked?"checked":""}>
+          <div class="f">
+            <input class="lab" data-rf="label" value="${esc(r.label)}" placeholder="Shot">
+            <input class="desc" data-rf="desc" value="${esc(r.desc)}" placeholder="What it needs to show">
+            <input class="sub" data-rf="sub" value="${esc(r.sub)}" placeholder="Watch for… (optional)">
+          </div><button class="x" data-del title="Remove">✕</button></div>`).join("")}
+        <button class="addrow" data-addshot="${gi}">+ Add shot</button>`).join("")}</div>
+       <button class="addrow" data-addgroup>+ Add group</button></div>`+
+    /* 07 */ secOpen("07","Logistics","",1)+
+      `<div class="grid4">
+        <div class="cell"><span class="lab">Access / parking</span><input data-l="access" value="${esc(L.access||"")}"></div>
+        <div class="cell"><span class="lab">Crew</span><input data-l="crew" value="${esc(L.crew||"")}"></div>
+        <div class="cell"><span class="lab">Gear</span><input data-l="gear" value="${esc(L.gear||"")}"></div>
+        <div class="cell"><span class="lab">Wardrobe / props</span><input data-l="wardrobe" value="${esc(L.wardrobe||"")}"></div>
+      </div></div>`+
+    /* 08 */ secOpen("08","Talent &amp; Contacts","",1)+
+      `<div>${rowsHTML(CUR.talent,"talent",["Name","Role — on camera?","Phone (optional)"])}</div>
+       <button class="addrow" data-add="talent">+ Add person</button></div>`+
+    /* 09 */ secOpen("09","Approvals &amp; Risk","What's locked before the camera comes out, and what could go wrong.",1)+
+      `<div>${rowsHTML(CUR.approvals,"approvals",["Item — consent / permit","Status","Backup plan"])}</div>
+       <button class="addrow" data-add="approvals">+ Add item</button></div>`+
+    /* 10 */ secOpen("10","Notes","",1)+
+      `<div>${CUR.notes.map((n,i)=>`<div class="crow${i%2?" alt":""}" data-note="${i}">
+        <div class="f"><input class="desc" data-nf value="${esc(n)}" placeholder=""></div></div>`).join("")}</div>
+       <button class="addrow" data-addnote>+ Add line</button></div>`;
+}
+
+/* ---------------------------------------------------------------- edits */
+function touch(){ CUR.updatedAt=Date.now(); CUR.updatedBy=MYEMAIL; }
+$("#sections").addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.f!==undefined && t.dataset.f){ CUR[t.dataset.f]=t.value; touch();
+    if(t.dataset.f==="client"||t.dataset.f==="project"){
+      $("#docWho").textContent=(CUR.client||"Client")+" · "+(CUR.project||"Project");
+      $("#footWho").textContent=(CUR.client||"—")+" · "+(CUR.project||"—"); }
+    return; }
+  if(t.dataset.l!==undefined && t.dataset.l){ (CUR.logistics||(CUR.logistics={}))[t.dataset.l]=t.value; touch(); return; }
+  if(t.hasAttribute("data-gname")){ CUR.shots[+t.closest(".gbar").dataset.g].name=t.value; touch(); return; }
+  if(t.hasAttribute("data-nf")){ CUR.notes[+t.closest("[data-note]").dataset.note]=t.value; touch(); return; }
+  const cr=t.closest(".crow"); if(!cr||!t.dataset.rf) return;
+  const r = cr.dataset.path==="shots" ? CUR.shots[+cr.dataset.g].rows[+cr.dataset.i]
+                                      : CUR[cr.dataset.path][+cr.dataset.i];
+  r[t.dataset.rf] = t.type==="checkbox" ? t.checked : t.value;
+  touch();
+});
+$("#fPurpose").addEventListener("input",e=>{ CUR.purpose=e.target.value; touch(); });
+
+$("#sections").addEventListener("click",e=>{
+  const t=e.target;
+  const add=t.closest("[data-add]"); if(add){ CUR[add.dataset.add].push(row()); touch(); renderEditor(); return; }
+  if(t.closest("[data-addgroup]")){ CUR.shots.push(group()); touch(); renderEditor(); return; }
+  const as=t.closest("[data-addshot]"); if(as){ CUR.shots[+as.dataset.addshot].rows.push(row()); touch(); renderEditor(); return; }
+  if(t.closest("[data-addnote]")){ CUR.notes.push(""); touch(); renderEditor(); return; }
+  const gd=t.closest("[data-gdel]");
+  if(gd){ const gi=+gd.closest(".gbar").dataset.g;
+    if(confirm("Remove this shot group and its rows?")){ CUR.shots.splice(gi,1); if(!CUR.shots.length)CUR.shots.push(group()); touch(); renderEditor(); } return; }
+  const del=t.closest("[data-del]"); if(del){
+    const cr=del.closest(".crow");
+    if(cr.dataset.path==="shots"){ const g=CUR.shots[+cr.dataset.g]; g.rows.splice(+cr.dataset.i,1); if(!g.rows.length)g.rows.push(row()); }
+    else { const a=CUR[cr.dataset.path]; a.splice(+cr.dataset.i,1); if(!a.length)a.push(row()); }
+    touch(); renderEditor(); return; }
+  const mic=t.closest("[data-mic]"); if(mic){ dictate(mic); return; }
+});
+
+/* ---------------------------------------------------------------- dictation
+   Browser speech recognition — free, no key, no round-trip. Final text is
+   APPENDED so you can dictate a field in several passes. Absent in Safari and
+   Firefox, in which case the mic buttons are never rendered at all. */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let REC=null, RECBTN=null;
+function dictate(btn){
+  if(REC){ REC.stop(); return; }
+  const ta=btn.parentElement.querySelector("textarea"); if(!ta) return;
+  REC=new SR(); REC.continuous=false; REC.interimResults=true; REC.lang="en-US";
+  RECBTN=btn; btn.classList.add("live");
+  const base=ta.value, pad=base&&!/\s$/.test(base)?" ":"";
+  REC.onresult=ev=>{
+    let fin="",int="";
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const r=ev.results[i]; if(r.isFinal) fin+=r[0].transcript; else int+=r[0].transcript;
+    }
+    ta.value=base+pad+(fin||int);
+    if(fin){ CUR[ta.dataset.f]=ta.value; touch(); }
+  };
+  REC.onerror=()=>{ note("Dictation stopped — check mic permission.","err"); };
+  REC.onend=()=>{ btn.classList.remove("live"); CUR[ta.dataset.f]=ta.value; touch(); REC=null; RECBTN=null; };
+  try{ REC.start(); }catch(err){ btn.classList.remove("live"); REC=null; }
+}
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&REC) REC.stop(); });
+
+/* ---------------------------------------------------------------- nav */
+function openBrief(b){ CUR=b; renderEditor();
+  $("#libwrap").classList.add("hidden"); $("#editwrap").classList.remove("hidden");
+  ["backBtn","clientBtn","printBtn","saveBtn"].forEach(i=>$("#"+i).hidden=false);
+  $("#newBtn").hidden=true; window.scrollTo(0,0);
+}
+function openLib(){ CUR=null; document.body.classList.remove("clientview"); renderLib();
+  $("#editwrap").classList.add("hidden"); $("#libwrap").classList.remove("hidden");
+  ["backBtn","clientBtn","printBtn","saveBtn"].forEach(i=>$("#"+i).hidden=true);
+  $("#newBtn").hidden=false;
+}
+$("#lib").addEventListener("click",async e=>{
+  const r=e.target.closest(".lrow"); if(!r) return;
+  const b=LIST.find(x=>x.id===r.dataset.id); if(!b) return;
+  const act=e.target.closest("[data-act]")?.dataset.act;
+  if(act==="dup"){ const c=JSON.parse(JSON.stringify(b)); c.id=uid(); c.project=(b.project||"Untitled")+" (copy)";
+    c.status="draft"; c.createdAt=c.updatedAt=Date.now(); c.createdBy=c.updatedBy=MYEMAIL;
+    LIST.push(c); renderLib(); await save(); return; }
+  if(act==="del"){ if(!confirm(`Delete "${b.project||"this brief"}"? This can't be undone.`)) return;
+    LIST=LIST.filter(x=>x.id!==b.id); renderLib(); await save(); return; }
+  openBrief(b);
+});
+$("#libSearch").addEventListener("input",e=>{ Q=e.target.value; renderLib(); });
+$("#newBtn").onclick=async()=>{ const b=blank(); LIST.push(b); openBrief(b); await save(); };
+$("#backBtn").onclick=openLib;
+$("#saveBtn").onclick=save;
+$("#printBtn").onclick=()=>window.print();
+$("#clientBtn").onclick=()=>{
+  const on=document.body.classList.toggle("clientview");
+  $("#clientBtn").textContent=on?"Full brief":"Client view";
+  note(on?"Client view — internal sections hidden. Print now to send.":"","");
+};
+
+/* ---------------------------------------------------------------- auth */
+$("#signin").onclick=async()=>{
+  try{ await signInWithPopup(auth,new GoogleAuthProvider()); }
+  catch(e){ $("#gateMsg").textContent="Sign-in failed ("+(e.code||e.message)+")."; $("#gateMsg").className="msg err"; }
+};
+onAuthStateChanged(auth,async u=>{
+  if(!u){ $("#gate").classList.remove("hidden"); $("#app").classList.add("hidden"); $("#newBtn").hidden=true; return; }
+  MYEMAIL=(u.email||"").toLowerCase();
+  $("#gate").classList.add("hidden"); $("#app").classList.remove("hidden");
+  await load(); openLib();
+});
+</script>
+</body>
+</html>
