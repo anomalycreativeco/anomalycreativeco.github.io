@@ -144,6 +144,24 @@
   .trow b{color:var(--ink);font-weight:600}
   .trow .tt{font-family:var(--mono);font-size:10px;color:var(--muted);flex:none;margin-top:1px}
   .tmore{font-family:var(--mono);font-size:10px;color:var(--faint);padding-top:6px;letter-spacing:.08em}
+  /* calendar split: filming and meetings read as separate groups */
+  .cgrp{margin-top:10px}
+  .cgrp:first-child{margin-top:0}
+  .cgrp .clab{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding-bottom:2px}
+  .cgrp .clab i{width:5px;height:5px;border-radius:50%;background:var(--green);display:block;flex:none}
+  .cgrp.meet .clab i{background:var(--green-mid)}
+  .cgrp.meet .trow.cal .dot{background:var(--green-mid)}
+  /* Mine / Team switch — its own row; the 250px card can't fit it beside the date */
+  .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;
+    background:var(--card-solid);margin-bottom:10px}
+  .seg[hidden]{display:none}
+  .seg button{flex:1;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);background:none;border:0;cursor:pointer;padding:5px 0;line-height:1.4}
+  .seg button.on{background:var(--green);color:#fff}
+  /* --green lightens in dark mode, so white-on-green loses contrast — flip to ink */
+  html[data-theme="dark"] .seg button.on{color:#0a100f}
+  .seg button:not(.on):hover{color:var(--ink)}
   .chart{width:100%;display:block}
   .chart .bar{fill:var(--green-mid);transition:fill .2s}
   .chart .bar:hover{fill:var(--green)}
@@ -431,6 +449,9 @@
     <div class="astrip" id="astrip" style="display:none">
       <div class="acard" id="todayCard">
         <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
+        <div class="seg" id="todayScope" hidden>
+          <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
+        </div>
         <div id="todayCal"></div>
         <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
       </div>
@@ -686,13 +707,13 @@ function enterPreview(email,role){
   document.body.classList.add("previewing");
   document.getElementById("pvBanner").classList.add("on");
   document.getElementById("pvWho").innerHTML="viewing as <b style='font-family:inherit;text-transform:none;font-size:12.5px'>"+email+"</b> ("+role+")";
-  renderUser(); applyAccess(); renderTodayTasks(LASTTASKS);
+  renderUser(); applyAccess(); renderTodayCal(); renderTodayTasks(LASTTASKS);
 }
 function exitPreview(){
   PREVIEW=null;
   document.body.classList.remove("previewing");
   document.getElementById("pvBanner").classList.remove("on");
-  renderUser(); applyAccess(); renderTodayTasks(LASTTASKS);
+  renderUser(); applyAccess(); renderTodayCal(); renderTodayTasks(LASTTASKS);
 }
 document.getElementById("pvExit").onclick=exitPreview;
 document.getElementById("userChip").onclick=async()=>{
@@ -742,24 +763,58 @@ function firstName(){
   if(PREVIEW) return PREVIEW.email.split("@")[0].split(/[.\-_]/)[0].toLowerCase();
   return ((USER&&USER.displayName)||MYEMAIL.split("@")[0]).trim().split(/\s+/)[0].toLowerCase();
 }
+/* ---- today's calendar ----
+   Events arrive from hub/today as {cal,title,start,attendees,organizer}, written each
+   weekday morning by the hub-today-sync task. Filming and meetings render as separate
+   groups, and the Mine/Team switch filters on attendees — but only when the payload
+   actually carries them, since docs written before that field existed have none. */
+let TODAY_EVENTS=[];
+const SCOPE_KEY="hub.today.scope";
+const scopePref=()=>{ try{ return localStorage.getItem(SCOPE_KEY)||"mine"; }catch(e){ return "mine"; } };
+const evtHasPeople=e=>!!((e.attendees&&e.attendees.length)||e.organizer);
+function evtIsMine(e){
+  const me=(effEmail()||"").toLowerCase(); if(!me) return false;
+  if((e.organizer||"").toLowerCase()===me) return true;
+  return (e.attendees||[]).some(a=>String(a).toLowerCase()===me);
+}
+function calGroup(list,cls,label){
+  if(!list.length) return "";
+  return `<div class="cgrp ${cls}"><div class="clab"><i></i>${label}</div>`+
+    list.map(e=>`<div class="trow cal"><span class="dot"></span><span class="tt">${e.start||""}</span>
+      <span><b>${e.title}</b></span></div>`).join("")+`</div>`;
+}
+function renderTodayCal(){
+  const cal=document.getElementById("todayCal"), seg=document.getElementById("todayScope");
+  // no attendee data anywhere → the switch can't filter, so don't offer it
+  const filterable=TODAY_EVENTS.some(evtHasPeople);
+  seg.hidden=!filterable;
+  const scope=filterable?scopePref():"team";
+  seg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.scope===scope));
+  const shown=scope==="mine"?TODAY_EVENTS.filter(evtIsMine):TODAY_EVENTS;
+  const filming=shown.filter(e=>e.cal==="filming"), meetings=shown.filter(e=>e.cal!=="filming");
+  const html=calGroup(filming,"film","Filming")+calGroup(meetings,"meet","Meetings");
+  cal.innerHTML=html||(TODAY_EVENTS.length&&scope==="mine"
+    ? `<div class="amsg">Nothing on your calendar today.</div>` : "");
+}
 async function loadToday(){
   const d=new Date();
   document.getElementById("todayLabel").textContent=d.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"});
-  // calendar events, synced into hub/today by Claude each morning
+  TODAY_EVENTS=[];
   try{
     const t=await getDoc(doc(db,"hub","today"));
     const data=t.exists()?t.data():null;
-    const cal=document.getElementById("todayCal");
     let evts=data?data.events:[];
     if(typeof evts==="string"){try{evts=JSON.parse(evts);}catch(e){evts=[];}}
-    if(data && data.date===todayISO() && (evts||[]).length){
-      cal.innerHTML=(evts||[]).map(e=>`
-        <div class="trow cal"><span class="dot"></span><span class="tt">${e.start||""}</span>
-        <span><b>${e.title}</b> · ${e.cal==="filming"?"Filming":"Meeting"}</span></div>`).join("");
-    } else cal.innerHTML="";
-  }catch(e){ document.getElementById("todayCal").innerHTML=""; }
+    if(data && data.date===todayISO() && (evts||[]).length) TODAY_EVENTS=evts;
+  }catch(e){ TODAY_EVENTS=[]; }
+  renderTodayCal();
   renderTodayTasks(null);
 }
+document.getElementById("todayScope").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-scope]"); if(!b) return;
+  try{ localStorage.setItem(SCOPE_KEY,b.dataset.scope); }catch(err){}
+  renderTodayCal();
+});
 function renderTodayTasks(tasks){
   const box=document.getElementById("todayTasks");
   if(!canSee("pipeline")){ box.innerHTML=""; return; }
