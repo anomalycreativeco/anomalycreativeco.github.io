@@ -388,9 +388,9 @@
       <!-- run rate vs stretch goal -->
       <div class="fc" style="grid-column:span 12">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-          <div><div class="lbl">Run rate vs stretch goal</div><div class="sub">trailing 3-month average collections, annualised against the stretch goal</div></div>
+          <div><div class="lbl">Run rate vs stretch goal</div><div class="sub">trailing 3-month average of projected collections, annualised against the stretch goal</div></div>
           <div class="legend" style="margin:0">
-            <span class="lg"><i style="background:var(--bar2);box-shadow:inset 0 0 0 1px var(--gridline)"></i>Collected</span>
+            <span class="lg"><i style="background:var(--bar2);box-shadow:inset 0 0 0 1px var(--gridline)"></i>Projected</span>
             <span class="lg"><i style="background:var(--ink);border-radius:99px;width:14px;height:3px"></i>3-month average</span>
             <span class="lg"><i style="background:var(--g3);border-radius:99px;width:14px;height:3px"></i>Stretch pace</span>
           </div>
@@ -485,7 +485,7 @@ onAuthStateChanged(auth,async u=>{
 
 /* ── data passcode + decrypt ── */
 const GATE_HASH="a85442a37b917b5463e629a4f66b0c711a1a04411b1601cdd7c109bcb70a6309";
-const BLOB="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";
+const BLOB="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";
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function decrypt(pass){
@@ -632,28 +632,28 @@ function render(d){
     document.getElementById("goalChart").innerHTML=s;
   }
 
-  /* run rate — trailing 3-month average vs the stretch goal */
+  /* run rate — trailing 3-month average of PROJECTED collections vs the stretch goal */
   {
     // complete months only; older blobs without `elapsed` fall back to months with money in them
     const el=Math.max(1,Math.min(12,d.elapsed||d.collected.filter(v=>v>0).length));
     const stretch=(d.goals&&d.goals.aggressive)||1200000, pace=stretch/12;
     const win=Math.min(3,el);
-    const avg3=d.collected.slice(el-win,el).reduce((a,b)=>a+b,0)/win;
+    const avg3=d.projected.slice(el-win,el).reduce((a,b)=>a+b,0)/win;
     const rr=avg3*12, gap=rr-stretch;
 
     document.getElementById("rrStats").innerHTML=`
       <div class="rrstat"><b>${fmtK(Math.round(rr))}</b><span>Annualised run rate</span></div>
       <div class="rrstat"><b>${Math.round(rr/stretch*100)}%</b><span>of the ${fmtK(stretch)} stretch goal</span></div>
-      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Avg collections, ${d.months[el-win]}–${d.months[el-1]}</span></div>
+      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Avg projected, ${d.months[el-win]}–${d.months[el-1]}</span></div>
       <div class="rrstat"><b>${(gap>=0?"+":"−")+fmtK(Math.abs(Math.round(gap)))}</b><span>${gap>=0?"ahead of":"short of"} the stretch goal</span></div>`;
 
     // rolling 3-month average through the elapsed months
     const roll=[];
     for(let i=0;i<el;i++){const w=Math.min(3,i+1);
-      roll.push(d.collected.slice(i-w+1,i+1).reduce((a,b)=>a+b,0)/w);}
+      roll.push(d.projected.slice(i-w+1,i+1).reduce((a,b)=>a+b,0)/w);}
 
     const W4=1180,H4=260,qL=56,qR=130,qB=28,qT=14;
-    const max4=Math.max(pace,...d.collected)*1.12;
+    const max4=Math.max(pace,...d.projected)*1.12;
     const qx=i=>qL+i*(W4-qL-qR)/11;
     const qy=v=>H4-qB-(v/max4)*(H4-qB-qT);
     let r="";
@@ -661,7 +661,7 @@ function render(d){
       r+=`<line x1="${qL}" y1="${yy}" x2="${W4-qR+30}" y2="${yy}" style="stroke:var(--gridline)"/>
           <text x="${qL-8}" y="${yy+3}" text-anchor="end">${fmtK(Math.round(gv))}</text>`;}
     d.months.forEach((mo,i)=>{r+=`<text x="${qx(i)}" y="${H4-8}" text-anchor="middle">${mo}</text>`;});
-    for(let i=0;i<el;i++){const bw=26,yy=qy(d.collected[i]);
+    for(let i=0;i<el;i++){const bw=26,yy=qy(d.projected[i]);
       r+=`<rect x="${qx(i)-bw/2}" y="${yy}" width="${bw}" height="${H4-qB-yy}" rx="6" style="fill:var(--bar2);stroke:var(--gridline)"/>`;}
     r+=`<line x1="${qx(0)}" y1="${qy(pace)}" x2="${qx(11)}" y2="${qy(pace)}" style="stroke:var(--g3)" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
         <text x="${qx(11)+10}" y="${qy(pace)+3}" style="fill:var(--g3);font-weight:600">${fmtK(Math.round(pace))}/mo stretch pace</text>`;
