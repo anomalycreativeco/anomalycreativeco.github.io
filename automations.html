@@ -256,6 +256,7 @@ const SEEDS=[
   {id:"bhi-ig-pipeline",client:"Big Hitters International",name:"Frame.io → Instagram",engine:"Skill · staged rollout",freq:"On demand — poll runs",status:"paused",note:"",desc:"Approved Frame.io assets get an on-brand caption and publish to IG. Currently in dry-run rollout; connectors pending."},
   {id:"bhi-weekly-carousel",client:"Big Hitters International",name:"Weekly Carousel",engine:"Scheduled · Thu 9:05 AM",freq:"Weekly — Thursday morning",status:"active",note:"",desc:"Builds the next carousel from the Big Hitters queue in the Scoreboard design system and auto-posts the 9 slides + caption to Slack #big-hitters-international. First real run Aug 6."},
   {id:"frameio-captions-pipeline",client:"Josh Holyfield",name:"Frame.io → Captions",engine:"Skill · config pending",freq:"On demand — poll runs",status:"paused",note:"",desc:"Approved videos run through the Captions (Mirage) API with the client's template and return captioned to Frame.io."},
+  {id:"josh-raw-tracker",client:"Josh Holyfield",name:"RAW Footage Tracker Sync",engine:"Scheduled · Daily 8:05 AM",freq:"Daily — every morning",status:"active",note:"",desc:"Reads the Raw Video tree on Frame.io (July 2026 onward) and mirrors every clip's editing status into the hub's RAW Tracker, so untouched footage can't hide."},
   {id:"weekly-carousel",client:"Anomaly · Studio",name:"Weekly Anomaly Carousel",engine:"Scheduled · Mon 9:06 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"9-slide Anomaly Creative carousel — 1080×1350 PNGs plus caption, ready to post."},
   {id:"inspiration-folder-digest",client:"Anomaly · Studio",name:"Inspiration Digest",engine:"Scheduled · Mon 9:09 AM",freq:"Weekly — Monday morning",status:"active",note:"",desc:"Hunts trending carousel/design references into the inspiration folders and digests them into STYLE-INDEX.md."}
 ];
@@ -271,6 +272,7 @@ const FLOWS={
   "beechwood-eblast-carousel":[{img:"logos/gmail.png",label:"Chloe's e-blast"},{img:"logos/instagram.png",label:"IG carousel"}],
   "bhi-ig-pipeline":[{img:"logos/frame.png",label:"Frame.io"},{img:"logos/instagram.png",label:"Instagram"}],
   "frameio-captions-pipeline":[{img:"logos/frame.png",label:"Frame.io"},{img:"logos/captions.png",label:"Captions.ai"},{img:"logos/frame.png",label:"Frame.io"}],
+  "josh-raw-tracker":[{img:"logos/frame.png",label:"Frame.io RAW"},{img:"logomark.png",label:"Hub tracker"}],
   "weekly-carousel":[{img:"logomark.png",label:"Anomaly"},{img:"logos/instagram.png",label:"Instagram"}],
   "inspiration-folder-digest":[{img:"logos/pinterest.png",label:"Reference hunt"},{svg:"folder",label:"Inspo folders"}],
   "bhi-weekly-carousel":[{img:"logomark.png",label:"Carousel build"},{img:"logos/slack.png",label:"Slack"}]

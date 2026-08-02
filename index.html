@@ -359,6 +359,7 @@
   body.enter .astrip .acard:nth-child(2){animation:rise .7s var(--ease) 1.25s backwards}
   body.enter .astrip .acard:nth-child(3){animation:rise .7s var(--ease) 1.45s backwards}
   body.enter .astrip .acard:nth-child(4){animation:rise .7s var(--ease) 1.6s backwards}
+  body.enter .astrip .acard:nth-child(5){animation:rise .7s var(--ease) 1.75s backwards}
   body.enter .catcol .cat:nth-child(1){animation:rise .7s var(--ease) 1.15s backwards}
   body.enter .catcol .cat:nth-child(2){animation:rise .7s var(--ease) 1.35s backwards}
   body.enter .catcol .cat:nth-child(3){animation:rise .7s var(--ease) 1.55s backwards}
@@ -467,6 +468,10 @@
         <div class="ahead"><span>Open tasks · by client</span></div>
         <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
       </div>
+      <div class="acard" id="joshCard" style="display:none" title="Open the RAW tracker">
+        <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
+        <div id="jBody"><div class="amsg">Loading tracker…</div></div>
+      </div>
     </div>
 
     <!-- category cards -->
@@ -569,6 +574,7 @@ const PLATFORMS={
   onboarding:{name:"Client Onboarding",cat:"client",def:"everyone"},
   relmap:{name:"Client Relationship Map",cat:"client",def:"everyone"},
   brief:{name:"Pre-Production Brief",cat:"pre",def:"everyone"},
+  josh:{name:"Josh Holyfield · RAW Tracker",cat:"post",def:"custom"},
   rchplanner:{name:"RCH Content Planner",cat:"pre",def:"everyone"},
   ufplanner:{name:"Universal Furniture Planner",cat:"pre",def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
@@ -581,7 +587,8 @@ const ITEMS={
     {key:"relmap",name:"Client Relationship Map",desc:"Team responsibilities — who owns which client, account by account.",tag:"Static",url:"https://anomalycreativeco.github.io/Anomaly-Client-Relationship-Map/",icon:"M9 8m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 7m-2.4 0a2.4 2.4 0 1 0 4.8 0a2.4 2.4 0 1 0-4.8 0M15.5 13.6c2.9.4 5 2.9 5 6.4"}
   ],
   post:[
-    {key:"pipeline",name:"Editing Pipeline",desc:"Post-production tracker — every project, editor, and delivery from ingest to final export.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/",icon:"M3 7.5h18M7 5v4M12 5v4M17 5v4M3 5.5h18v13H3z"}
+    {key:"pipeline",name:"Editing Pipeline",desc:"Post-production tracker — every project, editor, and delivery from ingest to final export.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-Post-Production-Pipeline/",icon:"M3 7.5h18M7 5v4M12 5v4M17 5v4M3 5.5h18v13H3z"},
+    {key:"josh",name:"Josh Holyfield · RAW Tracker",desc:"Every RAW clip the shooter delivers vs. its Frame.io status — untouched footage surfaces here before it goes stale.",tag:"Frame.io",url:"josh.html",icon:"M15.5 10.5l5-3v9l-5-3M3 7h12.5v10H3z"}
   ],
   pre:[
     {key:"brief",name:"Pre-Production Brief",desc:"Build a shoot brief — concept and deliverables for the client, shot list and logistics for the crew. Type it or speak it.",tag:"Firebase",url:"brief.html",icon:"M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 15.5h7M9 19h4"},
@@ -673,13 +680,22 @@ async function loadAccess(){
   return {};
 }
 function modeOf(key){ return (ACCESS&&ACCESS[key]&&ACCESS[key].mode)||PLATFORMS[key].def; }
-function emailsOf(key){ return (ACCESS&&ACCESS[key]&&ACCESS[key].emails)||[]; }
+/* josh tracker defaults to admins + Tyler until the panel overrides it */
+const JOSH_DEFAULT_EMAILS=["tyler@anomalycreativestudio.com"];
+function emailsOf(key){
+  const o=ACCESS&&ACCESS[key]&&ACCESS[key].emails;
+  if(o&&o.length) return o;
+  return key==="josh"?JOSH_DEFAULT_EMAILS:[];
+}
 function canSee(key){
   if(effOwner()) return true;
   const m=modeOf(key);
   if(m==="everyone") return true;
   if(m==="managers") return effRole()==="manager"||effRole()==="admin";
-  if(m==="custom") return emailsOf(key).map(e=>e.toLowerCase()).includes(effEmail());
+  if(m==="custom"){
+    if(key==="josh"&&effRole()==="admin") return true;
+    return emailsOf(key).map(e=>e.toLowerCase()).includes(effEmail());
+  }
   return false; // owners
 }
 
@@ -756,7 +772,38 @@ function applyAccess(){
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
   document.getElementById("astrip").style.display="flex";
   document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
-  loadToday();
+  document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
+  loadToday(); loadJosh();
+}
+
+/* ── Josh Holyfield RAW tracker card — reads the hub/joshTracker doc the daily
+   Frame.io sync writes; the card is a shortcut into josh.html ── */
+async function loadJosh(){
+  if(!canSee("josh")) return;
+  const card=document.getElementById("joshCard");
+  card.style.cursor="pointer";
+  card.onclick=()=>openApp("Josh Holyfield · RAW Tracker","josh.html");
+  const body=document.getElementById("jBody"), badge=document.getElementById("jBadge");
+  try{
+    const d=await getDoc(doc(db,"hub","joshTracker"));
+    if(!d.exists()){ body.innerHTML='<div class="amsg">No Frame.io sync yet.</div>'; return; }
+    let data=(d.data()||{}).data;
+    if(typeof data==="string"){ try{data=JSON.parse(data);}catch(e){data=null;} }
+    const clips=data&&data.months?data.months.flatMap(m=>[...(m.longform||[]),...(m.shortform||[])]):[];
+    const un=clips.filter(c=>(c.status||"none")==="none");
+    const oldest=un.map(c=>{
+      const ref=c.uploadedAt||c.date, t=Date.parse(ref||"");
+      return isNaN(t)?null:Math.max(0,Math.floor((Date.now()-t)/864e5));
+    }).filter(v=>v!=null).sort((a,b)=>b-a)[0];
+    const inedit=clips.filter(c=>c.status==="in_progress"||c.status==="needs_review").length;
+    badge.textContent=un.length?un.length+" waiting":"clear";
+    badge.style.color=un.length?"#c0563c":"";
+    body.innerHTML=`<div class="kpirow">
+      <div class="kpi ${un.length?"warn":""}"><b>${un.length}</b><span>Untouched</span></div>
+      <div class="kpi"><b>${inedit}</b><span>In edit</span></div>
+      <div class="kpi ${oldest>=14?"warn":""}"><b>${oldest!=null?oldest+"d":"—"}</b><span>Oldest</span></div>
+    </div>`;
+  }catch(e){ body.innerHTML='<div class="amsg">Couldn\'t load tracker.</div>'; }
 }
 
 /* ── Today: personal to-dos + Filming / Meetings calendar ── */

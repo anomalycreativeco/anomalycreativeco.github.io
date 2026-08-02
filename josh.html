@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anomaly · Josh Holyfield RAW Tracker</title>
+<meta name="description" content="Anomaly Creative Studio — Josh Holyfield RAW footage tracker.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="logomark.png">
+<style>
+  :root{
+    --ink:#111417; --body:#3d4449; --muted:#878e94; --faint:#b4bac0;
+    --card:rgba(255,255,255,.82); --card-solid:#ffffff;
+    --line:rgba(17,20,23,.07);
+    --shadow:0 18px 40px -18px rgba(17,20,23,.18), 0 4px 12px -6px rgba(17,20,23,.07);
+    --green:#3C554F; --green-2:#4E6A63; --green-3:#6D8F88; --green-4:#91ABA5; --green-5:#B5C6C2;
+    --bg:radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #f2f3f4 45%, #e3e5e7 100%);
+    --amber:#b07f3c; --red:#c0563c; --r:20px;
+    --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Menlo",monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  html[data-theme="dark"]{
+    --ink:#f2f5f4; --body:#c3cecb; --muted:#7e8f8b; --faint:#54615e;
+    --card:rgba(22,28,27,.75); --card-solid:#181e1d;
+    --line:rgba(181,198,194,.1);
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+    --green:#B5C6C2; --green-2:#91ABA5; --green-3:#6D8F88; --green-4:#4E6A63; --green-5:#3C554F;
+    --bg:radial-gradient(120% 90% at 50% -10%, #10201c 0%, #0a100f 45%, #050807 100%);
+    --amber:#d9a55d; --red:#e0765c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--body);background:var(--bg) fixed;-webkit-font-smoothing:antialiased;min-height:100vh}
+  ::selection{background:var(--green-3);color:#fff}
+  a{text-decoration:none;color:inherit}
+  button,input{font-family:inherit}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 36px 70px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:34px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .bdg{width:30px;height:30px;border-radius:50%;background:#92ABA7;display:grid;place-items:center;box-shadow:0 1px 4px rgba(28,33,31,.25)}
+  .brand .bdg img{width:17px;height:17px;object-fit:contain}
+  .brand-name b{display:block;font-size:12.5px;letter-spacing:.14em;color:var(--ink);font-weight:700;line-height:1.15;text-transform:uppercase}
+  .brand-name span{font-size:10.5px;color:var(--muted)}
+  .tb-right{display:flex;align-items:center;gap:10px}
+  .backbtn,.theme-btn{
+    font-size:12.5px;font-weight:600;color:var(--body);cursor:pointer;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:9px 18px;transition:all .25s var(--ease);
+  }
+  .backbtn:hover,.theme-btn:hover{color:var(--ink);transform:translateY(-2px)}
+  .theme-btn{width:36px;height:36px;padding:0;border-radius:50%}
+
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+  .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--green-3);margin-bottom:8px}
+  h1{font-size:clamp(30px,3.6vw,42px);color:var(--ink);letter-spacing:-.02em;font-weight:700;line-height:1.05}
+  .hsub{font-size:13px;color:var(--muted);margin-top:8px;max-width:560px;line-height:1.6}
+  .syncmeta{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--faint);text-align:right;line-height:1.8}
+  .syncmeta b{color:var(--muted);font-weight:600}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:24px 0 8px}
+  @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kcard{
+    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
+    border-radius:var(--r);box-shadow:var(--shadow);padding:16px 18px;
+  }
+  .kcard span{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .kcard b{display:block;font-size:30px;color:var(--ink);letter-spacing:-.02em;margin-top:6px;line-height:1}
+  .kcard small{display:block;font-size:10.5px;color:var(--faint);margin-top:6px}
+  .kcard.warn{border-color:rgba(192,86,60,.35)}
+  .kcard.warn b{color:var(--red)}
+  .kcard.ok b{color:var(--green-2)}
+
+  .filterbar{display:flex;align-items:center;gap:10px;margin:20px 0 4px;flex-wrap:wrap}
+  .filterbar .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .seg button{
+    font:inherit;font-size:12px;font-weight:600;color:var(--muted);background:none;border:0;
+    padding:6px 14px;border-radius:999px;cursor:pointer;transition:color .15s,background .15s}
+  .seg button.on{background:var(--card-solid);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .seg button:hover:not(.on){color:var(--ink)}
+
+  /* month sections */
+  .month{margin-top:28px}
+  .m-title{
+    display:flex;align-items:baseline;gap:12px;border-top:1px solid var(--line);
+    padding-top:18px;margin-bottom:6px;
+  }
+  .m-title h2{font-size:20px;color:var(--ink);font-weight:700;letter-spacing:-.01em}
+  .m-title .mstat{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted)}
+  .m-title .mstat i{font-style:normal;color:var(--red);font-weight:700}
+  .grp{margin-top:12px}
+  .g-lab{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .g-lab i{width:5px;height:5px;border-radius:50%;background:var(--green-3);display:block;flex:none;font-style:normal}
+  .clips{
+    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
+    border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;
+  }
+  .clip{
+    display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid var(--line);
+    font-size:13px;transition:background .15s;
+  }
+  .clip:first-child{border-top:none}
+  .clip:hover{background:var(--card-solid)}
+  .clip .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .clip .cname{flex:1;min-width:0;color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .clip .cname a:hover{color:var(--green-2)}
+  .clip .cdate{font-family:var(--mono);font-size:10.5px;color:var(--muted);flex:none;letter-spacing:.04em}
+  .clip .age{
+    font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.08em;flex:none;
+    color:var(--red);border:1px solid rgba(192,86,60,.4);border-radius:99px;padding:3px 9px;
+  }
+  .chip{
+    font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    border-radius:99px;padding:4px 11px;flex:none;
+  }
+  .s-none{background:rgba(192,86,60,.12);color:var(--red)}
+  .s-none.dot,.dot.s-none{background:var(--red)}
+  .s-in_progress{background:rgba(109,143,136,.18);color:var(--green-2)}
+  .dot.s-in_progress{background:var(--green-3)}
+  .s-needs_review{background:rgba(176,127,60,.14);color:var(--amber)}
+  .dot.s-needs_review{background:var(--amber)}
+  .s-approved{background:rgba(78,106,99,.16);color:var(--green)}
+  .dot.s-approved{background:var(--green)}
+  .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:46px 0}
+  .gempty{font-size:12px;color:var(--faint);padding:14px 18px}
+
+  .howto{
+    margin-top:38px;border-top:1px solid var(--line);padding-top:18px;
+    font-size:12px;color:var(--muted);line-height:1.7;max-width:680px;
+  }
+  .howto b{color:var(--body)}
+
+  /* gate */
+  .gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+  .gate.off{display:none}
+  .gcard{text-align:center;width:min(360px,90vw)}
+  .gcard>img{width:60px;height:60px;object-fit:contain;margin-bottom:18px}
+  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .gcard h2{font-size:21px;color:var(--ink);font-weight:700;margin-bottom:22px}
+  .gbtn{
+    width:100%;height:48px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--card-solid);color:var(--ink);border:1px solid var(--line);transition:all .25s var(--ease);
+  }
+  .gbtn:hover{transform:translateY(-2px)}
+  .gbtn .gdot{width:16px;height:16px;border-radius:50%;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
+  .gmsg{margin-top:14px;font-size:12px;color:#c0563c;min-height:16px;line-height:1.5}
+  .gout{margin-top:12px;background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:99px;padding:8px 18px;font-size:12px;cursor:pointer;display:none}
+  .gout.show{display:inline-block}
+  .gback{display:block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .gback:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gcard">
+    <img src="logomark.png" alt="" id="gateLogo">
+    <div class="gk">Anomaly Creative &amp; Co.</div>
+    <h2 id="gateTitle">Josh Holyfield · RAW Tracker</h2>
+    <div id="stepAuth">
+      <button class="gbtn" id="gGoogle"><span class="gdot"></span>Continue with Google</button>
+    </div>
+    <div class="gmsg" id="gateMsg"></div>
+    <button class="gout" id="gOut">Sign out</button>
+    <a class="gback" href="index.html">← Studio Hub</a>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <div class="topbar">
+    <div class="brand">
+      <span class="bdg"><img id="brandLogo" src="logomark-white.png" alt="Anomaly"></span>
+      <div class="brand-name"><b>Anomaly</b><span>Josh Holyfield · RAW Tracker</span></div>
+    </div>
+    <div class="tb-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+      <a class="backbtn" href="index.html">← Studio Hub</a>
+    </div>
+  </div>
+
+  <div class="headrow">
+    <div>
+      <div class="kicker">Post-Production · Frame.io</div>
+      <h1>Josh Holyfield — RAW Tracker</h1>
+      <div class="hsub">Every RAW clip the shooter delivers, against its Frame.io status.
+        A clip with <b>no status</b> is untouched — that's the backlog. Once an editor marks it
+        <b>In Progress</b> on Frame.io it's considered handled and needs no further action here.</div>
+    </div>
+    <div class="syncmeta" id="syncMeta"></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="filterbar">
+    <span class="lbl">Show</span>
+    <span class="seg" id="segFilter">
+      <button data-fil="all" class="on">Everything</button>
+      <button data-fil="untouched">Untouched only</button>
+    </span>
+    <span class="seg" id="segType">
+      <button data-typ="all" class="on">All footage</button>
+      <button data-typ="shortform">Short form</button>
+      <button data-typ="longform">Long form</button>
+    </span>
+  </div>
+
+  <div id="list"><div class="empty">Loading…</div></div>
+
+  <div class="howto">
+    <b>How this stays current:</b> a Claude sync reads the RAW Video folder on Frame.io (July 2026 onward)
+    once a day and mirrors every clip's status into the hub. Nothing is edited here — statuses are set on
+    Frame.io itself. Mark a clip <b>In Progress</b> there and it leaves the untouched list on the next sync.
+    Untouched ages count from the day the footage was uploaded.
+  </div>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const root=document.documentElement;
+function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");localStorage.setItem("hub-theme",t);
+  document.getElementById("gateLogo").src=t==="dark"?"logomark-fuzzy.png?v=2":"logomark.png";}
+setTheme(localStorage.getItem("hub-theme")||"light");
+document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+
+const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
+const auth=getAuth(app), db=getFirestore(app);
+const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
+/* default audience until hub/access overrides it: owners, admins, and Tyler */
+const DEFAULT_EMAILS=["tyler@anomalycreativestudio.com"];
+
+let MYEMAIL="";
+const gMsg=document.getElementById("gateMsg"), gOut=document.getElementById("gOut");
+document.getElementById("gGoogle").onclick=async()=>{
+  gMsg.textContent="";
+  try{ await signInWithPopup(auth,new GoogleAuthProvider()); }
+  catch(e){ gMsg.textContent="Sign-in failed: "+(e.code||e.message); }
+};
+gOut.onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,async u=>{
+  if(!u){ document.getElementById("gate").classList.remove("off"); gOut.classList.remove("show"); return; }
+  MYEMAIL=(u.email||"").toLowerCase();
+  let ok=OWNERS.includes(MYEMAIL), role="";
+  if(!ok){
+    try{ const r=await getDoc(doc(db,"roles",MYEMAIL)); role=r.exists()?(r.data()||{}).role||"":""; }catch(e){}
+    if(role==="admin") ok=true;
+  }
+  if(!ok){
+    try{
+      const d=await getDoc(doc(db,"hub","access"));
+      const a=d.exists()?((d.data()||{}).platforms||{}):{};
+      const cfg=a.josh||{mode:"custom",emails:DEFAULT_EMAILS};
+      if(cfg.mode==="everyone") ok=true;
+      else if(cfg.mode==="managers") ok=role==="manager"||role==="admin";
+      else if(cfg.mode==="custom") ok=(cfg.emails&&cfg.emails.length?cfg.emails:DEFAULT_EMAILS).map(e=>e.toLowerCase()).includes(MYEMAIL);
+    }catch(e){}
+  }
+  if(!ok){
+    document.getElementById("gateTitle").textContent="Restricted";
+    document.getElementById("stepAuth").style.display="none";
+    gMsg.textContent="Signed in as "+MYEMAIL+" — this account can't view this tracker.";
+    gOut.classList.add("show");
+    return;
+  }
+  document.getElementById("gate").classList.add("off");
+  document.getElementById("app").style.visibility="visible";
+  await load();
+});
+
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+const STATUS_LABEL={none:"Untouched",in_progress:"In Progress",needs_review:"Needs Review",approved:"Approved"};
+let DATA=null, SYNCED=0, FIL="untouched-first-load", TYP="all";
+FIL="all";
+
+const dayMs=864e5;
+const ageDays=c=>{
+  const ref=c.uploadedAt||c.date; if(!ref) return null;
+  const t=typeof ref==="number"?ref:Date.parse(ref+(String(ref).length===10?"T12:00":""));
+  if(isNaN(t)) return null;
+  return Math.max(0,Math.floor((Date.now()-t)/dayMs));
+};
+const allClips=()=>DATA?DATA.months.flatMap(m=>[...(m.longform||[]),...(m.shortform||[])]):[];
+
+async function load(){
+  try{
+    const d=await getDoc(doc(db,"hub","joshTracker"));
+    if(d.exists()){
+      const raw=(d.data()||{});
+      SYNCED=raw.at||0;
+      let data=raw.data;
+      if(typeof data==="string"){try{data=JSON.parse(data);}catch(e){data=null;}}
+      DATA=data;
+    }
+  }catch(e){}
+  render();
+}
+
+function kpis(){
+  const clips=allClips();
+  const n=s=>clips.filter(c=>(c.status||"none")===s).length;
+  const untouched=clips.filter(c=>(c.status||"none")==="none");
+  const oldest=untouched.map(ageDays).filter(v=>v!=null).sort((a,b)=>b-a)[0];
+  document.getElementById("kpis").innerHTML=`
+    <div class="kcard ${untouched.length?"warn":"ok"}"><span>Untouched</span><b>${untouched.length}</b><small>${untouched.length?"waiting on an editor":"backlog clear"}</small></div>
+    <div class="kcard"><span>In Progress</span><b>${n("in_progress")}</b><small>assumed handled</small></div>
+    <div class="kcard"><span>Needs Review</span><b>${n("needs_review")}</b><small>cut, awaiting QA</small></div>
+    <div class="kcard ok"><span>Approved</span><b>${n("approved")}</b><small>through the pipeline</small></div>
+    <div class="kcard ${oldest>=14?"warn":""}"><span>Oldest untouched</span><b>${oldest!=null?oldest+"d":"—"}</b><small>${oldest!=null?"since footage arrived":"nothing waiting"}</small></div>`;
+}
+
+function clipRow(c){
+  const st=c.status||"none";
+  const a=ageDays(c);
+  const name=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a>`:esc(c.name);
+  return `<div class="clip">
+    <span class="dot s-${st}"></span>
+    <span class="cname">${name}</span>
+    ${c.date?`<span class="cdate">shot ${esc(c.date)}</span>`:""}
+    ${st==="none"&&a!=null?`<span class="age">${a}d waiting</span>`:""}
+    <span class="chip s-${st}" ${c.src==="folder"?'title="inferred from the folder it sits in — no status set on Frame.io"':""}>${STATUS_LABEL[st]||esc(st)}${c.src==="folder"?" ·":""}</span>
+  </div>`;
+}
+function group(label,clips){
+  const shown=clips
+    .filter(c=>FIL!=="untouched"||(c.status||"none")==="none")
+    .sort((x,y)=>String(x.date||x.name).localeCompare(String(y.date||y.name)));
+  const body=shown.length?shown.map(clipRow).join("")
+    :`<div class="gempty">${FIL==="untouched"?"Nothing untouched here.":"No clips."}</div>`;
+  return `<div class="grp"><div class="g-lab"><i></i>${label} · ${shown.length}</div>
+    <div class="clips">${body}</div></div>`;
+}
+function render(){
+  kpis();
+  const meta=document.getElementById("syncMeta");
+  meta.innerHTML=SYNCED?`<b>Synced</b> ${new Date(SYNCED).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}<br>from Frame.io · RAW Video`:"";
+  const box=document.getElementById("list");
+  if(!DATA||!(DATA.months||[]).length){
+    box.innerHTML=`<div class="empty">No sync data yet — the first Frame.io sync hasn't landed.</div>`;
+    return;
+  }
+  const months=[...DATA.months].sort((a,b)=>String(b.key).localeCompare(String(a.key)));
+  box.innerHTML=months.map(m=>{
+    const lf=m.longform||[], sf=m.shortform||[];
+    const un=[...lf,...sf].filter(c=>(c.status||"none")==="none").length;
+    const grps=[
+      (TYP==="all"||TYP==="shortform")?group("Short Form",sf):"",
+      (TYP==="all"||TYP==="longform")?group("Long Form · YouTube, Podcasts, Q&amp;A",lf):""
+    ].join("");
+    return `<div class="month">
+      <div class="m-title"><h2>${esc(m.label||m.key)}</h2>
+        <span class="mstat">${lf.length+sf.length} clips${un?` · <i>${un} untouched</i>`:" · clear"}</span></div>
+      ${grps}
+    </div>`;
+  }).join("");
+}
+document.getElementById("segFilter").onclick=e=>{
+  const b=e.target.closest("button[data-fil]"); if(!b) return;
+  FIL=b.dataset.fil;
+  document.querySelectorAll("#segFilter button").forEach(x=>x.classList.toggle("on",x===b));
+  render();
+};
+document.getElementById("segType").onclick=e=>{
+  const b=e.target.closest("button[data-typ]"); if(!b) return;
+  TYP=b.dataset.typ;
+  document.querySelectorAll("#segType button").forEach(x=>x.classList.toggle("on",x===b));
+  render();
+};
+</script>
+
+</body>
+</html>
