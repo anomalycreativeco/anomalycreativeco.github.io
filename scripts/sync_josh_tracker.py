@@ -148,7 +148,13 @@ def walk(folder_id, token, path_names, sink):
             walk(child["id"], token, path_names + [child.get("name", "")], sink)
         elif str(child.get("media_type", "")).startswith("video/"):
             top = path_names[0] if path_names else ""
-            bucket = "shortform" if "short" in top.lower() else "longform"
+            # Short form appears in two layouts: under an explicit "Short Form"
+            # folder (July), or — when the shooter skips that wrapper — directly
+            # under a dated shoot folder like "8.2.26" (August). A dated folder
+            # at the top of the month IS a shoot day, so it's social clips.
+            is_short = (any("short" in p.lower() for p in path_names)
+                        or bool(DATE_IN_FOLDER.match(top.strip())))
+            bucket = "shortform" if is_short else "longform"
             name = child.get("name", "")
             if bucket == "longform" and top and top.lower() != "youtube":
                 name = f"{top} · {name}"

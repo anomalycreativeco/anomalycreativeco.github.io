@@ -80,6 +80,14 @@
     padding:6px 14px;border-radius:999px;cursor:pointer;transition:color .15s,background .15s}
   .seg button.on{background:var(--card-solid);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
   .seg button:hover:not(.on){color:var(--ink)}
+  /* a month with untouched footage carries a dot, so the backlog is visible
+     from the selector itself rather than only after you switch to it */
+  .seg button .wdot{display:inline-block;width:5px;height:5px;border-radius:50%;
+    background:var(--red);margin-left:6px;vertical-align:middle}
+  .mnote{font-size:11.5px;color:var(--muted);margin:10px 0 0;line-height:1.6}
+  .mnote .lnk{background:none;border:0;padding:0;font:inherit;color:var(--green-2);
+    font-weight:600;cursor:pointer;text-decoration:underline}
+  .mnote .lnk:hover{color:var(--ink)}
 
   /* month sections */
   .month{margin-top:28px}
@@ -197,6 +205,10 @@
   <div class="kpis" id="kpis"></div>
 
   <div class="filterbar">
+    <span class="lbl">Month</span>
+    <span class="seg" id="segMonth"></span>
+  </div>
+  <div class="filterbar">
     <span class="lbl">Show</span>
     <span class="seg" id="segFilter">
       <button data-fil="all" class="on">Everything</button>
@@ -208,6 +220,7 @@
       <button data-typ="longform">Long form</button>
     </span>
   </div>
+  <div class="mnote" id="mNote"></div>
 
   <div id="list"><div class="empty">Loading…</div></div>
 
@@ -277,8 +290,8 @@ onAuthStateChanged(auth,async u=>{
 
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
 const STATUS_LABEL={none:"Untouched",in_progress:"In Progress",needs_review:"Needs Review",approved:"Approved"};
-let DATA=null, SYNCED=0, FIL="untouched-first-load", TYP="all";
-FIL="all";
+let DATA=null, SYNCED=0, FIL="all", TYP="all", MON=null;
+const MON_KEY="josh.month";
 
 const dayMs=864e5;
 const ageDays=c=>{
@@ -287,7 +300,50 @@ const ageDays=c=>{
   if(isNaN(t)) return null;
   return Math.max(0,Math.floor((Date.now()-t)/dayMs));
 };
-const allClips=()=>DATA?DATA.months.flatMap(m=>[...(m.longform||[]),...(m.shortform||[])]):[];
+const clipsOf=m=>[...(m.longform||[]),...(m.shortform||[])];
+const untouchedIn=m=>clipsOf(m).filter(c=>(c.status||"none")==="none").length;
+/* newest month first — the month you're most likely to be working */
+const monthList=()=>DATA?[...(DATA.months||[])].sort((a,b)=>String(b.key).localeCompare(String(a.key))):[];
+const shownMonths=()=>MON==="all"?monthList():monthList().filter(m=>m.key===MON);
+/* KPIs and the clip list both read this, so they always agree with the
+   month selector rather than one showing site-wide totals */
+const allClips=()=>shownMonths().flatMap(clipsOf);
+
+/* Default to the newest month that has footage, but honour a stored choice —
+   and fall back gracefully if that month is gone from the data. */
+function resolveMonth(){
+  const ms=monthList(); if(!ms.length) return;
+  if(MON==="all"||(MON&&ms.some(m=>m.key===MON))) return;
+  let stored=null; try{ stored=localStorage.getItem(MON_KEY); }catch(e){}
+  MON=(stored==="all"||(stored&&ms.some(m=>m.key===stored)))?stored:ms[0].key;
+}
+function setMonth(k){
+  MON=k; try{ localStorage.setItem(MON_KEY,k); }catch(e){}
+  render();
+}
+function monthShort(key,label){
+  const m=/^(\d{4})-(\d{2})$/.exec(key||"");
+  if(!m) return label||key||"—";
+  return new Date(+m[1],+m[2]-1,1).toLocaleDateString("en-US",{month:"short"})+" "+m[1];
+}
+function buildMonthSeg(){
+  const ms=monthList();
+  document.getElementById("segMonth").innerHTML=
+    ms.map(m=>`<button data-mon="${esc(m.key)}" class="${MON===m.key?"on":""}">${esc(monthShort(m.key,m.label))}${untouchedIn(m)?'<span class="wdot"></span>':""}</button>`).join("")
+    +`<button data-mon="all" class="${MON==="all"?"on":""}">All months</button>`;
+}
+/* A month view hides the rest of the backlog — say so out loud, with a way back. */
+function renderNote(){
+  const el=document.getElementById("mNote");
+  if(!DATA||MON==="all"){ el.innerHTML=""; return; }
+  const others=monthList().filter(m=>m.key!==MON);
+  const un=others.reduce((n,m)=>n+untouchedIn(m),0);
+  if(!un){ el.innerHTML=""; return; }
+  const worst=others.filter(m=>untouchedIn(m)).map(m=>`${untouchedIn(m)} in ${monthShort(m.key,m.label)}`).join(", ");
+  el.innerHTML=`Hidden by this month filter: <b>${un} untouched clip${un===1?"":"s"}</b> (${esc(worst)}). `
+    +`<button class="lnk" id="mAll">Show all months</button>`;
+  const b=document.getElementById("mAll"); if(b) b.onclick=()=>setMonth("all");
+}
 
 async function load(){
   try{
@@ -338,15 +394,18 @@ function group(label,clips){
     <div class="clips">${body}</div></div>`;
 }
 function render(){
+  resolveMonth();
+  buildMonthSeg();
   kpis();
   const meta=document.getElementById("syncMeta");
   meta.innerHTML=SYNCED?`<b>Synced</b> ${new Date(SYNCED).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}<br>from Frame.io · RAW Video`:"";
   const box=document.getElementById("list");
   if(!DATA||!(DATA.months||[]).length){
     box.innerHTML=`<div class="empty">No sync data yet — the first Frame.io sync hasn't landed.</div>`;
+    renderNote();
     return;
   }
-  const months=[...DATA.months].sort((a,b)=>String(b.key).localeCompare(String(a.key)));
+  const months=shownMonths();
   box.innerHTML=months.map(m=>{
     const lf=m.longform||[], sf=m.shortform||[];
     const un=[...lf,...sf].filter(c=>(c.status||"none")==="none").length;
@@ -360,7 +419,12 @@ function render(){
       ${grps}
     </div>`;
   }).join("");
+  renderNote();
 }
+document.getElementById("segMonth").onclick=e=>{
+  const b=e.target.closest("button[data-mon]"); if(!b) return;
+  setMonth(b.dataset.mon);
+};
 document.getElementById("segFilter").onclick=e=>{
   const b=e.target.closest("button[data-fil]"); if(!b) return;
   FIL=b.dataset.fil;
