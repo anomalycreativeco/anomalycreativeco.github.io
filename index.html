@@ -122,7 +122,33 @@
     background:radial-gradient(closest-side, rgba(0,0,0,.3), transparent 70%);filter:blur(6px)}
 
   /* ── Analytics strip (left) ──────── */
-  .astrip{position:absolute;left:2%;top:34%;width:250px;z-index:4;display:flex;flex-direction:column;gap:12px}
+  /* .appver, not .vbadge — .vbadge is already the round logo in the embedded-app bar */
+  .appver{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted);
+    background:var(--card-solid);border:1px solid var(--line);border-radius:999px;padding:2px 7px;
+    align-self:center;white-space:nowrap;line-height:1.5}
+
+  /* ---- widget deck ----
+     Widgets used to live in a 250px absolutely-positioned rail pinned at 34%
+     from the top. Five cards already ran past the fold on a 720px viewport and
+     every new one made it worse, so they now sit in a scrolling section below
+     the hero where they can keep growing. */
+  .deck{position:relative;z-index:4;max-width:1440px;margin:0 auto;padding:0 40px 64px}
+  .deck[hidden]{display:none}
+  .deckhead{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
+  .deckhead h2{margin:0;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);font-weight:400}
+  .deckhead .line{flex:1;height:1px;background:var(--line)}
+  .astrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px;align-items:start}
+  .astrip[hidden]{display:none}
+  /* nudge the eye past the hero once there's something below it */
+  .scrollcue{position:absolute;left:50%;bottom:calc(3% + 46px);transform:translateX(-50%);z-index:3;
+    display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:none;cursor:pointer;
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .scrollcue:hover{color:var(--muted)}
+  .scrollcue svg{width:13px;height:13px;animation:cuebob 1.9s var(--ease) infinite}
+  .scrollcue[hidden]{display:none}
+  @keyframes cuebob{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(3px);opacity:1}}
+  @media(prefers-reduced-motion:reduce){ .scrollcue svg{animation:none} }
   .acard{
     background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
     border-radius:var(--r);box-shadow:var(--shadow);padding:16px 17px;
@@ -376,9 +402,10 @@
     .titleblock{position:static;max-width:none;text-align:center;margin:0 auto}
     .scene{position:relative;left:auto;top:auto;transform:none;margin:26px auto 4px;width:min(280px,70vw)}
     .podium{position:relative;left:auto;top:auto;transform:none;margin:-44% auto 0;width:min(400px,88vw)}
-    .astrip{position:static;width:auto;margin-top:26px}
     .catcol{position:static;width:auto;margin-top:14px}
     .pillrow{position:static;transform:none;margin-top:16px}
+    .deck{padding:0 18px 44px}
+    .scrollcue{display:none}   /* the hero already collapses to a scroll on mobile */
   }
 </style>
 </head>
@@ -412,6 +439,7 @@
     <div class="brand">
       <span class="badge"><img id="brandLogo" src="logomark-white.png" alt="Anomaly logomark"></span>
       <div class="brand-name"><b>Anomaly</b><span>Studio Hub</span></div>
+      <span class="appver" id="vBadge" title="Studio Hub version"></span>
     </div>
     <nav class="navpills">
       <button class="active" id="navHome">Home</button>
@@ -446,33 +474,6 @@
     <div class="podium"><div class="ring"></div><div class="shade"></div></div>
     <div class="scene"><div class="spinner" id="spinner"></div></div>
 
-    <!-- today + live analytics from the Editing Pipeline -->
-    <div class="astrip" id="astrip" style="display:none">
-      <div class="acard" id="todayCard">
-        <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
-        <div class="seg" id="todayScope" hidden>
-          <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
-        </div>
-        <div id="todayCal"></div>
-        <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
-      </div>
-      <div class="acard" id="aKpis">
-        <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
-        <div id="aBody"><div class="amsg">Loading production stats…</div></div>
-      </div>
-      <div class="acard" id="aChartCard" style="display:none">
-        <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
-        <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
-      </div>
-      <div class="acard" id="aClientCard" style="display:none">
-        <div class="ahead"><span>Open tasks · by client</span></div>
-        <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
-      </div>
-      <div class="acard" id="joshCard" style="display:none" title="Open the RAW tracker">
-        <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
-        <div id="jBody"><div class="amsg">Loading tracker…</div></div>
-      </div>
-    </div>
 
     <!-- category cards -->
     <div class="catcol">
@@ -496,7 +497,12 @@
       </button>
     </div>
 
-    <div class="pillrow">
+    <button class="scrollcue" id="scrollCue" hidden aria-label="Scroll to your widgets">
+    <span>Your day</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+
+  <div class="pillrow">
       <a class="pill" id="pillAutomations" href="automations.html" target="_blank" rel="noopener" style="display:none">
         <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></span>
         <span class="t"><small>Claude Code</small><b>Client Automations</b></span>
@@ -508,7 +514,39 @@
     </div>
 
   </div>
+
 </div>
+<!-- widget deck — today, live pipeline stats, client trackers.
+     Lives below the hero so it can scroll and keep growing. -->
+<section class="deck" id="deck" hidden>
+  <div class="deckhead"><h2>Your day &middot; live</h2><span class="line"></span></div>
+  <div class="astrip" id="astrip">
+    <div class="acard" id="todayCard">
+      <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
+      <div class="seg" id="todayScope" hidden>
+        <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
+      </div>
+      <div id="todayCal"></div>
+      <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
+    </div>
+    <div class="acard" id="aKpis">
+      <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
+      <div id="aBody"><div class="amsg">Loading production stats…</div></div>
+    </div>
+    <div class="acard" id="aChartCard" style="display:none">
+      <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
+      <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
+    </div>
+    <div class="acard" id="aClientCard" style="display:none">
+      <div class="ahead"><span>Open tasks · by client</span></div>
+      <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
+    </div>
+    <div class="acard" id="joshCard" style="display:none" title="Open the RAW tracker">
+      <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
+      <div id="jBody"><div class="amsg">Loading tracker…</div></div>
+    </div>
+  </div>
+</section>
 
 <a class="ares-switch" id="aresSwitch" href="ares.html" title="Switch to Ares Digital">
   <img src="ares-head.png?v=3" alt="Ares Digital">
@@ -567,6 +605,11 @@ import {getFirestore,doc,getDoc,setDoc,getDocs,collection} from "https://www.gst
 
 const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
 const auth=getAuth(app), db=getFirestore(app);
+
+/* Bump on every deploy. Shown next to the wordmark so anyone reporting a
+   problem can say which build they're on — GitHub Pages caches at the edge for
+   ~10 minutes, which makes "have you got the fix yet?" a real question. */
+const APP_VERSION="1.0.0", APP_BUILD="2026-08-01";
 
 const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
 const PLATFORMS={
@@ -770,7 +813,8 @@ function applyAccess(){
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
-  document.getElementById("astrip").style.display="flex";
+  document.getElementById("deck").hidden=false;
+  document.getElementById("scrollCue").hidden=false;
   document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
   loadToday(); loadJosh();
@@ -859,6 +903,32 @@ async function loadToday(){
   renderTodayCal();
   renderTodayTasks(null);
 }
+/* version badge + scroll cue */
+(()=>{
+  const b=document.getElementById("vBadge");
+  if(b){ b.textContent="v"+APP_VERSION; b.title="Studio Hub v"+APP_VERSION+" — built "+APP_BUILD; }
+  const cue=document.getElementById("scrollCue"), deck=document.getElementById("deck");
+  if(cue&&deck){
+    cue.addEventListener("click",()=>{
+      const y=deck.offsetTop, before=window.scrollY;
+      const smooth=!matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo(smooth?{top:y,behavior:"smooth"}:{top:y});
+      // some engines quietly no-op on smooth scrolling — make sure the click still lands
+      if(smooth) setTimeout(()=>{ if(Math.abs(window.scrollY-before)<2) window.scrollTo(0,y); },350);
+    });
+    /* Once the deck is in view the cue is just clutter. Watched with an
+       observer rather than a scroll listener: body carries its own
+       overflow-y, so window never sees scroll events on this page. */
+    if("IntersectionObserver" in window){
+      new IntersectionObserver(([e])=>{
+        const seen=e.isIntersecting;
+        cue.style.opacity=seen?"0":"";
+        cue.style.pointerEvents=seen?"none":"";
+      },{rootMargin:"-30% 0px 0px 0px"}).observe(deck);
+    }
+  }
+})();
+
 document.getElementById("todayScope").addEventListener("click",e=>{
   const b=e.target.closest("button[data-scope]"); if(!b) return;
   try{ localStorage.setItem(SCOPE_KEY,b.dataset.scope); }catch(err){}
