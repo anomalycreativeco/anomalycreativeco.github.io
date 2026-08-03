@@ -161,6 +161,24 @@
   .gout.show{display:inline-block}
   .gback{display:block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .gback:hover{color:var(--ink)}
+
+  /* ---- phones: thumbs, and nothing may push the page sideways ---- */
+  @media(max-width:560px){
+    .theme-btn{min-width:44px;min-height:44px;padding:0 14px}
+    .backbtn{min-height:44px;display:inline-flex;align-items:center}
+    .seg{flex-wrap:wrap}
+    .seg button{min-height:40px;padding:0 14px}
+    .lnk{min-height:40px;display:inline-flex;align-items:center}
+    input,select,textarea{font-size:16px;min-height:44px}
+    /* the clip table scrolls inside itself rather than widening the page */
+    table{font-size:12px}
+    .tablewrap,.tbl,.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  }
+
+  /* touch targets keyed to the device, not the width — iPads count too */
+  @media(hover:none){ .theme-btn{min-width:44px;min-height:44px}
+    .backbtn{min-height:44px;display:inline-flex;align-items:center}
+    .seg button,.lnk{min-height:40px} }
 </style>
 </head>
 <body>

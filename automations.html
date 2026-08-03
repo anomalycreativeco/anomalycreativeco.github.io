@@ -168,6 +168,23 @@
   .gout.show{display:inline-block}
   .gback{display:block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .gback:hover{color:var(--ink)}
+
+  /* ---- phones: thumbs, and nothing may push the page sideways ---- */
+  @media(max-width:560px){
+    .theme-btn{min-width:44px;min-height:44px}
+    .backbtn{min-height:44px;padding:0 16px;display:inline-flex;align-items:center}
+    .statusbtn{min-height:40px;padding:0 14px}
+    .savebtn,.gbtn,.gout{min-height:44px}
+    .clr{min-width:40px;min-height:40px}
+    input,textarea,select,#q{font-size:16px;min-height:44px}   /* 16px stops iOS zooming on focus */
+    .seg button,[data-mode]{min-height:40px;padding:0 14px}
+  }
+
+  /* touch targets keyed to the device, not the width — iPads count too */
+  @media(hover:none){ .theme-btn{min-width:44px;min-height:44px}
+    .backbtn,.savebtn,.gbtn,.gout{min-height:44px}
+    .statusbtn,.seg button,[data-mode]{min-height:40px}
+    .clr{min-width:40px;min-height:40px} }
 </style>
 </head>
 <body>

@@ -258,6 +258,22 @@
   .gout.show{display:inline-block}
   .gback{display:block;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
   .gback:hover{color:#fff}
+
+  /* ---- phones: thumbs, and nothing may push the page sideways ---- */
+  /* body had overflow-x:hidden but html did not, so the decorative blobs
+     still dragged the page ~12px sideways on a phone */
+  html{overflow-x:hidden}
+  @media(max-width:560px){
+    .wrap{padding:18px 14px 80px}
+    .theme-btn,.outbtn,#themeBtn,#topOut,#backBtn{min-width:44px;min-height:44px}
+    input,textarea,select,#gateIn{font-size:16px;min-height:44px}
+    .topbar,.tbar{flex-wrap:wrap;row-gap:10px}
+    table{font-size:12px}
+    .tablewrap,.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  }
+
+  /* touch targets keyed to the device, not the width — iPads count too */
+  @media(hover:none){ .theme-btn,.outbtn,#themeBtn,#topOut,#backBtn{min-width:44px;min-height:44px} }
 </style>
 </head>
 <body>

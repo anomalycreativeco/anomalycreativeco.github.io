@@ -171,7 +171,18 @@
   .wtools .wdrag{cursor:grab;touch-action:none;padding:2px 5px}
   .wtools .wdrag:active{cursor:grabbing}
   /* no hover to reveal them on a touch screen — width is the wrong signal */
-  @media(hover:none){ .wtools{opacity:1} }
+  /* Touch targets keyed to the input device, not the screen width — an iPad at
+     768px is every bit as much a thumb as a phone is. */
+  @media(hover:none){
+    .wtools{opacity:1}
+    .wtools button{min-width:42px;min-height:42px;display:grid;place-items:center;font-size:11px}
+    .deckreset{min-height:44px;padding:0 16px}
+    .gear-btn,.theme-btn,.logout-btn{width:44px;height:44px}
+    .seg button{padding:11px 0}
+    .cat,.pill{min-height:44px}
+    .vbar button,.vbar a{min-width:42px;min-height:42px;display:inline-flex;
+      align-items:center;justify-content:center}
+  }
   @media(max-width:1100px){ .wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .wgrid .acard[data-size="l"],.wgrid .acard[data-size="xl"]{grid-column:span 2} }
   @media(max-width:700px){ .wgrid{grid-template-columns:1fr}
@@ -440,10 +451,62 @@
     .titleblock{position:static;max-width:none;text-align:center;margin:0 auto}
     .scene{position:relative;left:auto;top:auto;transform:none;margin:26px auto 4px;width:min(280px,70vw)}
     .podium{position:relative;left:auto;top:auto;transform:none;margin:-44% auto 0;width:min(400px,88vw)}
+    /* On a phone "what am I doing today?" beats the brand moment, so the
+       calendar comes right after the title and the logomark drops below it.
+       Ordered on .canvas — .stage only holds the topbar and .canvas itself,
+       so ordering there just pushed the topbar to the bottom. Podium keeps its
+       negative margin against .scene, so the two must stay adjacent. */
+    .canvas{display:flex;flex-direction:column}
+    .titleblock{order:1} .astrip{order:2}
+    .podium{order:3} .scene{order:4} .catcol{order:5} .pillrow{order:6}
+    .astrip{position:static;width:auto;margin-top:18px}   /* flows instead of overlapping */
     .catcol{position:static;width:auto;margin-top:14px}
     .pillrow{position:static;transform:none;margin-top:16px}
     .deck{padding:0 18px 44px}
     .scrollcue{display:none}   /* the hero already collapses to a scroll on mobile */
+  }
+
+  /* ---- phones ----------------------------------------------------------
+     Everything below is about thumbs and 390px of width: nothing may push
+     the page sideways, and anything tappable gets a real target. */
+  @media(max-width:560px){
+    .stage{padding:14px 14px 70px}
+    .topbar{flex-wrap:wrap;row-gap:10px}
+    .brand{flex:1 1 auto;min-width:0}
+    .brand-name{min-width:0}
+    .brand-name b,.brand-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+    .tb-right{flex:0 0 auto;margin-left:auto}
+    .titleblock h1{font-size:clamp(34px,11vw,52px)}
+    .deck{padding:0 14px 40px}
+    .deckhead{flex-wrap:wrap;row-gap:6px}
+    .deckhint{flex:1 1 100%;order:3}
+    /* thumbs, not cursors */
+    .gear-btn,.theme-btn,.logout-btn{width:44px;height:44px;font-size:16px}
+    /* the name and role are already in the account menu — the avatar is enough here */
+    .userchip{padding:5px;gap:0}
+    .userchip .who{display:none}
+    .avatar{width:34px;height:34px}
+    .deckreset{padding:0 16px;min-height:44px;font-size:10.5px}
+    .wtools{top:10px;right:10px;gap:8px}
+    .wtools button{min-width:42px;min-height:42px;display:grid;place-items:center;font-size:11px}
+    .seg button{padding:11px 0;font-size:10px}
+    .cat{padding:16px 18px}
+    .pill{padding:12px 16px}
+    /* the 3D logomark is expensive and mostly decorative on a phone */
+    .scene{width:min(210px,56vw);margin:18px auto 2px}
+    .podium{width:min(300px,76vw);margin:-40% auto 0}
+  }
+    /* embedded apps: give the bar real buttons and stop the host line
+       stealing a third of the screen */
+    .vbar{padding:7px 12px;gap:9px}
+    .vtitle b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:46vw}
+    .vtitle span{display:none}
+    .vbar button,.vbar a{min-width:42px;min-height:42px;display:inline-flex;
+      align-items:center;justify-content:center}
+  }
+  @media(max-width:390px){
+    .titleblock h1{font-size:clamp(30px,10vw,40px)}
+    .brand-name span{display:none}
   }
 </style>
 </head>
@@ -654,7 +717,7 @@ const auth=getAuth(app), db=getFirestore(app);
 /* Bump on every deploy. Shown next to the wordmark so anyone reporting a
    problem can say which build they're on — GitHub Pages caches at the edge for
    ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.1.0", APP_BUILD="2026-08-01";
+const APP_VERSION="1.2.0", APP_BUILD="2026-08-01";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
