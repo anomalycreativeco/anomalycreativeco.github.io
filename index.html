@@ -138,8 +138,46 @@
   .deckhead h2{margin:0;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
     text-transform:uppercase;color:var(--muted);font-weight:400}
   .deckhead .line{flex:1;height:1px;background:var(--line)}
-  .astrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px;align-items:start}
+  .deckhint{font-size:10.5px;color:var(--faint)}
+  .deckreset{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;
+    padding:3px 9px;cursor:pointer}
+  .deckreset:hover{color:var(--ink);border-color:var(--muted)}
+
+  /* the calendar keeps its original spot on the hero */
+  .astrip{position:absolute;left:2%;top:34%;width:250px;z-index:4;display:flex;flex-direction:column;gap:12px}
   .astrip[hidden]{display:none}
+
+  /* ---- re-orderable, resizable widget grid ----
+     Four fixed columns, so a widget's size means the same thing wherever it
+     sits. Layout is per person AND per device on purpose: what fits depends on
+     the screen you're actually looking at. */
+  .wgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}
+  .wgrid .acard{position:relative;grid-column:span 1;min-width:0}
+  .wgrid .acard[data-size="m"]{grid-column:span 2}
+  .wgrid .acard[data-size="l"]{grid-column:span 3}
+  .wgrid .acard[data-size="xl"]{grid-column:span 4}
+  .wgrid .acard.dragging{opacity:.4}
+  .wgrid .acard.dropzone{outline:2px dashed var(--green-soft);outline-offset:3px}
+  /* keep the card's own header badge clear of the hover tools */
+  .wgrid .acard .ahead{padding-right:56px}
+  .wtools{position:absolute;top:8px;right:9px;display:flex;gap:5px;align-items:center;
+    opacity:0;transition:opacity .16s ease;z-index:2}
+  .wgrid .acard:hover .wtools,.wgrid .acard .wtools:focus-within{opacity:1}
+  .wtools button{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);background:var(--card-solid);border:1px solid var(--line);
+    border-radius:6px;padding:2px 6px;cursor:pointer;line-height:1.5}
+  .wtools button:hover{color:var(--ink);border-color:var(--muted)}
+  .wtools .wdrag{cursor:grab;touch-action:none;padding:2px 5px}
+  .wtools .wdrag:active{cursor:grabbing}
+  /* no hover to reveal them on a touch screen — width is the wrong signal */
+  @media(hover:none){ .wtools{opacity:1} }
+  @media(max-width:1100px){ .wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .wgrid .acard[data-size="l"],.wgrid .acard[data-size="xl"]{grid-column:span 2} }
+  @media(max-width:700px){ .wgrid{grid-template-columns:1fr}
+    .wgrid .acard,.wgrid .acard[data-size="m"],.wgrid .acard[data-size="l"],
+    .wgrid .acard[data-size="xl"]{grid-column:span 1}
+    .wtools{opacity:1} }
   /* nudge the eye past the hero once there's something below it */
   .scrollcue{position:absolute;left:50%;bottom:calc(3% + 46px);transform:translateX(-50%);z-index:3;
     display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:none;cursor:pointer;
@@ -497,7 +535,19 @@
       </button>
     </div>
 
-    <button class="scrollcue" id="scrollCue" hidden aria-label="Scroll to your widgets">
+      <!-- the calendar sits back on the hero — it's the thing you look at first -->
+    <div class="astrip" id="astrip" hidden>
+      <div class="acard" id="todayCard">
+        <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
+        <div class="seg" id="todayScope" hidden>
+          <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
+        </div>
+        <div id="todayCal"></div>
+        <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
+      </div>
+    </div>
+
+  <button class="scrollcue" id="scrollCue" hidden aria-label="Scroll to your widgets">
     <span>Your day</span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
   </button>
@@ -519,29 +569,24 @@
 <!-- widget deck — today, live pipeline stats, client trackers.
      Lives below the hero so it can scroll and keep growing. -->
 <section class="deck" id="deck" hidden>
-  <div class="deckhead"><h2>Your day &middot; live</h2><span class="line"></span></div>
-  <div class="astrip" id="astrip">
-    <div class="acard" id="todayCard">
-      <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
-      <div class="seg" id="todayScope" hidden>
-        <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
-      </div>
-      <div id="todayCal"></div>
-      <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
-    </div>
-    <div class="acard" id="aKpis">
+  <div class="deckhead"><h2>Widgets</h2><span class="line"></span>
+    <span class="deckhint">drag to reorder &middot; click the size chip to resize</span>
+    <button class="deckreset" id="wReset" title="Restore the default layout">Reset</button>
+  </div>
+  <div class="wgrid" id="wgrid">
+    <div class="acard" id="aKpis" data-w="kpis">
       <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
       <div id="aBody"><div class="amsg">Loading production stats…</div></div>
     </div>
-    <div class="acard" id="aChartCard" style="display:none">
+    <div class="acard" id="aChartCard" data-w="chart" style="display:none">
       <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
       <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
     </div>
-    <div class="acard" id="aClientCard" style="display:none">
+    <div class="acard" id="aClientCard" data-w="clients" style="display:none">
       <div class="ahead"><span>Open tasks · by client</span></div>
       <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
     </div>
-    <div class="acard" id="joshCard" style="display:none" title="Open the RAW tracker">
+    <div class="acard" id="joshCard" data-w="josh" style="display:none">
       <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
       <div id="jBody"><div class="amsg">Loading tracker…</div></div>
     </div>
@@ -609,7 +654,9 @@ const auth=getAuth(app), db=getFirestore(app);
 /* Bump on every deploy. Shown next to the wordmark so anyone reporting a
    problem can say which build they're on — GitHub Pages caches at the edge for
    ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.0.0", APP_BUILD="2026-08-01";
+const APP_VERSION="1.1.0", APP_BUILD="2026-08-01";
+
+const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
 const PLATFORMS={
@@ -813,8 +860,10 @@ function applyAccess(){
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
+  document.getElementById("astrip").hidden=false;
   document.getElementById("deck").hidden=false;
   document.getElementById("scrollCue").hidden=false;
+  WL=wlLoad(); mountTools(); applyLayout();
   document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
   loadToday(); loadJosh();
@@ -840,14 +889,35 @@ async function loadJosh(){
       return isNaN(t)?null:Math.max(0,Math.floor((Date.now()-t)/864e5));
     }).filter(v=>v!=null).sort((a,b)=>b-a)[0];
     const inedit=clips.filter(c=>c.status==="in_progress"||c.status==="needs_review").length;
-    badge.textContent=un.length?un.length+" waiting":"clear";
-    badge.style.color=un.length?"#c0563c":"";
-    body.innerHTML=`<div class="kpirow">
+    JOSH={un,inedit,oldest};
+    renderJoshBody();
+  }catch(e){ body.innerHTML='<div class="amsg">Couldn\'t load tracker.</div>'; }
+}
+/* The RAW tracker earns its size: the KPI row is the whole story at S/M, and
+   from L on it also names the clips that have been sitting longest. */
+let JOSH=null;
+function renderJoshBody(){
+  if(!JOSH) return;
+  const body=document.getElementById("jBody"), badge=document.getElementById("jBadge");
+  if(!body) return;
+  const {un,inedit,oldest}=JOSH;
+  badge.textContent=un.length?un.length+" waiting":"clear";
+  badge.style.color=un.length?"#c0563c":"";
+  const size=(document.getElementById("joshCard")||{}).dataset?.size||"s";
+  const big=size==="l"||size==="xl";
+  const age=c=>{const t=Date.parse(c.uploadedAt||c.date||"");return isNaN(t)?null:Math.floor((Date.now()-t)/864e5);};
+  let html=`<div class="kpirow">
       <div class="kpi ${un.length?"warn":""}"><b>${un.length}</b><span>Untouched</span></div>
       <div class="kpi"><b>${inedit}</b><span>In edit</span></div>
       <div class="kpi ${oldest>=14?"warn":""}"><b>${oldest!=null?oldest+"d":"—"}</b><span>Oldest</span></div>
     </div>`;
-  }catch(e){ body.innerHTML='<div class="amsg">Couldn\'t load tracker.</div>'; }
+  if(big && un.length){
+    const rows=un.map(c=>({c,d:age(c)})).sort((a,b)=>(b.d??-1)-(a.d??-1)).slice(0,size==="xl"?8:5);
+    html+=rows.map(({c,d})=>`<div class="trow ${d>=14?"over":""}"><span class="dot"></span>
+      <span class="tt">${d!=null?d+"d":"—"}</span>
+      <span>${esc(c.name||c.title||"Untitled clip")}</span></div>`).join("");
+  }
+  body.innerHTML=html;
 }
 
 /* ── Today: personal to-dos + Filming / Meetings calendar ── */
@@ -903,8 +973,108 @@ async function loadToday(){
   renderTodayCal();
   renderTodayTasks(null);
 }
+/* ---- widget layout: order + size, per person ----------------------------
+   Stored per email in localStorage rather than Firestore, deliberately: a
+   layout is a response to the screen in front of you, so it should not follow
+   you from a 27" desktop to a laptop. Unknown widgets fall to the end, so
+   adding one later never strands it. */
+const WKEYS=["kpis","chart","clients","josh"];
+const WSIZES=["s","m","l","xl"];
+const WLABEL={s:"S",m:"M",l:"L",xl:"XL"};
+const WDEFAULT={kpis:"s",chart:"m",clients:"s",josh:"s"};
+const wlKey=()=>"hub.widgets."+((effEmail()||"anon").toLowerCase());
+function wlLoad(){
+  try{
+    const raw=localStorage.getItem(wlKey());
+    if(!raw) return {order:WKEYS.slice(),size:{...WDEFAULT}};
+    const p=JSON.parse(raw);
+    const order=(p.order||[]).filter(k=>WKEYS.includes(k));
+    WKEYS.forEach(k=>{ if(!order.includes(k)) order.push(k); });
+    const size={...WDEFAULT};
+    Object.entries(p.size||{}).forEach(([k,v])=>{ if(WKEYS.includes(k)&&WSIZES.includes(v)) size[k]=v; });
+    return {order,size};
+  }catch(e){ return {order:WKEYS.slice(),size:{...WDEFAULT}}; }
+}
+function wlSave(){ try{ localStorage.setItem(wlKey(),JSON.stringify(WL)); }catch(e){} }
+let WL=wlLoad();
+
+const wcard=k=>document.querySelector(`#wgrid [data-w="${k}"]`);
+function applyLayout(){
+  const grid=document.getElementById("wgrid"); if(!grid) return;
+  WL.order.forEach(k=>{ const el=wcard(k); if(el){ el.dataset.size=WL.size[k]||"s"; grid.appendChild(el); } });
+  grid.querySelectorAll(".wtools .wsize").forEach(b=>{
+    const k=b.closest("[data-w]").dataset.w; b.textContent=WLABEL[WL.size[k]||"s"];
+  });
+  if(typeof renderJoshBody==="function") renderJoshBody();
+}
+function mountTools(){
+  const grid=document.getElementById("wgrid"); if(!grid) return;
+  grid.querySelectorAll("[data-w]").forEach(card=>{
+    if(card.querySelector(".wtools")) return;
+    const t=document.createElement("div");
+    t.className="wtools";
+    t.innerHTML=`<button class="wsize" title="Resize">S</button>`+
+      `<button class="wdrag" title="Drag to reorder" aria-label="Drag to reorder">⠿</button>`;
+    card.appendChild(t);
+  });
+}
+/* Pointer-based sorting rather than HTML5 drag-and-drop: it works the same on
+   touch, and it lets the card reorder live under the finger. */
+function initWidgetDrag(){
+  const grid=document.getElementById("wgrid"); if(!grid) return;
+  let drag=null;
+  grid.addEventListener("pointerdown",e=>{
+    const h=e.target.closest(".wdrag"); if(!h) return;
+    const card=h.closest("[data-w]"); if(!card) return;
+    e.preventDefault();
+    drag=card; card.classList.add("dragging");
+    h.setPointerCapture(e.pointerId);
+  });
+  grid.addEventListener("pointermove",e=>{
+    if(!drag) return;
+    // hit-test against the rects directly — elementFromPoint only sees what is
+    // scrolled into view, so a card near the edge would silently refuse a drop
+    let over=null;
+    for(const c of grid.querySelectorAll("[data-w]")){
+      if(c===drag||!c.offsetParent) continue;
+      const r=c.getBoundingClientRect();
+      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){ over=c; break; }
+    }
+    grid.querySelectorAll(".dropzone").forEach(x=>x.classList.remove("dropzone"));
+    if(!over) return;
+    over.classList.add("dropzone");
+    const r=over.getBoundingClientRect();
+    const after=(e.clientX-r.left)>r.width/2;
+    grid.insertBefore(drag, after?over.nextSibling:over);
+  });
+  const end=()=>{
+    if(!drag) return;
+    drag.classList.remove("dragging");
+    grid.querySelectorAll(".dropzone").forEach(x=>x.classList.remove("dropzone"));
+    drag=null;
+    WL.order=[...grid.querySelectorAll("[data-w]")].map(el=>el.dataset.w);
+    wlSave();
+  };
+  grid.addEventListener("pointerup",end);
+  grid.addEventListener("pointercancel",end);
+  // capture, so this runs before the card's own onclick (Josh opens its app)
+  grid.addEventListener("click",e=>{
+    const b=e.target.closest(".wsize"); if(!b) return;
+    e.stopPropagation(); e.preventDefault();
+    const k=b.closest("[data-w]").dataset.w;
+    const i=WSIZES.indexOf(WL.size[k]||"s");
+    WL.size[k]=WSIZES[(i+1)%WSIZES.length];
+    wlSave(); applyLayout();
+  },{capture:true});
+  const reset=document.getElementById("wReset");
+  if(reset) reset.addEventListener("click",()=>{
+    WL={order:WKEYS.slice(),size:{...WDEFAULT}}; wlSave(); applyLayout();
+  });
+}
+
 /* version badge + scroll cue */
 (()=>{
+  initWidgetDrag();
   const b=document.getElementById("vBadge");
   if(b){ b.textContent="v"+APP_VERSION; b.title="Studio Hub v"+APP_VERSION+" — built "+APP_BUILD; }
   const cue=document.getElementById("scrollCue"), deck=document.getElementById("deck");
