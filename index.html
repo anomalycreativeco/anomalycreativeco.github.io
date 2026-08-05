@@ -157,6 +157,13 @@
   .wgrid .acard[data-size="m"]{grid-column:span 2}
   .wgrid .acard[data-size="l"]{grid-column:span 3}
   .wgrid .acard[data-size="xl"]{grid-column:span 4}
+  .wsub{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--faint);margin:12px 0 2px;padding-top:8px;border-top:1px solid var(--line)}
+  .wbars{display:flex;flex-direction:column;gap:5px;margin-top:5px}
+  .wbar{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--body)}
+  .wbar span{flex:0 0 72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wbar i{height:7px;border-radius:99px;background:var(--green-mid);display:block;min-width:3px}
+  .wbar b{color:var(--ink);font-size:11px}
   .wgrid .acard.dragging{opacity:.4}
   .wgrid .acard.dropzone{outline:2px dashed var(--green-soft);outline-offset:3px}
   /* keep the card's own header badge clear of the hover tools */
@@ -644,10 +651,12 @@
     <div class="acard" id="aChartCard" data-w="chart" style="display:none">
       <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
       <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
+      <div id="aChartFoot" style="display:none"></div>
     </div>
     <div class="acard" id="aClientCard" data-w="clients" style="display:none">
       <div class="ahead"><span>Open tasks · by client</span></div>
       <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
+      <div class="tmore" id="aClientsMore" style="display:none"></div>
     </div>
     <div class="acard" id="joshCard" data-w="josh" style="display:none">
       <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
@@ -717,7 +726,7 @@ const auth=getAuth(app), db=getFirestore(app);
 /* Bump on every deploy. Shown next to the wordmark so anyone reporting a
    problem can say which build they're on — GitHub Pages caches at the edge for
    ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.2.0", APP_BUILD="2026-08-01";
+const APP_VERSION="1.3.0", APP_BUILD="2026-08-01";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -966,16 +975,24 @@ function renderJoshBody(){
   const {un,inedit,oldest}=JOSH;
   badge.textContent=un.length?un.length+" waiting":"clear";
   badge.style.color=un.length?"#c0563c":"";
-  const size=(document.getElementById("joshCard")||{}).dataset?.size||"s";
-  const big=size==="l"||size==="xl";
+  const size=wSize("josh");
+  const big=size==="l";
   const age=c=>{const t=Date.parse(c.uploadedAt||c.date||"");return isNaN(t)?null:Math.floor((Date.now()-t)/864e5);};
   let html=`<div class="kpirow">
       <div class="kpi ${un.length?"warn":""}"><b>${un.length}</b><span>Untouched</span></div>
       <div class="kpi"><b>${inedit}</b><span>In edit</span></div>
       <div class="kpi ${oldest>=14?"warn":""}"><b>${oldest!=null?oldest+"d":"—"}</b><span>Oldest</span></div>
     </div>`;
+  if(size==="m"&&un.length){
+    const oldestClip=un.map(c=>({c,d:age(c)})).sort((a,b)=>(b.d??-1)-(a.d??-1))[0];
+    if(oldestClip) html+=`<div class="wsub">Longest waiting</div>`+
+      `<div class="trow ${oldestClip.d>=14?"over":""}"><span class="dot"></span>
+        <span class="tt">${oldestClip.d!=null?oldestClip.d+"d":"—"}</span>
+        <span>${esc(oldestClip.c.name||oldestClip.c.title||"Untitled clip")}</span></div>`;
+  }
   if(big && un.length){
-    const rows=un.map(c=>({c,d:age(c)})).sort((a,b)=>(b.d??-1)-(a.d??-1)).slice(0,size==="xl"?8:5);
+    html+=`<div class="wsub">Waiting longest</div>`;
+    const rows=un.map(c=>({c,d:age(c)})).sort((a,b)=>(b.d??-1)-(a.d??-1)).slice(0,6);
     html+=rows.map(({c,d})=>`<div class="trow ${d>=14?"over":""}"><span class="dot"></span>
       <span class="tt">${d!=null?d+"d":"—"}</span>
       <span>${esc(c.name||c.title||"Untitled clip")}</span></div>`).join("");
@@ -1042,8 +1059,8 @@ async function loadToday(){
    you from a 27" desktop to a laptop. Unknown widgets fall to the end, so
    adding one later never strands it. */
 const WKEYS=["kpis","chart","clients","josh"];
-const WSIZES=["s","m","l","xl"];
-const WLABEL={s:"S",m:"M",l:"L",xl:"XL"};
+const WSIZES=["s","m","l"];
+const WLABEL={s:"S",m:"M",l:"L"};
 const WDEFAULT={kpis:"s",chart:"m",clients:"s",josh:"s"};
 const wlKey=()=>"hub.widgets."+((effEmail()||"anon").toLowerCase());
 function wlLoad(){
@@ -1054,7 +1071,10 @@ function wlLoad(){
     const order=(p.order||[]).filter(k=>WKEYS.includes(k));
     WKEYS.forEach(k=>{ if(!order.includes(k)) order.push(k); });
     const size={...WDEFAULT};
-    Object.entries(p.size||{}).forEach(([k,v])=>{ if(WKEYS.includes(k)&&WSIZES.includes(v)) size[k]=v; });
+    // "xl" existed briefly; fold any saved ones down rather than ignoring them
+    Object.entries(p.size||{}).forEach(([k,v])=>{ if(!WKEYS.includes(k)) return;
+      const vv = v==="xl" ? "l" : v;
+      if(WSIZES.includes(vv)) size[k]=vv; });
     return {order,size};
   }catch(e){ return {order:WKEYS.slice(),size:{...WDEFAULT}}; }
 }
@@ -1068,7 +1088,7 @@ function applyLayout(){
   grid.querySelectorAll(".wtools .wsize").forEach(b=>{
     const k=b.closest("[data-w]").dataset.w; b.textContent=WLABEL[WL.size[k]||"s"];
   });
-  if(typeof renderJoshBody==="function") renderJoshBody();
+  renderWidgetBodies();
 }
 function mountTools(){
   const grid=document.getElementById("wgrid"); if(!grid) return;
@@ -1304,31 +1324,121 @@ function drawStats(tasks){
   const delivered=open.filter(t=>t.delivered).length;
   const inprod=open.length-delivered;
   document.getElementById("aState").textContent="LIVE";
-  document.getElementById("aBody").innerHTML=`<div class="kpirow">
+  document.getElementById("aChartCard").style.display="block";
+  document.getElementById("aClientCard").style.display="block";
+  // Everything the widgets might want, computed once. Which slice of it each
+  // one actually shows is decided by its size, in renderWidgetBodies().
+  STATS={weeks,posted,open,overdue,delivered,inprod,today:todayISO()};
+  LASTTASKS=tasks;
+  renderWidgetBodies();
+  renderTodayTasks(tasks);
+}
+
+/* ---- widget bodies -------------------------------------------------------
+   S is the headline, M adds the "so what", L is everything short of opening
+   the app. Re-run whenever data OR size changes. */
+let STATS=null;
+const wSize=k=>((WL&&WL.size&&WL.size[k])||"s");
+function renderWidgetBodies(){
+  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody();
+}
+function taskLine(t,extra){
+  return `<div class="trow${extra&&extra.over?" over":""}"><span class="dot"></span>
+    ${extra&&extra.tt?`<span class="tt">${esc(extra.tt)}</span>`:""}
+    <span><b>${esc(t.clientAbbr||"—")}</b> · ${esc(t.projectName||t.type||"task")}</span></div>`;
+}
+function renderKpiBody(){
+  const box=document.getElementById("aBody"); if(!box||!STATS) return;
+  const size=wSize("kpis"), {open,overdue,delivered,inprod,today}=STATS;
+  let html=`<div class="kpirow">
     <div class="kpi"><b>${inprod}</b><span>In prod</span></div>
     <div class="kpi"><b>${delivered}</b><span>Delivered</span></div>
     <div class="kpi ${overdue?"warn":""}"><b>${overdue}</b><span>Overdue</span></div>
   </div>`;
-  const max=Math.max(...posted,1), W=216,bw=W/WEEKS-6;
-  document.getElementById("aChart").innerHTML=posted.map((v,i)=>{
-    const h=Math.round(v/max*44), x=i*(W/WEEKS)+3, y=56-h;
+  if(size==="m"||size==="l"){
+    const due=open.filter(t=>t.dueDate===today).slice(0,size==="l"?6:3);
+    html+=`<div class="wsub">Due today</div>`;
+    html+= due.length ? due.map(t=>taskLine(t)).join("")
+                      : `<div class="amsg">Nothing due today.</div>`;
+  }
+  if(size==="l"){
+    const late=open.filter(t=>t.dueDate&&t.dueDate<today)
+      .sort((a,b)=>a.dueDate<b.dueDate?-1:1).slice(0,6);
+    html+=`<div class="wsub">Overdue</div>`;
+    html+= late.length ? late.map(t=>{
+        const d=Math.round((new Date(today+"T12:00")-new Date(t.dueDate+"T12:00"))/864e5);
+        return taskLine(t,{tt:d+"d",over:true});
+      }).join("") : `<div class="amsg">Nothing overdue — clear runway.</div>`;
+    const byEd={}; open.forEach(t=>{ const a=t.assignee||"Unassigned"; byEd[a]=(byEd[a]||0)+1; });
+    const eds=Object.entries(byEd).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(eds.length){
+      html+=`<div class="wsub">By editor</div><div class="wbars">`+
+        eds.map(([n,v])=>`<div class="wbar"><span>${esc(n)}</span><i style="width:${Math.round(v/eds[0][1]*100)}%"></i><b>${v}</b></div>`).join("")+`</div>`;
+    }
+  }
+  box.innerHTML=html;
+}
+function renderChartBody(){
+  const svg=document.getElementById("aChart"), lbl=document.getElementById("aChartLabel");
+  if(!svg||!STATS) return;
+  const size=wSize("chart");
+  const n=size==="s"?4:8;
+  const weeks=STATS.weeks.slice(-n), posted=STATS.posted.slice(-n);
+  const showLabels=size!=="s";
+  const W=216, H=showLabels?74:60, bw=W/n-6, barTop=showLabels?56:48;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const max=Math.max(...posted,1);
+  svg.innerHTML=posted.map((v,i)=>{
+    const h=Math.round(v/max*(showLabels?44:38)), x=i*(W/n)+3, y=barTop-h;
     return `<rect class="bar" x="${x}" y="${y}" width="${bw}" height="${h}" rx="3"></rect>
       <text class="vlabel" x="${x+bw/2}" y="${y-3}" text-anchor="middle">${v||""}</text>
-      <text x="${x+bw/2}" y="68" text-anchor="middle">${fmtWk(new Date(weeks[i]))}</text>`;
+      ${showLabels?`<text x="${x+bw/2}" y="68" text-anchor="middle">${fmtWk(new Date(weeks[i]))}</text>`:""}`;
   }).join("");
-  document.getElementById("aChartCard").style.display="block";
-  const byClient={}; open.forEach(t=>{byClient[t.clientAbbr||"—"]=(byClient[t.clientAbbr||"—"]||0)+1;});
-  const top=Object.entries(byClient).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const cm=Math.max(...top.map(x=>x[1]),1);
-  document.getElementById("aClients").innerHTML=top.map(([c,v],i)=>{
-    const y=i*19+4, w=Math.round(v/cm*130);
+  lbl.textContent = size==="s" ? "Posted · 4 weeks" : "Posted · by week";
+  const foot=document.getElementById("aChartFoot");
+  if(foot){
+    if(size==="l"){
+      const tot=posted.reduce((a,b)=>a+b,0);
+      const avg=Math.round(tot/posted.length*10)/10;
+      const best=Math.max(...posted);
+      const thisWk=posted[posted.length-1], prev=posted[posted.length-2]||0;
+      const delta=thisWk-prev;
+      foot.innerHTML=`<div class="kpirow">
+        <div class="kpi"><b>${tot}</b><span>8-wk total</span></div>
+        <div class="kpi"><b>${avg}</b><span>Avg / wk</span></div>
+        <div class="kpi"><b>${best}</b><span>Best wk</span></div>
+        <div class="kpi ${delta<0?"warn":""}"><b>${delta>0?"+":""}${delta}</b><span>vs last</span></div>
+      </div>`;
+      foot.style.display="block";
+    } else foot.style.display="none";
+  }
+}
+function renderClientsBody(){
+  const svg=document.getElementById("aClients"); if(!svg||!STATS) return;
+  const size=wSize("clients"), open=STATS.open;
+  const byClient={};
+  open.forEach(t=>{ const k=t.clientAbbr||"—";
+    (byClient[k]||(byClient[k]={n:0,dl:0})); byClient[k].n++; if(t.delivered) byClient[k].dl++; });
+  const all=Object.entries(byClient).sort((a,b)=>b[1].n-a[1].n);
+  const top=all.slice(0, size==="s"?3 : size==="m"?5 : 10);
+  const cm=Math.max(...top.map(x=>x[1].n),1);
+  const rowH=19, H=Math.max(top.length*rowH+8,24);
+  svg.setAttribute("viewBox",`0 0 216 ${H}`);
+  // at L the bar splits: delivered-but-not-posted shown lighter inside the total
+  svg.innerHTML=top.map(([c,v],i)=>{
+    const y=i*rowH+4, w=Math.round(v.n/cm*130), dw=Math.round(v.dl/cm*130);
+    const split = size==="l" && v.dl
+      ? `<rect class="bar dl" x="46" y="${y}" width="${dw}" height="12" rx="3" opacity=".45"></rect>` : "";
     return `<text x="0" y="${y+9}" class="vlabel">${c}</text>
-      <rect class="bar" x="46" y="${y}" width="${w}" height="12" rx="3"></rect>
-      <text x="${50+w}" y="${y+9}">${v}</text>`;
+      <rect class="bar" x="46" y="${y}" width="${w}" height="12" rx="3"></rect>${split}
+      <text x="${50+w}" y="${y+9}">${size==="l"&&v.dl?`${v.n} · ${v.dl} dlv`:v.n}</text>`;
   }).join("");
-  document.getElementById("aClientCard").style.display="block";
-  LASTTASKS=tasks;
-  renderTodayTasks(tasks);
+  const more=document.getElementById("aClientsMore");
+  if(more){
+    const hidden=all.length-top.length;
+    more.textContent = hidden>0 ? `+${hidden} more client${hidden>1?"s":""}` : "";
+    more.style.display = hidden>0 ? "block" : "none";
+  }
 }
 async function pullStats(){
   if(!canSee("pipeline")) return;
