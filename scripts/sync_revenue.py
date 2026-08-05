@@ -8,6 +8,9 @@ hand-typed lists of clients, industries and services, so anything new silently d
 out of it; reading the deal rows means a new client shows up the moment their first
 deal is entered, with no maintenance.
 
+Rows whose service is "Reimbursement" are pass-through cost, not revenue, and are
+dropped entirely — see EXCLUDE_SERVICES.
+
 The payload is encrypted with the dashboard passcode (AES-GCM / PBKDF2-SHA256,
 matching the WebCrypto code in the page) and written over the `const BLOB="..."` line.
 
@@ -48,6 +51,16 @@ SUMMARY = "Analytics Dashboard"  # hand-maintained; used only as a cross-check
 CLIENT, MONTH, AMOUNT, INDUSTRY = 0, 2, 3, 4
 SERVICES = range(5, 10)        # Service 1 … Service 5
 COLLECTED = 10                 # "Payment Collected"
+REIMB_FLAG = 14                # "Reimbursement Flag" — cross-check only, see below
+
+# Services that are pass-through cost, not revenue. A deal row carrying any of these
+# is dropped entirely: it never reaches the monthly totals, the client ranking, the
+# industry split or the service split. Matched case-insensitively.
+#
+# The sheet also has a "Reimbursement Flag" column, but it is formatted as a date, so
+# a 1 comes back as 1900-01-01 and a 0 as time(0,0). Too brittle to key off; we read
+# the service label instead and only use the flag to flag a disagreement.
+EXCLUDE_SERVICES = {"reimbursement"}
 
 # Yearly collection goals for the "projected vs goals" chart.
 GOALS = {"conservative": 800_000, "moderate": 1_000_000, "aggressive": 1_200_000}
@@ -94,6 +107,21 @@ def is_true(v):
     return v is True or txt(v).upper() == "TRUE"
 
 
+def is_reimbursement(r):
+    """True if any of Service 1…5 marks this row as a reimbursement."""
+    return any(txt(r[c]).lower() in EXCLUDE_SERVICES for c in SERVICES if len(r) > c)
+
+
+def reimb_flag_set(r):
+    """The date-formatted 'Reimbursement Flag' column, read as a boolean."""
+    v = r[REIMB_FLAG] if len(r) > REIMB_FLAG else None
+    if isinstance(v, dt.datetime):        # serial 1 → 1900-01-01, serial 0 → time(0,0)
+        return v.date() != dt.date(1899, 12, 30)
+    if isinstance(v, dt.time):
+        return False
+    return bool(v)
+
+
 def build_payload():
     import openpyxl
     wb = openpyxl.load_workbook(XLSX, data_only=True)
@@ -104,12 +132,24 @@ def build_payload():
     collected = [0] * 12
     by_client, by_industry, by_service = {}, {}, {}
     skipped = 0
+    reimb_rows, reimb_total, flag_mismatch = 0, 0, 0
 
     for r in wb[DEALS].iter_rows(min_row=2, values_only=True):
         client = txt(r[CLIENT]) if len(r) > CLIENT else ""
         amount = r[AMOUNT] if len(r) > AMOUNT and isinstance(r[AMOUNT], (int, float)) else 0
         month = r[MONTH] if len(r) > MONTH else None
-        if not client or not amount:
+        if not client:
+            continue
+
+        # reimbursements are pass-through cost, never revenue — drop the row outright
+        if is_reimbursement(r):
+            reimb_rows += 1
+            reimb_total += amount
+            continue
+        if reimb_flag_set(r):
+            flag_mismatch += 1    # flagged in Excel but no "Reimbursement" service label
+
+        if not amount:
             continue
         if not isinstance(month, (dt.datetime, dt.date)):
             skipped += 1          # a deal with no usable date can't land in a month
@@ -166,6 +206,12 @@ def build_payload():
     notes = []
     if skipped:
         notes.append(f"{skipped} deal row(s) had no usable date and were skipped")
+    if reimb_rows:
+        notes.append(f"{reimb_rows} reimbursement row(s) excluded from revenue "
+                     f"(${reimb_total:,.0f})")
+    if flag_mismatch:
+        notes.append(f'{flag_mismatch} row(s) have the "Reimbursement Flag" set but no '
+                     f'"Reimbursement" service label, so they still count as revenue')
     if SUMMARY in wb.sheetnames:
         ad = wb[SUMMARY]
         for label, got in (("Total Projected Revenue", total_p),
