@@ -51,8 +51,15 @@ def http(url, method="GET", body=None, headers=None, token=None):
 
 
 def api_get(path, token):
-    """GET with pagination — follows links.next and concatenates data."""
+    """GET with pagination — follows links.next and concatenates data.
+
+    links.next carries only the cursor and drops the original query string,
+    so include=metadata has to be re-applied to every page after the first.
+    Without it page 2+ arrive with no metadata at all, and every clip on them
+    reads as "no Status pill" — i.e. silently untouched.
+    """
     out, url = [], API + path
+    query = path.partition("?")[2]
     while url:
         page = http(url, token=token)
         data = page.get("data")
@@ -62,6 +69,8 @@ def api_get(path, token):
             return data
         nxt = (page.get("links") or {}).get("next")
         url = ("https://api.frame.io" + nxt) if nxt and nxt.startswith("/") else nxt
+        if url and query:
+            url += ("&" if "?" in url else "?") + query
     return out
 
 

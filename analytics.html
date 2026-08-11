@@ -138,6 +138,13 @@
   .legend{display:flex;gap:14px;justify-content:center;margin-top:10px}
   .lg{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
   /* run rate */
+  .rrhead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .rrsel{font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);background:var(--pill);
+    border:1px solid var(--frostline);border-radius:999px;padding:8px 32px 8px 14px;cursor:pointer;
+    appearance:none;-webkit-appearance:none;flex:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' fill='none' stroke='%237b8794' stroke-width='1.6' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 13px center}
+  .rrsel:focus{outline:2px solid var(--gridline);outline-offset:1px}
   .rrstats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
   .rrstat{flex:1 1 150px;background:var(--pill);border-radius:16px;padding:12px 14px}
   .rrstat b{display:block;font-size:clamp(20px,2vw,26px);font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:1.1}
@@ -310,6 +317,7 @@
       <a href="index.html?cat=pre">Pre-Production</a>
       <a href="index.html?cat=post">Post-Production</a>
       <a class="active" href="analytics.html">Revenue</a>
+      <a href="financials.html">Financials</a>
     </nav>
     <div style="display:flex;align-items:center;gap:8px">
       <button class="outbtn" id="themeBtn" title="Light / dark" style="font-size:14px">◐</button>
@@ -403,7 +411,15 @@
 
       <!-- run rate -->
       <div class="fc" style="grid-column:span 12">
-        <div><div class="lbl">Run rate</div><div class="sub">mean of the last 3 months of projected collections, annualised</div></div>
+        <div class="rrhead">
+          <div><div class="lbl">Run rate</div><div class="sub" id="rrSub">mean of the last 3 months of projected collections, annualised</div></div>
+          <select class="rrsel" id="rrWin" aria-label="Run-rate window">
+            <option value="1">1 month</option>
+            <option value="3" selected>3 months</option>
+            <option value="6">6 months</option>
+            <option value="12">1 year</option>
+          </select>
+        </div>
         <div class="rrstats" id="rrStats"></div>
         <svg class="chart" id="runrateChart" viewBox="0 0 1180 260" style="margin-top:10px"></svg>
       </div>
@@ -431,6 +447,7 @@
 <!-- bottom nav -->
 <nav class="bnav" id="bnav" style="display:none">
   <a class="active" href="analytics.html">Revenue</a>
+  <a href="financials.html">Financials</a>
   <a href="index.html">Studio Hub</a>
   <a href="automations.html">Automations</a>
   <a class="plus" href="index.html" title="Home">+</a>
@@ -531,6 +548,15 @@ document.getElementById("gateIn").addEventListener("keydown",e=>{if(e.key==="Ent
 /* ── render ── */
 const fmt$=n=>"$"+n.toLocaleString("en-US");
 const fmtK=n=>n>=1e6?"$"+(n/1e6).toFixed(2)+"M":n>=1000?"$"+Math.round(n/1000)+"k":"$"+n;
+/* the run-rate window is a per-person preference, so it persists locally and
+   re-renders from data already in hand — no refetch, no decrypt */
+document.addEventListener("change",e=>{
+  if(e.target && e.target.id==="rrWin"){
+    localStorage.setItem(RR_KEY,e.target.value);
+    if(RRDATA) renderRunRate(RRDATA);
+  }
+});
+
 function ringSVG(pct,size,sw){
   const r=(size-sw)/2, c=2*Math.PI*r, off=c*(1-pct);
   return `<svg class="ring" width="${size}" height="${size}">
@@ -642,23 +668,47 @@ function render(d){
     document.getElementById("goalChart").innerHTML=s;
   }
 
-  /* run rate — mean of the last 3 months of projected collections, annualised */
+  /* run rate — trailing mean of projected collections, annualised.
+     The window is the user's choice, so this lives in its own function and
+     re-runs on change rather than forcing a full dashboard re-render. */
+  RRDATA=d;
+  renderRunRate(d);
+  renderRest(d);
+}
+
+let RRDATA=null;
+const RR_KEY="hub.analytics.runrate.window";
+const rrWindow=()=>{
+  const v=parseInt(localStorage.getItem(RR_KEY),10);
+  return [1,3,6,12].includes(v)?v:3;
+};
+function renderRunRate(d){
   {
     // complete months only; older blobs without `elapsed` fall back to months with money in them
     const el=Math.max(1,Math.min(12,d.elapsed||d.collected.filter(v=>v>0).length));
-    const win=Math.min(3,el);
+    const want=rrWindow();
+    // a 6- or 12-month window early in the year would average months that
+    // haven't happened, so it's clamped to what has actually elapsed
+    const win=Math.min(want,el);
     const avg3=d.projected.slice(el-win,el).reduce((a,b)=>a+b,0)/win;
     const rr=avg3*12;
 
+    const sel=document.getElementById("rrWin"); if(sel) sel.value=String(want);
+    const sub=document.getElementById("rrSub");
+    if(sub) sub.textContent = win===1
+      ? "last complete month of projected collections, annualised"
+      : `mean of the last ${win} month${win>1?"s":""} of projected collections, annualised`
+        + (win<want ? ` — only ${win} complete so far` : "");
+
     document.getElementById("rrStats").innerHTML=`
       <div class="rrstat"><b>${fmtK(Math.round(rr))}</b><span>Annualised run rate</span></div>
-      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Mean of ${d.months[el-win]}–${d.months[el-1]} projected</span></div>
-      <div class="rrstat"><b>${win}</b><span>months in the mean</span></div>`;
+      <div class="rrstat"><b>${fmtK(Math.round(avg3))}</b><span>Mean of ${d.months[el-win]}\u2013${d.months[el-1]} projected</span></div>
+      <div class="rrstat"><b>${win}</b><span>month${win>1?"s":""} in the mean</span></div>`;
 
     // the same calculation walked month by month: each point is that month's
-    // trailing 3-month mean, annualised
+    // trailing mean over the chosen window, annualised
     const roll=[];
-    for(let i=0;i<el;i++){const w=Math.min(3,i+1);
+    for(let i=0;i<el;i++){const w=Math.min(win,i+1);
       roll.push(d.projected.slice(i-w+1,i+1).reduce((a,b)=>a+b,0)/w*12);}
 
     const W4=1180,H4=260,qL=64,qR=120,qB=28,qT=14;
@@ -679,7 +729,9 @@ function render(d){
         <text x="${rx+10}" y="${ry-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(Math.round(rr))}</text>`;
     document.getElementById("runrateChart").innerHTML=r;
   }
+}
 
+function renderRest(d){
   /* services (dark card) */
   const smax=Math.max(...d.services.map(x=>x[1]));
   document.getElementById("services").innerHTML=d.services.slice(0,6).map(([n,v])=>`

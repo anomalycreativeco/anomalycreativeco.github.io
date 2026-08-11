@@ -631,6 +631,10 @@
         <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span>
         <span class="t"><small>Revenue · 2026</small><b>Analytics Dashboard</b></span>
       </a>
+      <a class="pill" id="pillFinancials" href="financials.html" target="_blank" rel="noopener" style="display:none">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.5 5 1.6 5 3.5-2.2 3-5 3-5-1.1-5-3"/></svg></span>
+        <span class="t"><small>QuickBooks · P&amp;L</small><b>Financials</b></span>
+      </a>
     </div>
 
   </div>
@@ -726,7 +730,7 @@ const auth=getAuth(app), db=getFirestore(app);
 /* Bump on every deploy. Shown next to the wordmark so anyone reporting a
    problem can say which build they're on — GitHub Pages caches at the edge for
    ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.3.0", APP_BUILD="2026-08-01";
+const APP_VERSION="1.4.0", APP_BUILD="2026-08-01";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -740,6 +744,7 @@ const PLATFORMS={
   rchplanner:{name:"RCH Content Planner",cat:"pre",def:"everyone"},
   ufplanner:{name:"Universal Furniture Planner",cat:"pre",def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
+  financials:{name:"Financials (QuickBooks P&L, balance sheet)",cat:null,def:"owners"},
   automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
   ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"}
 };
@@ -930,6 +935,7 @@ function applyAccess(){
     document.querySelector(`[data-count="${c}"]`).textContent=n+" platform"+(n===1?"":"s");
   });
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
+  document.getElementById("pillFinancials").style.display=canSee("financials")?"flex":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
   document.getElementById("astrip").hidden=false;
