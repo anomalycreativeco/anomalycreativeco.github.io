@@ -49,7 +49,7 @@ PBKDF2_ITERS = 150_000  # must match financials.html
 REQUIRED = ["asOf", "elapsed", "summary", "months", "monthlyIncome",
             "monthlyExpenses", "monthlyCogs", "monthlyNet", "expenseBreakdown",
             "priorYear", "balanceSheet", "arAging", "cashFlow", "cashTrend",
-            "topCustomers"]
+            "topCustomers", "overhead"]
 
 
 def get_passcode() -> str:
@@ -125,6 +125,20 @@ def load_payload() -> dict:
         sys.exit(f"Payload is internally inconsistent — months total "
                  f"${inc:,.0f}/${exp:,.0f} but the summary says "
                  f"${s['income']:,.0f}/${s['expenses'] + s['cogs']:,.0f}.")
+
+    # Overhead is the headline the page leads with, so its parts must add up and
+    # tie back to revenue: revenue - everything spent = what was kept.
+    o = payload["overhead"]
+    parts = o["labor"]["total"] + o["nonLabor"]["total"]
+    if abs(parts - o["total"]) > 1:
+        sys.exit(f"Overhead parts total ${parts:,.0f} but overhead is "
+                 f"${o['total']:,.0f}.")
+    if abs(o["labor"]["payroll"] + o["labor"]["contractor"]
+           - o["labor"]["total"]) > 1:
+        sys.exit("Payroll and contractors do not add up to total labour cost.")
+    if abs(o["total"] + s["netIncome"] - s["income"]) > 1:
+        sys.exit(f"Overhead ${o['total']:,.0f} plus net ${s['netIncome']:,.0f} "
+                 f"does not equal revenue ${s['income']:,.0f}.")
     return payload
 
 

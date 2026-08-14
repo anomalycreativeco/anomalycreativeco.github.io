@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Weekly financials refresh — Mondays at 07:15.
+
+  NOT installed automatically. Install only after a supervised first run has
+  proved the QuickBooks credentials and report parsing work:
+
+      cp scripts/com.anomaly.financials-weekly.plist ~/Library/LaunchAgents/
+      launchctl load ~/Library/LaunchAgents/com.anomaly.financials-weekly.plist
+
+  To check on it:
+      launchctl list | grep anomaly
+      tail -f ~/Library/Logs/anomaly-financials.log
+
+  To stop it:
+      launchctl unload ~/Library/LaunchAgents/com.anomaly.financials-weekly.plist
+
+  RunAtLoad is deliberately false: loading this should not fire an unattended
+  publish the moment it is installed.
+
+  A weekly cadence also keeps the QuickBooks refresh token alive — Intuit expires
+  tokens after roughly 100 days unused, so a run every seven days never gets close.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.anomaly.financials-weekly</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/danielpan/Desktop/Claude/Anomaly-Studio-Hub/scripts/refresh_financials.py</string>
+        <string>--publish</string>
+        <string>--quiet</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/danielpan/Desktop/Claude/Anomaly-Studio-Hub</string>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>1</integer>
+        <key>Hour</key><integer>7</integer>
+        <key>Minute</key><integer>15</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/danielpan/Library/Logs/anomaly-financials.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/danielpan/Library/Logs/anomaly-financials.log</string>
+</dict>
+</plist>

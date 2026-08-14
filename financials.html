@@ -297,13 +297,57 @@
         <div><div class="lbl">Net income</div><div class="sub">after every expense</div></div>
         <div><div class="v" id="kpiNet">—</div><div class="d" id="kpiNetSub"></div></div>
       </div>
+      <div class="dc kpi s3">
+        <div><div class="lbl">Overhead</div><div class="sub">everything it costs to do the work</div></div>
+        <div><div class="v" id="kpiOverhead">—</div><div class="d" id="kpiOverheadSub"></div></div>
+      </div>
       <div class="fc kpi s3">
         <div><div class="lbl">Cash on hand</div><div class="sub">bank balance today</div></div>
         <div><div class="v" id="kpiCash">—</div><div class="d" id="kpiCashSub"></div></div>
       </div>
-      <div class="fc kpi s3">
-        <div><div class="lbl">Owed to us</div><div class="sub">accounts receivable</div></div>
-        <div><div class="v" id="kpiAR">—</div><div class="d" id="kpiARSub"></div></div>
+
+      <!-- labour mix: the split Daniel steers on -->
+      <div class="fc s8">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+          <div><div class="lbl">Payroll vs contractors</div><div class="sub">what the people who do the work cost, month by month</div></div>
+          <span class="badge" id="laborBadge"></span>
+        </div>
+        <svg class="chart" id="laborChart" viewBox="0 0 900 280" style="margin-top:14px"></svg>
+        <div class="legend">
+          <span class="lg"><i style="background:var(--ink)"></i>Payroll</span>
+          <span class="lg"><i style="background:var(--g1)"></i>Contractors</span>
+          <span class="lg"><i style="background:var(--bar2);box-shadow:inset 0 0 0 1.2px var(--muted)"></i>Everything else</span>
+          <span class="lg"><i style="background:var(--neg);border-radius:99px;width:14px;height:3px"></i>Overhead as % of revenue</span>
+        </div>
+      </div>
+
+      <!-- overhead composition -->
+      <div class="dc s4">
+        <div class="lbl">What overhead is made of</div><div class="sub" id="ohPeriod">year to date</div>
+        <div class="compbar" id="ohBar" style="margin-top:16px"></div>
+        <div id="ohRows"></div>
+        <div class="stats" id="ohStats"></div>
+      </div>
+
+      <!-- per-contractor spend. Always rendered: when no export has been loaded it
+           says so and how to load one, because a card that hides itself is a
+           feature nobody can find. -->
+      <div class="fc s4" id="conCard">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div class="lbl">By contractor</div><div class="sub" id="conSub">who the contract labour went to</div></div>
+          <span class="badge" id="conBadge"></span>
+        </div>
+        <div id="conRecon"></div>
+        <div class="rank" id="conRows" style="max-height:230px"></div>
+      </div>
+
+      <!-- labour detail -->
+      <div class="fc s4">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div class="lbl">Cost of people</div><div class="sub">every line that pays a human</div></div>
+          <span class="badge" id="laborTotal"></span>
+        </div>
+        <div id="laborRows"></div>
       </div>
 
       <!-- monthly P&L -->
@@ -443,7 +487,7 @@ onAuthStateChanged(auth,async u=>{
 
 /* ── data passcode + decrypt ── */
 const GATE_HASH="a85442a37b917b5463e629a4f66b0c711a1a04411b1601cdd7c109bcb70a6309";
-const BLOB="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";
+const BLOB="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";
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function decrypt(pass){
@@ -513,6 +557,14 @@ function render(d){
   document.getElementById("kpiNetSub").innerHTML=
     `<span class="${s.netIncome>=0?"up":"down"}">${pct(s.netMargin)} margin</span><b>of revenue kept</b>`;
 
+  const oh=d.overhead||{};
+  document.getElementById("kpiOverhead").textContent=fmtK(oh.total||0);
+  if(oh.rate!==undefined){
+    document.getElementById("kpiOverheadSub").innerHTML=
+      `<span class="${oh.rate>=.8?"down":"up"}">${pct(oh.rate)} of revenue</span>`+
+      `<b>$${(oh.perRevenueDollar||0).toFixed(2)} per $1 earned</b>`;
+  }
+
   const bs=d.balanceSheet||{};
   document.getElementById("kpiCash").textContent=fmtK(bs.cash||0);
   const cf=d.cashFlow||{};
@@ -522,9 +574,134 @@ function render(d){
       `<span class="${up?"up":"down"}">${up?"▲":"▼"} ${fmtK(Math.abs(cf.netChange))}</span><b>since Jan 1</b>`;
   }
   const ar=d.arAging||{};
-  document.getElementById("kpiAR").textContent=fmtK(ar.total||0);
-  document.getElementById("kpiARSub").innerHTML=
-    `<span class="${(ar.overdue||0)>0?"down":"up"}">${fmtK(ar.overdue||0)} overdue</span><b>${ar.customerCount||0} customers</b>`;
+
+  /* labour mix — stacked overhead per month, with the overhead rate over it.
+     Stacking payroll + contractors + the rest means the column height is the
+     month's total overhead, so the split and the total read in one glance. */
+  {
+    const lab=oh.labor||{}, W=900,H=280,pL=52,pR=52,pB=30,pT=16;
+    const pay=(oh.monthlyPayroll||[]).slice(0,el);
+    const con=(oh.monthlyContractor||[]).slice(0,el);
+    const non=(oh.monthlyNonLabor||[]).slice(0,el);
+    const rate=(oh.monthlyRate||[]).slice(0,el);
+    const tot=pay.map((v,i)=>v+con[i]+non[i]);
+    const top=Math.max(...tot,1);
+    const y=v=>H-pB-(v/top)*(H-pB-pT);
+    const cw=(W-pL-pR)/el;
+    let g="";
+    for(let i=0;i<=4;i++){const gv=top/4*i,gy=y(gv);
+      g+=`<line x1="${pL}" y1="${gy}" x2="${W-pR}" y2="${gy}" style="stroke:var(--gridline)"/>
+          <text x="${pL-8}" y="${gy+3}" text-anchor="end">${fmtK(gv)}</text>`;}
+    const bw=Math.min(34,cw*.56);
+    const base=H-pB;
+    d.months.slice(0,el).forEach((mo,i)=>{
+      const x=pL+i*cw+cw/2-bw/2;
+      const hP=base-y(pay[i]), hC=base-y(con[i]), hN=base-y(non[i]);
+      let yy=base;
+      // payroll sits on the axis, contractors above it, other overhead on top
+      yy-=hP; g+=`<rect x="${x}" y="${yy}" width="${bw}" height="${Math.max(0,hP)}" style="fill:var(--ink)"/>`;
+      yy-=hC; g+=`<rect x="${x}" y="${yy}" width="${bw}" height="${Math.max(0,hC)}" style="fill:var(--g1)"/>`;
+      yy-=hN; g+=`<rect x="${x}" y="${yy}" width="${bw}" height="${Math.max(0,hN)}" rx="4" style="fill:var(--bar2);stroke:var(--muted)" stroke-width="1.2"/>`;
+      g+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle">${esc(mo)}</text>`;
+    });
+    // The rate line covers complete months only. The month in progress has banked
+    // some revenue but barely any of its costs, so plotting it would draw a
+    // cliff-drop that only means "the month isn't over yet".
+    const cm=Math.max(0,Math.min(el,d.completeMonths===undefined?el:d.completeMonths));
+    const rDone=rate.slice(0,cm);
+    const rMax=Math.max(1.1,...rDone)*1.04;
+    const ry=v=>H-pB-(v/rMax)*(H-pB-pT);
+    // 100% of revenue eaten by overhead — the line where a month breaks even
+    g+=`<line x1="${pL}" y1="${ry(1)}" x2="${W-pR}" y2="${ry(1)}" style="stroke:var(--neg);opacity:.45" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="${W-pR+6}" y="${ry(1)+3}" style="fill:var(--neg);opacity:.85">break-even</text>`;
+    const rp=rDone.map((v,i)=>[pL+i*cw+cw/2,ry(v)]);
+    if(rp.length){
+      g+=`<path d="${rp.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" style="stroke:var(--neg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 6"/>`;
+      const peak=rDone.indexOf(Math.max(...rDone));
+      rp.forEach(([px,py2],i)=>{
+        g+=`<circle cx="${px}" cy="${py2}" r="3.2" style="fill:var(--neg)"/>`;
+        if(i===0||i===rp.length-1||i===peak)
+          g+=`<text x="${px}" y="${py2-9}" text-anchor="middle" style="fill:var(--neg);font-weight:700">${Math.round(rDone[i]*100)}%</text>`;
+      });
+    }
+    if(cm<el)
+      g+=`<text x="${pL+(el-1)*cw+cw/2}" y="${H-20}" text-anchor="middle" style="fill:var(--faint)">partial</text>`;
+    document.getElementById("laborChart").innerHTML=g;
+    document.getElementById("laborBadge").textContent=
+      pct(lab.payrollShare||0)+" payroll · "+pct(lab.contractorShare||0)+" contract";
+  }
+
+  /* overhead composition */
+  {
+    const lab=oh.labor||{}, nl=oh.nonLabor||{}, t=oh.total||1;
+    document.getElementById("ohPeriod").textContent="Jan 1 – "+d.asOf;
+    document.getElementById("ohBar").innerHTML=
+      `<i style="width:${(lab.payroll||0)/t*100}%;background:#fff"></i>`+
+      `<i style="width:${(lab.contractor||0)/t*100}%;background:rgba(255,255,255,.55)"></i>`+
+      `<i style="width:${(nl.total||0)/t*100}%;background:rgba(255,255,255,.2)"></i>`;
+    document.getElementById("ohRows").innerHTML=[
+      ["Payroll",lab.payroll||0],["Contractors",lab.contractor||0],
+      ["Everything else",nl.total||0]
+    ].map(([n,v])=>`
+      <div class="prow"><div class="pt"><span>${n}</span><b>${fmtK(v)} · ${Math.round(v/t*100)}%</b></div>
+      <div class="bar"><i style="width:${v/t*100}%"></i></div></div>`).join("");
+    document.getElementById("ohStats").innerHTML=`
+      <div class="stat"><b>${pct(lab.rate||0)}</b><span>People, as % of revenue</span></div>
+      <div class="stat"><b>${pct(nl.rate||0)}</b><span>Everything else</span></div>`;
+  }
+
+  /* per-contractor spend — the reconciliation leads, because the question this
+     card answers is "is anyone missing", not "who cost the most" */
+  {
+    const c=(oh.labor||{}).contractors||oh.contractors;
+    const total=(oh.labor||{}).contractor||0;
+    if(c&&c.rows&&c.rows.length){
+      document.getElementById("conBadge").textContent=c.count+" people";
+      document.getElementById("conSub").textContent=
+        "of "+fmtK(c.accountTotal)+" contract labour";
+      const ok=c.complete, gap=c.unaccounted;
+      document.getElementById("conRecon").innerHTML=
+        `<div class="stats" style="margin-top:12px"><div class="stat" style="flex:1 1 100%">`+
+        // exact dollars, not fmtK — this figure is the whole point of the card
+        `<b class="${ok?"up":"down"}">${ok?"All accounted for":fmt$(Math.abs(gap))+(gap>0?" unattributed":" over account")}</b>`+
+        `<span>${ok
+          ? "named contractors match the Contract labor account"
+          : (gap>0
+             ? "in Contract labor with no name against it"
+             : "named spend exceeds the Contract labor account")}</span></div></div>`;
+      const mx=Math.max(...c.rows.map(r=>r[1]),1);
+      document.getElementById("conRows").innerHTML=c.rows.map(([n,v],i)=>`
+        <div class="prow" style="margin-top:${i?13:14}px"><div class="pt"><span>${esc(n)}</span><b>${fmt$(v)} · ${Math.round(v/c.accountTotal*100)}%</b></div>
+        <div class="bar"><i style="width:${v/mx*100}%;background:var(--g1)"></i></div></div>`).join("");
+    }else{
+      // no export loaded — still show the total, and say exactly what unlocks the split
+      document.getElementById("conBadge").textContent="not loaded";
+      document.getElementById("conSub").textContent="who the contract labour went to";
+      document.getElementById("conRecon").innerHTML=
+        `<div class="stats" style="margin-top:12px"><div class="stat" style="flex:1 1 100%">`+
+        `<b>${fmt$(total)}</b><span>in Contract labor, not yet broken out by person</span></div></div>`;
+      // .note is a flex row (bullet + body), so the whole message must be a single
+      // child — bare inline tags become sibling flex items and scatter the sentence
+      document.getElementById("conRows").innerHTML=
+        `<div class="notes" style="margin-top:4px"><div class="note"><span>`+
+        `QuickBooks' connector has no expenses-by-vendor report, so this one has to be `+
+        `exported: <b style="color:var(--ink)">Reports → Expenses by Vendor Summary</b>, `+
+        `filtered to Contract labor. Save it as `+
+        `<b style="color:var(--ink)">contractors.csv</b> in the snapshots folder and `+
+        `rebuild — the card then lists every contractor and flags any spend with no `+
+        `name against it.</span></div></div>`;
+    }
+  }
+
+  /* every line that pays a human */
+  {
+    const lab=oh.labor||{}, rows=lab.detail||[];
+    const t=lab.total||1, mx=Math.max(...rows.map(r=>r[1]),1);
+    document.getElementById("laborTotal").textContent=fmtK(t)+" · "+pct(lab.rate||0)+" of revenue";
+    document.getElementById("laborRows").innerHTML=rows.map(([n,v])=>`
+      <div class="prow"><div class="pt"><span>${esc(n)}</span><b>${fmtK(v)} · ${Math.round(v/t*100)}%</b></div>
+      <div class="bar"><i style="width:${v/mx*100}%;${/contract/i.test(n)?"background:var(--g1)":""}"></i></div></div>`).join("");
+  }
 
   /* monthly P&L: revenue vs expenses, with the net line riding on top */
   {

@@ -4,8 +4,10 @@
 # ~/Dropbox/Anomaly Creative LLC/qbo-snapshots/; these patterns are a backstop
 # in case a copy is ever dropped in here by hand.
 financials_payload.json
+qbo_snapshot.json
 qbo-snapshots/
 pl_*.json
 extra.json
+contractors.csv
 
 .DS_Store

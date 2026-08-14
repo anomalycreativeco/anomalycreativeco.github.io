@@ -234,6 +234,41 @@
   .cgrp .clab i{width:5px;height:5px;border-radius:50%;background:var(--green);display:block;flex:none}
   .cgrp.meet .clab i{background:var(--green-mid)}
   .cgrp.meet .trow.cal .dot{background:var(--green-mid)}
+  /* ---- Reminders ----
+     Sits above Today because it's the one card that is entirely yours: things
+     you asked to be reminded of, and things the team asked of you. */
+  .rem-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .rem-head b{font-size:12px;color:var(--green);font-weight:700;margin-left:auto}
+  .remtab{display:flex;gap:4px;margin-bottom:9px}
+  .remtab button{flex:1;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;
+    padding:6px 0;cursor:pointer}
+  .remtab button.on{background:var(--green);color:#fff;border-color:var(--green)}
+  html[data-theme="dark"] .remtab button.on{color:#0a100f}
+  .rem-new{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+  .rem-new input,.rem-new select{width:100%;font:inherit;font-size:12px;color:var(--ink);
+    background:var(--card-solid);border:1px solid var(--line);border-radius:9px;padding:8px 10px;outline:none}
+  .rem-new input:focus,.rem-new select:focus{border-color:var(--green-soft)}
+  .rem-new .row2{display:flex;gap:6px}
+  .rem-new .row2 input[type=date]{flex:1}
+  .rem-add{flex:none;background:var(--green);color:#fff;border:0;border-radius:9px;
+    padding:0 14px;font-weight:700;font-size:12px;cursor:pointer}
+  html[data-theme="dark"] .rem-add{color:#0a100f}
+  .rem-add:disabled{opacity:.4;cursor:default}
+  .remrow{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-top:1px solid var(--line);
+    font-size:12px;color:var(--body);line-height:1.35}
+  .remrow:first-child{border-top:none}
+  .remrow .tick{width:14px;height:14px;border-radius:5px;border:1.5px solid var(--line);
+    background:none;cursor:pointer;flex:none;margin-top:1px;padding:0}
+  .remrow .tick:hover{border-color:var(--green)}
+  .remrow .body{flex:1;min-width:0}
+  .remrow .body b{display:block;color:var(--ink);font-weight:600}
+  .remrow .meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--faint);margin-top:2px}
+  .remrow.over .meta{color:#c0563c}
+  .remrow .x{border:0;background:none;color:var(--faint);cursor:pointer;font-size:12px;padding:2px 3px;line-height:1}
+  .remrow .x:hover{color:#c0563c}
+  .rem-empty{font-size:11px;color:var(--muted);padding:8px 0;text-align:center}
+
   /* Mine / Team switch — its own row; the 250px card can't fit it beside the date */
   .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;
     background:var(--card-solid);margin-bottom:10px}
@@ -607,6 +642,21 @@
 
       <!-- the calendar sits back on the hero — it's the thing you look at first -->
     <div class="astrip" id="astrip" hidden>
+      <div class="acard" id="remCard">
+        <div class="rem-head"><span id="remLabel">Reminders</span><b id="remBadge"></b></div>
+        <div class="remtab" id="remTabs">
+          <button data-rt="mine" class="on">For me</button><button data-rt="sent">I sent</button>
+        </div>
+        <div class="rem-new" id="remNew">
+          <input id="remText" placeholder="Remind me to&hellip;" maxlength="140">
+          <select id="remWho" hidden></select>
+          <div class="row2">
+            <input type="date" id="remDue" title="When (optional)">
+            <button class="rem-add" id="remAdd" disabled>Add</button>
+          </div>
+        </div>
+        <div id="remList"></div>
+      </div>
       <div class="acard" id="todayCard">
         <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
         <div class="seg" id="todayScope" hidden>
@@ -730,7 +780,7 @@ const auth=getAuth(app), db=getFirestore(app);
 /* Bump on every deploy. Shown next to the wordmark so anyone reporting a
    problem can say which build they're on — GitHub Pages caches at the edge for
    ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.4.0", APP_BUILD="2026-08-01";
+const APP_VERSION="1.5.0", APP_BUILD="2026-08-01";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -942,6 +992,7 @@ function applyAccess(){
   document.getElementById("deck").hidden=false;
   document.getElementById("scrollCue").hidden=false;
   WL=wlLoad(); mountTools(); applyLayout();
+  initReminders(); loadReminders();
   document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
   loadToday(); loadJosh();
@@ -1059,6 +1110,170 @@ async function loadToday(){
   renderTodayCal();
   renderTodayTasks(null);
 }
+/* ---- Reminders -----------------------------------------------------------
+   Replaces the pipeline's sticky notes. Two kinds: ones you set for yourself
+   and ones the team sets for you — same list, because from your side there is
+   no difference in what you have to do. "I sent" is a separate tab so you can
+   see what you have asked of other people without it cluttering your own list.
+
+   Stored in hub/reminders as a JSON list, the same shape and path family as
+   hub/automations and hub/briefs, which this project already writes to. */
+let REMS=[], REM_TAB="mine", TEAM=[];
+const remDoc=()=>doc(db,"hub","reminders");
+const remId=()=>"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const firstOf=e=>String(e||"").split("@")[0].split(/[.\-_]/)[0].replace(/^./,c=>c.toUpperCase());
+
+const FIO_BRIDGE="https://anomaly-frameio-bridge.weathered-bird-9848.workers.dev";
+let REM_MIGRATED=false;
+
+async function loadReminders(){
+  try{
+    const d=await getDoc(remDoc());
+    const data=d.exists()?(d.data()||{}):{};
+    REMS=JSON.parse(data.list||"[]");
+    REM_MIGRATED=!!data.migrated;
+  }catch(e){ REMS=[]; }
+  try{
+    const rs=await getDocs(collection(db,"roles"));
+    TEAM=rs.docs.map(x=>x.id.toLowerCase()).filter(Boolean).sort();
+  }catch(e){ TEAM=[]; }
+  if(!TEAM.includes(effEmail())) TEAM.push(effEmail());
+  renderReminders();
+  if(!REM_MIGRATED) migrateStickyNotes();
+}
+
+/* One-off import of the pipeline's sticky notes. They were real work people
+   had written down, so they come across rather than being dropped. Sticky
+   notes carry an editor NAME, not an email, so it's matched back to the team
+   by first name; anything unmatchable lands with whoever runs the migration
+   rather than vanishing. Runs once, guarded by a flag on the doc. */
+async function migrateStickyNotes(){
+  try{
+    const snap=await getDocs(collection(db,"tasks"));
+    const notes=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(t=>t.type==="braindump" && !t.completed);
+    const me=(effEmail()||"").toLowerCase();
+    const byFirst={}; TEAM.forEach(e=>{ byFirst[firstOf(e).toLowerCase()]=e; });
+    const seen=new Set(REMS.map(r=>r.src).filter(Boolean));
+    let added=0;
+    notes.forEach(t=>{
+      if(seen.has(t.id)) return;
+      const body=[t.projectName,t.notes].map(x=>String(x||"").trim()).filter(Boolean).join(" — ");
+      if(!body) return;
+      const who=byFirst[String(t.assignee||"").trim().toLowerCase()]||me;
+      REMS.push({id:remId(),text:body.slice(0,300),for:who,from:who,
+        due:t.dueDate||"",done:false,createdAt:t.createdAt||Date.now(),src:t.id});
+      added++;
+    });
+    REM_MIGRATED=true;
+    await saveReminders();
+    if(added) renderReminders();
+  }catch(e){ /* migration is best-effort; reminders still work without it */ }
+}
+
+/* Ping the person in Slack. Fired after the save, never before: a Slack
+   outage should cost a notification, not the reminder. */
+async function pingSlack(toEmail,text){
+  try{
+    if(!AUTH_USER||!AUTH_USER.getIdToken) return;
+    const idt=await AUTH_USER.getIdToken();
+    await fetch(FIO_BRIDGE+"/notify",{method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+idt},
+      body:JSON.stringify({to:toEmail,text})});
+  }catch(e){}
+}
+async function saveReminders(){
+  try{
+    await setDoc(remDoc(),{list:JSON.stringify(REMS),migrated:REM_MIGRATED,
+      updatedBy:MYEMAIL,at:Date.now()});
+    return true;
+  }catch(e){
+    // a silent permission-denied is indistinguishable from a dead button
+    const l=document.getElementById("remList");
+    if(l) l.insertAdjacentHTML("afterbegin",
+      `<div class="rem-empty" style="color:#c0563c">Couldn't save (${esc(e.code||e.message)}).</div>`);
+    return false;
+  }
+}
+function remDueLabel(r){
+  if(!r.due) return "";
+  const t=todayISO();
+  const d=Math.round((new Date(r.due+"T12:00")-new Date(t+"T12:00"))/864e5);
+  if(d<0) return (-d)+"d overdue";
+  if(d===0) return "today";
+  if(d===1) return "tomorrow";
+  if(d<7) return new Date(r.due+"T12:00").toLocaleDateString("en-US",{weekday:"long"});
+  return new Date(r.due+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+function renderReminders(){
+  const list=document.getElementById("remList"); if(!list) return;
+  const me=(effEmail()||"").toLowerCase(), t=todayISO();
+  const mine=REMS.filter(r=>!r.done && (r.for||"").toLowerCase()===me);
+  const sent=REMS.filter(r=>!r.done && (r.from||"").toLowerCase()===me && (r.for||"").toLowerCase()!==me);
+  const rows=(REM_TAB==="mine"?mine:sent)
+    .sort((a,b)=>(a.due||"9999")<(b.due||"9999")?-1:1);
+
+  document.getElementById("remBadge").textContent=mine.length?mine.length:"";
+  document.getElementById("remTabs").querySelectorAll("button")
+    .forEach(b=>b.classList.toggle("on",b.dataset.rt===REM_TAB));
+
+  // the composer only needs a person picker when you're reminding someone else
+  const who=document.getElementById("remWho");
+  who.hidden = REM_TAB!=="sent";
+  if(REM_TAB==="sent" && !who.dataset.filled){
+    who.innerHTML=TEAM.filter(e=>e!==me).map(e=>`<option value="${esc(e)}">${esc(firstOf(e))}</option>`).join("")
+      || `<option value="">No teammates found</option>`;
+    who.dataset.filled="1";
+  }
+  document.getElementById("remText").placeholder =
+    REM_TAB==="sent" ? "Ask someone to\u2026" : "Remind me to\u2026";
+
+  list.innerHTML = rows.length ? rows.map(r=>{
+    const over=r.due&&r.due<t;
+    const bits=[];
+    if(r.due) bits.push(remDueLabel(r));
+    if(REM_TAB==="mine" && (r.from||"").toLowerCase()!==me) bits.push("from "+firstOf(r.from));
+    if(REM_TAB==="sent") bits.push("for "+firstOf(r.for));
+    return `<div class="remrow ${over?"over":""}" data-rid="${r.id}">
+      <button class="tick" data-rdone title="Mark done"></button>
+      <div class="body"><b>${esc(r.text)}</b>${bits.length?`<div class="meta">${esc(bits.join(" \u00b7 "))}</div>`:""}</div>
+      <button class="x" data-rdel title="Delete">\u2715</button>
+    </div>`;
+  }).join("")
+  : `<div class="rem-empty">${REM_TAB==="mine"?"Nothing on your list.":"You haven't asked anyone for anything."}</div>`;
+}
+function initReminders(){
+  const tabs=document.getElementById("remTabs"), list=document.getElementById("remList");
+  const text=document.getElementById("remText"), add=document.getElementById("remAdd");
+  if(!tabs||!list||!text) return;
+  tabs.addEventListener("click",e=>{
+    const b=e.target.closest("[data-rt]"); if(!b) return;
+    REM_TAB=b.dataset.rt; renderReminders();
+  });
+  text.addEventListener("input",()=>{ add.disabled=!text.value.trim(); });
+  text.addEventListener("keydown",e=>{ if(e.key==="Enter"&&text.value.trim()) add.click(); });
+  add.addEventListener("click",async()=>{
+    const body=text.value.trim(); if(!body) return;
+    const me=(effEmail()||"").toLowerCase();
+    const who=document.getElementById("remWho");
+    const target = REM_TAB==="sent" ? (who.value||me) : me;
+    REMS.push({id:remId(),text:body,for:target,from:me,
+      due:document.getElementById("remDue").value||"",done:false,createdAt:Date.now()});
+    text.value=""; document.getElementById("remDue").value=""; add.disabled=true;
+    renderReminders();
+    const ok=await saveReminders();
+    if(ok && target!==me) pingSlack(target,body);
+  });
+  list.addEventListener("click",async e=>{
+    const row=e.target.closest("[data-rid]"); if(!row) return;
+    const r=REMS.find(x=>x.id===row.dataset.rid); if(!r) return;
+    if(e.target.closest("[data-rdone]")){ r.done=true; r.doneAt=Date.now(); }
+    else if(e.target.closest("[data-rdel]")){ REMS=REMS.filter(x=>x.id!==r.id); }
+    else return;
+    renderReminders(); await saveReminders();
+  });
+}
+
 /* ---- widget layout: order + size, per person ----------------------------
    Stored per email in localStorage rather than Firestore, deliberately: a
    layout is a response to the screen in front of you, so it should not follow
