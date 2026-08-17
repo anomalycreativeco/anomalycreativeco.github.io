@@ -157,6 +157,11 @@
   .wgrid .acard[data-size="m"]{grid-column:span 2}
   .wgrid .acard[data-size="l"]{grid-column:span 3}
   .wgrid .acard[data-size="xl"]{grid-column:span 4}
+  .cdcodes{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+  .cdchip{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink);
+    background:var(--card-solid);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+  #cdBody .meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--faint);margin-top:2px}
+  #cdBody .trow.over .meta{color:#c0563c}
   .wsub{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--faint);margin:12px 0 2px;padding-top:8px;border-top:1px solid var(--line)}
   .wbars{display:flex;flex-direction:column;gap:5px;margin-top:5px}
@@ -712,6 +717,10 @@
       <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
       <div class="tmore" id="aClientsMore" style="display:none"></div>
     </div>
+    <div class="acard" id="cdCard" data-w="cds" style="display:none">
+      <div class="ahead"><span id="cdLabel">My clients</span><b id="cdBadge"></b></div>
+      <div id="cdBody"><div class="amsg">Loading your clients…</div></div>
+    </div>
     <div class="acard" id="joshCard" data-w="josh" style="display:none">
       <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
       <div id="jBody"><div class="amsg">Loading tracker…</div></div>
@@ -780,7 +789,7 @@ const auth=getAuth(app), db=getFirestore(app);
 /* Bump on every deploy. Shown next to the wordmark so anyone reporting a
    problem can say which build they're on — GitHub Pages caches at the edge for
    ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.5.0", APP_BUILD="2026-08-01";
+const APP_VERSION="1.6.0", APP_BUILD="2026-08-01";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -992,7 +1001,7 @@ function applyAccess(){
   document.getElementById("deck").hidden=false;
   document.getElementById("scrollCue").hidden=false;
   WL=wlLoad(); mountTools(); applyLayout();
-  initReminders(); loadReminders();
+  initReminders(); loadReminders(); loadClients();
   document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
   loadToday(); loadJosh();
@@ -1279,10 +1288,10 @@ function initReminders(){
    layout is a response to the screen in front of you, so it should not follow
    you from a 27" desktop to a laptop. Unknown widgets fall to the end, so
    adding one later never strands it. */
-const WKEYS=["kpis","chart","clients","josh"];
+const WKEYS=["cds","kpis","chart","clients","josh"];
 const WSIZES=["s","m","l"];
 const WLABEL={s:"S",m:"M",l:"L"};
-const WDEFAULT={kpis:"s",chart:"m",clients:"s",josh:"s"};
+const WDEFAULT={cds:"s",kpis:"s",chart:"m",clients:"s",josh:"s"};
 const wlKey=()=>"hub.widgets."+((effEmail()||"anon").toLowerCase());
 function wlLoad(){
   try{
@@ -1561,13 +1570,55 @@ function drawStats(tasks){
 let STATS=null;
 const wSize=k=>((WL&&WL.size&&WL.size[k])||"s");
 function renderWidgetBodies(){
-  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody();
+  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody(); renderMyClients();
 }
 function taskLine(t,extra){
   return `<div class="trow${extra&&extra.over?" over":""}"><span class="dot"></span>
     ${extra&&extra.tt?`<span class="tt">${esc(extra.tt)}</span>`:""}
     <span><b>${esc(t.clientAbbr||"—")}</b> · ${esc(t.projectName||t.type||"task")}</span></div>`;
 }
+/* ---- My clients ----
+   Every client we post for has exactly one creative director. A blank director
+   means we don't post for them, so those simply never appear here. */
+let CLIENTS=[];
+async function loadClients(){
+  try{
+    const snap=await getDocs(collection(db,"clients"));
+    CLIENTS=snap.docs.map(d=>d.data());
+  }catch(e){ CLIENTS=[]; }
+  renderMyClients();
+}
+function renderMyClients(){
+  const box=document.getElementById("cdBody"), card=document.getElementById("cdCard");
+  if(!box||!card) return;
+  const me=firstName();
+  const mine=CLIENTS.filter(c=>String(c.director||"").trim().toLowerCase()===me)
+    .sort((a,b)=>String(a.name||"").localeCompare(String(b.name||"")));
+  // not a creative director? the card has nothing to say, so it stays away
+  if(!mine.length){ card.style.display="none"; return; }
+  card.style.display="block";
+  document.getElementById("cdBadge").textContent=mine.length;
+  const size=wSize("cds"), tasks=LASTTASKS||[], today=todayISO();
+  const openFor=a=>tasks.filter(t=>!t.completed&&t.clientAbbr===a&&t.type!=="filming"&&t.type!=="braindump");
+  if(size==="s"){
+    box.innerHTML=`<div class="cdcodes">${mine.map(c=>`<span class="cdchip">${esc(c.abbr)}</span>`).join("")}</div>`;
+    return;
+  }
+  box.innerHTML=mine.map(c=>{
+    const op=openFor(c.abbr);
+    const late=op.filter(t=>t.dueDate&&t.dueDate<today).length;
+    const due=op.filter(t=>t.dueDate===today).length;
+    const bits=[];
+    if(size==="l"){
+      bits.push(op.length+" open");
+      if(due) bits.push(due+" due today");
+      if(late) bits.push(late+" overdue");
+    } else bits.push(op.length+" open");
+    return `<div class="trow ${late&&size==="l"?"over":""}"><span class="dot"></span>
+      <span><b>${esc(c.abbr)}</b> · ${esc(c.name||"")}<div class="meta">${esc(bits.join(" · "))}</div></span></div>`;
+  }).join("");
+}
+
 function renderKpiBody(){
   const box=document.getElementById("aBody"); if(!box||!STATS) return;
   const size=wSize("kpis"), {open,overdue,delivered,inprod,today}=STATS;
