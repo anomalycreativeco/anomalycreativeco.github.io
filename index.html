@@ -8,553 +8,392 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="logomark.png">
 <style>
-  :root{
-    --ink:#111417;
-    --body:#3d4449;
-    --muted:#878e94;
-    --faint:#b4bac0;
-    --card:rgba(255,255,255,.78);
-    --card-solid:#ffffff;
-    --line:rgba(17,20,23,.07);
-    --shadow:0 18px 40px -18px rgba(17,20,23,.22), 0 4px 12px -6px rgba(17,20,23,.08);
-    --shadow-sm:0 10px 24px -14px rgba(17,20,23,.25);
-    --green:#4E6A63; --green-mid:#6D8F88; --green-soft:#91ABA5; --green-pale:#B5C6C2;
-    --bg:radial-gradient(120% 90% at 50% -10%, #ffffff 0%, #f2f3f4 45%, #e3e5e7 100%);
-    --strip:rgba(255,255,255,.95);
-    --pill-r:999px; --r:20px;
-    --sans:"Creatodisplay","Creato Display",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
-    --mono:ui-monospace,"SF Mono","Menlo",monospace;
-    --ease:cubic-bezier(.2,.7,.2,1);
-  }
-  html[data-theme="dark"]{
-    --ink:#f2f5f4;
-    --body:#c3cecb;
-    --muted:#7e8f8b;
-    --faint:#54615e;
-    --card:rgba(22,28,27,.72);
-    --card-solid:#181e1d;
-    --line:rgba(181,198,194,.1);
-    --shadow:0 18px 40px -18px rgba(0,0,0,.7), 0 4px 12px -6px rgba(0,0,0,.5);
-    --shadow-sm:0 10px 24px -14px rgba(0,0,0,.7);
-    --green:#91ABA5; --green-mid:#8fb5ac; --green-soft:#6D8F88; --green-pale:#3C554F;
-    --bg:radial-gradient(120% 90% at 50% -10%, #10201c 0%, #0a100f 45%, #050807 100%);
-    --strip:rgba(145,171,165,.5);
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{height:100%}body{min-height:100%}
-  body{
-    font-family:var(--sans);color:var(--body);-webkit-font-smoothing:antialiased;
-    background:var(--bg) fixed;overflow-x:hidden;transition:background .4s;
-  }
-  ::selection{background:var(--green);color:#fff}
-  a{text-decoration:none;color:inherit}
-  button{font-family:inherit}
+/* ═══ Studio Hub v2 — sidebar + card grid. The old absolutely-positioned hero
+   collage is gone; nothing on this page can overlap anything else. ═══ */
+:root{
+  --page:#E9E9E6; --card:#F6F6F4; --card-2:#FFFFFF; --ink:#16181A; --mid:#5D6165;
+  --faint:#93979B; --line:rgba(0,0,0,.07); --line-2:rgba(0,0,0,.12);
+  --feat:#111315; --feat-ink:#FFFFFF; --feat-mid:#9AA0A4; --feat-line:rgba(255,255,255,.12);
+  --green:#8FB3AC; --green-deep:#3C5C55; --red:#C0563C; --amber:#B98A3E;
+  --red-tint:rgba(192,86,60,.12); --amber-tint:rgba(185,138,62,.14); --green-tint:rgba(143,179,172,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --r:22px; --r-sm:14px;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --page:#0C0D0E; --card:#161819; --card-2:#1C1F20; --ink:#F2F3F3; --mid:#9BA1A5;
+  --faint:#6B7175; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+  --feat:#F6F6F4; --feat-ink:#16181A; --feat-mid:#5D6165; --feat-line:rgba(0,0,0,.12);
+  --green:#8FB3AC; --green-deep:#B9D4CE; --red:#E0785C; --amber:#D6A758;
+  --red-tint:rgba(224,120,92,.15); --amber-tint:rgba(214,167,88,.15); --green-tint:rgba(143,179,172,.14);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;font-size:13px;line-height:1.45;min-height:100vh}
+button{font-family:var(--sans)}
+.lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
 
-  .room{position:fixed;inset:0;pointer-events:none;z-index:0}
-  .room::before{
-    content:"";position:absolute;top:-40px;left:50%;transform:translateX(-50%);
-    width:min(880px,80vw);height:160px;pointer-events:none;
-    background:radial-gradient(50% 100% at 50% 0%, var(--strip), transparent 68%);
-    opacity:.45;filter:blur(18px);
-  }
-  .room::after{
-    content:"";position:absolute;left:0;right:0;bottom:0;height:26vh;
-    background:linear-gradient(180deg,transparent,rgba(17,20,23,.05));
-  }
+/* ── auth gate (dark on purpose in both themes — it is the front door) ── */
+.gate{position:fixed;inset:0;z-index:200;background:#0C0D0E;display:grid;place-items:center;
+  transition:opacity .4s,visibility .4s}
+.gate.off{opacity:0;visibility:hidden;pointer-events:none}
+.gcard{text-align:center;max-width:340px;padding:30px}
+.gcard img{width:64px;height:64px;object-fit:contain;margin-bottom:18px}
+.gk{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6B7175;margin-bottom:8px}
+.gcard h2{color:#F2F3F3;font-size:26px;font-weight:600;letter-spacing:-.02em;margin-bottom:22px}
+.gbtn{display:inline-flex;align-items:center;gap:10px;background:#F2F3F3;color:#16181A;border:0;
+  border-radius:999px;padding:12px 22px;font-size:13.5px;font-weight:600;cursor:pointer}
+.gbtn:hover{background:#fff}
+.gdot{width:9px;height:9px;border-radius:50%;background:#8FB3AC}
+.gmsg{margin-top:16px;font-size:12px;color:#9BA1A5;min-height:18px}
+.gmsg.err{color:#E0785C}
+.gout{display:none;margin:14px auto 0;background:transparent;border:1px solid rgba(255,255,255,.2);
+  color:#9BA1A5;border-radius:999px;padding:7px 16px;font-size:11.5px;cursor:pointer}
+.gout.show{display:block}
+.gsub{margin-top:22px;font-size:11px;color:#6B7175;line-height:1.6}
 
-  .stage{position:relative;z-index:1;max-width:1440px;margin:0 auto;min-height:100vh;padding:24px 40px 40px}
+/* ── preview banner ── */
+.pvbanner{display:none;position:fixed;top:0;left:0;right:0;z-index:150;background:var(--amber);color:#231a08;
+  padding:8px 16px;font-size:12px;align-items:center;gap:8px;flex-wrap:wrap}
+.pvbanner.on{display:flex}
+.pvbanner b{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.pvbanner button{margin-left:auto;border:0;background:#231a08;color:#f3e8cf;border-radius:999px;
+  padding:5px 14px;font-size:11.5px;font-weight:600;cursor:pointer}
+body.previewing .shell{padding-top:52px}
 
-  /* ── Top bar ─────────────────────── */
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;z-index:6}
-  .brand{display:flex;align-items:center;gap:11px}
-  .brand .badge{
-    width:34px;height:34px;border-radius:50%;background:#92ABA7;flex:none;
-    display:grid;place-items:center;box-shadow:0 1px 4px rgba(28,33,31,.25);
-  }
-  .brand .badge img{width:19px;height:19px;object-fit:contain;display:block}
-  .brand-name b{display:block;font-size:13px;letter-spacing:.14em;color:var(--ink);font-weight:700;line-height:1.15;text-transform:uppercase}
-  .brand-name span{font-size:11px;color:var(--muted);letter-spacing:.04em}
-  .navpills{display:flex;gap:8px;position:absolute;left:50%;transform:translateX(-50%)}
-  .navpills a,.navpills button{
-    font-size:13px;font-weight:600;color:var(--body);cursor:pointer;
-    background:var(--card);backdrop-filter:blur(10px);
-    border:1px solid var(--line);border-radius:var(--pill-r);
-    padding:10px 22px;box-shadow:var(--shadow-sm);transition:all .25s var(--ease);
-  }
-  .navpills a:hover,.navpills button:hover{transform:translateY(-2px);color:var(--ink)}
-  .navpills .active{background:var(--ink);color:var(--card-solid);border-color:var(--ink)}
-  .tb-right{display:flex;align-items:center;gap:10px}
-  .theme-btn,.gear-btn{
-    width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:15px;
-    background:var(--card);border:1px solid var(--line);color:var(--muted);
-    box-shadow:var(--shadow-sm);transition:all .25s var(--ease);
-  }
-  .theme-btn:hover,.gear-btn:hover{color:var(--ink);transform:translateY(-2px)}
-  .gear-btn{display:none}
-  .userchip{
-    display:flex;align-items:center;gap:10px;background:var(--card);backdrop-filter:blur(10px);
-    border:1px solid var(--line);border-radius:var(--pill-r);padding:6px 16px 6px 6px;box-shadow:var(--shadow-sm);
-    cursor:pointer;transition:all .25s var(--ease);
-  }
-  .userchip:hover{transform:translateY(-2px)}
-  .userchip .avatar{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--card-solid);display:grid;place-items:center;font-size:12px;font-weight:700;overflow:hidden}
-  .userchip .avatar img{width:100%;height:100%;object-fit:cover}
-  .userchip .who b{display:block;font-size:12.5px;color:var(--ink);line-height:1.2}
-  .userchip .who span{font-size:10.5px;color:var(--muted)}
+/* ── shell ── */
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);gap:14px;padding:14px;min-height:100vh;align-items:start}
 
-  .canvas{position:relative;min-height:max(calc(100vh - 120px), 680px);margin-top:8px}
+/* ── sidebar ── */
+.side{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:20px 14px;position:sticky;top:14px;height:calc(100vh - 28px);display:flex;flex-direction:column;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 6px;cursor:pointer}
+.brand .mk{width:30px;height:30px;flex:none;display:grid;place-items:center}
+.brand .mk img{width:100%;height:100%;object-fit:contain;display:block}
+.brand .mk .dk{display:none}
+[data-theme="dark"] .brand .mk .lt{display:none}
+[data-theme="dark"] .brand .mk .dk{display:block}
+.brand b{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.appver{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--faint);
+  border:1px solid var(--line-2);border-radius:999px;padding:1px 7px;margin-left:auto;white-space:nowrap}
+.navlbl{padding:14px 8px 8px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a,.nav button{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:12px;border:0;
+  background:transparent;color:var(--mid);text-decoration:none;font-size:13px;cursor:pointer;
+  text-align:left;width:100%;transition:.15s}
+.nav .ic{width:17px;text-align:center;font-size:14px;opacity:.8;flex:none}
+.nav a:hover,.nav button:hover{background:var(--line);color:var(--ink)}
+.nav .active{background:var(--feat);color:var(--feat-ink)}
+.nav .tag{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--faint)}
+.nav .active .tag{color:var(--feat-mid)}
+.navsep{height:1px;background:var(--line);margin:14px 8px}
+.side .foot{margin-top:auto;padding-top:14px}
+.ares-switch{display:none;align-items:center;gap:9px;padding:8px 10px;border-radius:12px;
+  border:1px solid var(--line-2);color:var(--mid);text-decoration:none;margin-bottom:9px}
+.ares-switch.show{display:flex}
+.ares-switch:hover{border-color:var(--faint);color:var(--ink)}
+.ares-switch img{width:24px;height:24px;border-radius:7px;object-fit:cover}
+.ares-switch .t small{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.ares-switch .t b{font-size:12px;letter-spacing:.04em}
+.userchip{display:flex;align-items:center;gap:10px;padding:9px;border-radius:14px;background:var(--card-2);
+  box-shadow:var(--shadow-sm);cursor:pointer}
+.userchip .avatar{width:32px;height:32px;border-radius:10px;background:var(--green);color:var(--green-deep);
+  display:grid;place-items:center;font-weight:600;font-size:12px;flex:none;overflow:hidden}
+[data-theme="dark"] .userchip .avatar{color:#1c2b27}
+.userchip .avatar img{width:100%;height:100%;object-fit:cover}
+.userchip .who b{display:block;font-size:12.5px;font-weight:500;line-height:1.2}
+.userchip .who span{font-size:10.5px;color:var(--faint)}
+.umenu{display:none;position:absolute;bottom:56px;left:0;right:0;background:var(--card-2);border-radius:14px;
+  box-shadow:var(--shadow);padding:6px;z-index:60;max-height:300px;overflow-y:auto}
+.umenu.open{display:block}
+.umenu .uh{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:8px 10px 6px}
+.umenu button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;color:var(--ink);
+  font-size:12px;padding:8px 10px;border-radius:9px;cursor:pointer;text-align:left}
+.umenu button:hover{background:var(--line)}
+.umenu button small{margin-left:auto;color:var(--faint);font-size:10px}
+.umenu .eye{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;flex:none}
 
-  /* title */
-  .titleblock{position:absolute;left:2%;top:6%;max-width:360px;z-index:4}
-  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-  h1{font-size:clamp(38px,4.4vw,58px);line-height:1.02;letter-spacing:-.02em;color:var(--ink);font-weight:700}
-  .sub{margin-top:8px;font-size:13px;color:var(--muted);letter-spacing:.04em}
+/* ── topbar ── */
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top h1{font-size:26px;font-weight:600;letter-spacing:-.025em;margin-right:6px}
+.pill-time{display:flex;align-items:center;gap:9px;background:var(--card);border-radius:999px;
+  padding:8px 15px 8px 8px;box-shadow:var(--shadow-sm)}
+.pill-time .ico{width:30px;height:30px;border-radius:50%;background:var(--feat);color:var(--feat-ink);
+  display:grid;place-items:center;font-size:12px;flex:none}
+.pill-time .tx b{display:block;font-size:12px;font-weight:500;line-height:1.25;font-variant-numeric:tabular-nums}
+.pill-time .tx span{font-size:10px;color:var(--faint)}
+.search{flex:1;min-width:170px;max-width:300px;display:flex;align-items:center;gap:6px;position:relative;
+  background:var(--card);border-radius:999px;padding:8px 8px 8px 14px;box-shadow:var(--shadow-sm)}
+.search svg{width:14px;height:14px;fill:none;stroke:var(--faint);stroke-width:2;flex:none}
+.search input{border:0;background:transparent;outline:none;color:var(--ink);font-size:12.5px;
+  font-family:var(--sans);width:100%}
+.search input::placeholder{color:var(--faint)}
+.sdrop{display:none;position:absolute;top:44px;left:0;right:0;background:var(--card-2);border-radius:14px;
+  box-shadow:var(--shadow);padding:6px;z-index:70}
+.sdrop.open{display:block}
+.sdrop button{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;color:var(--ink);
+  font-size:12.5px;padding:9px 11px;border-radius:9px;cursor:pointer;text-align:left}
+.sdrop button:hover,.sdrop button.hot{background:var(--line)}
+.sdrop button small{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+.tbtn{width:38px;height:38px;border-radius:50%;background:var(--card);box-shadow:var(--shadow-sm);
+  display:grid;place-items:center;cursor:pointer;font-size:14px;color:var(--mid);border:0;flex:none}
+.tbtn:hover{color:var(--ink)}
+.tbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.spacer{flex:1}
 
-  /* ── 3D logomark ─────────────────── */
-  .scene{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(380px,36vw);aspect-ratio:1;perspective:1400px;z-index:2}
-  .spinner{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 14s linear infinite}
-  .spinner img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-  @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
-  .podium{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(540px,50vw);aspect-ratio:1;z-index:1;pointer-events:none}
-  .podium .ring{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);width:100%;height:24%;border-radius:50%;
-    background:radial-gradient(closest-side, var(--strip), transparent 72%);opacity:.85}
-  .podium .shade{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);width:46%;height:7%;border-radius:50%;
-    background:radial-gradient(closest-side, rgba(0,0,0,.3), transparent 70%);filter:blur(6px)}
+/* ── widget grid ── */
+.deck[hidden]{display:none}
+.wgrid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+.acard{position:relative;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:17px 18px;min-width:0;grid-column:span 4}
+.acard[data-size="m"]{grid-column:span 6}
+.acard[data-size="l"]{grid-column:span 8}
+#cdCard{grid-column:span 12!important}
+#cdCard .wsize{display:none}
+.acard.feat{background:var(--feat);color:var(--feat-ink)}
+.acard.feat .lbl,.acard.feat .ahead span{color:var(--feat-mid)}
+.acard.dragging{opacity:.45}
+.acard.dropzone{outline:2px dashed var(--green);outline-offset:3px}
+.ahead{display:flex;align-items:center;gap:9px;margin-bottom:13px;padding-right:52px}
+.ahead span{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);flex:1;min-width:0}
+.ahead b{font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;
+  background:var(--line);color:var(--mid);white-space:nowrap}
+.ahead b:empty{display:none}
+.ahead b.hot{background:var(--red-tint);color:var(--red)}
+.ahead b.warn{background:var(--amber-tint);color:var(--amber)}
+.acard.feat .ahead b{background:rgba(0,0,0,.08);color:var(--feat-mid)}
+.wtools{position:absolute;top:13px;right:13px;display:flex;gap:4px;z-index:5}
+.wtools button{border:0;background:var(--line);color:var(--mid);border-radius:8px;cursor:pointer;
+  font-family:var(--mono);font-size:9.5px;width:22px;height:22px;display:grid;place-items:center}
+.wtools button:hover{background:var(--line-2);color:var(--ink)}
+.wtools .wdrag{cursor:grab;touch-action:none}
+.acard.feat .wtools button{background:rgba(0,0,0,.08);color:var(--feat-mid)}
+.acard.feat .wtools button:hover{color:var(--feat-ink)}
+.gridfoot{display:flex;justify-content:flex-end;padding:4px 4px 0}
+.gridfoot button{border:0;background:transparent;color:var(--faint);cursor:pointer;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:6px 9px;border-radius:9px}
+.gridfoot button:hover{background:var(--line);color:var(--ink)}
 
-  /* ── Analytics strip (left) ──────── */
-  /* .appver, not .vbadge — .vbadge is already the round logo in the embedded-app bar */
-  .appver{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted);
-    background:var(--card-solid);border:1px solid var(--line);border-radius:999px;padding:2px 7px;
-    align-self:center;white-space:nowrap;line-height:1.5}
+/* widget internals */
+.amsg{font-size:12px;color:var(--faint);padding:8px 0}
+.kpirow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px}
+.kpirow .kpi{background:var(--card-2);border-radius:var(--r-sm);padding:11px 12px;box-shadow:var(--shadow-sm)}
+.acard.feat .kpirow .kpi{background:rgba(255,255,255,.05);border:1px solid var(--feat-line);box-shadow:none}
+[data-theme="dark"] .acard.feat .kpirow .kpi{background:rgba(0,0,0,.04)}
+.kpi b{display:block;font-size:23px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.kpi span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block;margin-top:3px}
+.acard.feat .kpi span{color:var(--feat-mid)}
+.kpi.warn b{color:var(--red)}
+.wsub{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:12px 0 5px}
+.trow{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12.5px;min-width:0}
+.trow:first-of-type{border-top:0}
+.trow .dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex:none;align-self:center}
+.trow.over .dot{background:var(--red)}
+.trow.over{color:var(--red)}
+.trow .tt{font-family:var(--mono);font-size:10px;color:var(--faint);flex:none;min-width:34px}
+.trow.over .tt{color:var(--red)}
+.trow b{font-weight:600}
+.trow .meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--faint);margin-top:2px}
+.trow.over .meta{color:var(--red)}
+.tmore{font-family:var(--mono);font-size:9.5px;color:var(--faint);padding:6px 0 0}
+.wbars{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.wbar{display:grid;grid-template-columns:64px 1fr 22px;align-items:center;gap:8px;font-size:11.5px}
+.wbar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mid)}
+.wbar i{display:block;height:5px;border-radius:3px;background:var(--green);min-width:2px}
+.wbar.red i{background:var(--red)}
+.wbar b{font-family:var(--mono);font-size:10px;font-weight:600;text-align:right}
+.cdcodes{display:flex;flex-wrap:wrap;gap:6px}
+.cdchip{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--line);
+  padding:4px 8px;border-radius:7px}
+svg.chart{width:100%;height:auto;display:block}
+svg.chart .bar{fill:var(--green)}
+svg.chart .bar.dl{fill:var(--green)}
+svg.chart text{font-family:var(--mono);font-size:8.5px;fill:var(--faint)}
+svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
 
-  /* ---- widget deck ----
-     Widgets used to live in a 250px absolutely-positioned rail pinned at 34%
-     from the top. Five cards already ran past the fold on a 720px viewport and
-     every new one made it worse, so they now sit in a scrolling section below
-     the hero where they can keep growing. */
-  .deck{position:relative;z-index:4;max-width:1440px;margin:0 auto;padding:0 40px 64px}
-  .deck[hidden]{display:none}
-  .deckhead{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
-  .deckhead h2{margin:0;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted);font-weight:400}
-  .deckhead .line{flex:1;height:1px;background:var(--line)}
-  .deckhint{font-size:10.5px;color:var(--faint)}
-  .deckreset{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;
-    padding:3px 9px;cursor:pointer}
-  .deckreset:hover{color:var(--ink);border-color:var(--muted)}
+/* today card */
+.seg{display:flex;background:var(--line);border-radius:999px;padding:2px}
+.seg[hidden]{display:none}
+.seg button{border:0;background:transparent;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);padding:4px 11px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--card-2);color:var(--ink);box-shadow:var(--shadow-sm)}
+#todayCard .seg{position:absolute;top:44px;right:18px}
+#todayCal{max-height:270px;overflow-y:auto;margin:0 -4px;padding:0 4px}
+#todayCal::-webkit-scrollbar{width:4px}
+#todayCal::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:4px}
+.cgrp{margin-bottom:11px}
+.cgrp .clab{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.cgrp .clab i{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.cgrp.meet .clab i{background:var(--amber)}
 
-  /* the calendar keeps its original spot on the hero */
-  .astrip{position:absolute;left:2%;top:34%;width:250px;z-index:4;display:flex;flex-direction:column;gap:12px}
-  .astrip[hidden]{display:none}
+/* reminders */
+.rem-head{display:flex;align-items:center;gap:9px;margin-bottom:11px;padding-right:52px}
+.rem-head span{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);flex:1}
+.rem-head b{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:999px;background:var(--red-tint);color:var(--red)}
+.rem-head b:empty{display:none}
+.remtab{display:flex;background:var(--line);border-radius:999px;padding:2px;width:max-content;margin-bottom:11px}
+.remtab button{border:0;background:transparent;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);padding:4px 11px;border-radius:999px;cursor:pointer}
+.remtab button.on{background:var(--card-2);color:var(--ink);box-shadow:var(--shadow-sm)}
+.rem-new input[type=text],.rem-new input:not([type]){width:100%;border:1px solid var(--line-2);background:var(--card-2);
+  border-radius:11px;padding:9px 11px;font-size:12.5px;font-family:var(--sans);color:var(--ink);outline:none}
+.rem-new input::placeholder{color:var(--faint)}
+.rem-new select{width:100%;margin-top:7px;border:1px solid var(--line-2);background:var(--card-2);border-radius:11px;
+  padding:8px 10px;font-size:12px;color:var(--ink);outline:none}
+.rem-new .row2{display:flex;gap:7px;margin-top:7px;margin-bottom:11px}
+.rem-new .row2 input[type=date]{flex:1;border:1px solid var(--line-2);background:var(--card-2);border-radius:11px;
+  padding:8px 10px;font-size:11.5px;color:var(--mid);outline:none;font-family:var(--sans)}
+.rem-add{border:0;background:var(--feat);color:var(--feat-ink);border-radius:11px;padding:0 16px;
+  font-size:12px;font-weight:500;cursor:pointer}
+.rem-add:disabled{opacity:.4;cursor:default}
+.remrow{display:flex;gap:9px;padding:9px 0;border-top:1px solid var(--line);align-items:flex-start}
+.remrow .tick{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--line-2);background:transparent;
+  cursor:pointer;flex:none;margin-top:2px}
+.remrow .tick:hover{border-color:var(--green);background:var(--green-tint)}
+.remrow .body{flex:1;min-width:0}
+.remrow .body b{font-weight:500;font-size:12.5px;line-height:1.4;display:block}
+.remrow .meta{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:2px}
+.remrow.over .meta{color:var(--red)}
+.remrow .x{border:0;background:transparent;color:var(--faint);cursor:pointer;font-size:11px;flex:none;padding:2px}
+.remrow .x:hover{color:var(--red)}
+.rem-empty{font-size:12px;color:var(--faint);padding:8px 0}
 
-  /* ---- re-orderable, resizable widget grid ----
-     Four fixed columns, so a widget's size means the same thing wherever it
-     sits. Layout is per person AND per device on purpose: what fits depends on
-     the screen you're actually looking at. */
-  .wgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}
-  .wgrid .acard{position:relative;grid-column:span 1;min-width:0}
-  .wgrid .acard[data-size="m"]{grid-column:span 2}
-  .wgrid .acard[data-size="l"]{grid-column:span 3}
-  .wgrid .acard[data-size="xl"]{grid-column:span 4}
-  .cdcodes{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
-  .cdchip{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink);
-    background:var(--card-solid);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
-  #cdBody .meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--faint);margin-top:2px}
-  #cdBody .trow.over .meta{color:#c0563c}
-  .wsub{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--faint);margin:12px 0 2px;padding-top:8px;border-top:1px solid var(--line)}
-  .wbars{display:flex;flex-direction:column;gap:5px;margin-top:5px}
-  .wbar{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--body)}
-  .wbar span{flex:0 0 72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .wbar i{height:7px;border-radius:99px;background:var(--green-mid);display:block;min-width:3px}
-  .wbar b{color:var(--ink);font-size:11px}
-  .wgrid .acard.dragging{opacity:.4}
-  .wgrid .acard.dropzone{outline:2px dashed var(--green-soft);outline-offset:3px}
-  /* keep the card's own header badge clear of the hover tools */
-  .wgrid .acard .ahead{padding-right:56px}
-  .wtools{position:absolute;top:8px;right:9px;display:flex;gap:5px;align-items:center;
-    opacity:0;transition:opacity .16s ease;z-index:2}
-  .wgrid .acard:hover .wtools,.wgrid .acard .wtools:focus-within{opacity:1}
-  .wtools button{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--muted);background:var(--card-solid);border:1px solid var(--line);
-    border-radius:6px;padding:2px 6px;cursor:pointer;line-height:1.5}
-  .wtools button:hover{color:var(--ink);border-color:var(--muted)}
-  .wtools .wdrag{cursor:grab;touch-action:none;padding:2px 5px}
-  .wtools .wdrag:active{cursor:grabbing}
-  /* no hover to reveal them on a touch screen — width is the wrong signal */
-  /* Touch targets keyed to the input device, not the screen width — an iPad at
-     768px is every bit as much a thumb as a phone is. */
-  @media(hover:none){
-    .wtools{opacity:1}
-    .wtools button{min-width:42px;min-height:42px;display:grid;place-items:center;font-size:11px}
-    .deckreset{min-height:44px;padding:0 16px}
-    .gear-btn,.theme-btn,.logout-btn{width:44px;height:44px}
-    .seg button{padding:11px 0}
-    .cat,.pill{min-height:44px}
-    .vbar button,.vbar a{min-width:42px;min-height:42px;display:inline-flex;
-      align-items:center;justify-content:center}
-  }
-  @media(max-width:1100px){ .wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .wgrid .acard[data-size="l"],.wgrid .acard[data-size="xl"]{grid-column:span 2} }
-  @media(max-width:700px){ .wgrid{grid-template-columns:1fr}
-    .wgrid .acard,.wgrid .acard[data-size="m"],.wgrid .acard[data-size="l"],
-    .wgrid .acard[data-size="xl"]{grid-column:span 1}
-    .wtools{opacity:1} }
-  /* nudge the eye past the hero once there's something below it */
-  .scrollcue{position:absolute;left:50%;bottom:calc(3% + 46px);transform:translateX(-50%);z-index:3;
-    display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:none;cursor:pointer;
-    font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
-  .scrollcue:hover{color:var(--muted)}
-  .scrollcue svg{width:13px;height:13px;animation:cuebob 1.9s var(--ease) infinite}
-  .scrollcue[hidden]{display:none}
-  @keyframes cuebob{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(3px);opacity:1}}
-  @media(prefers-reduced-motion:reduce){ .scrollcue svg{animation:none} }
-  .acard{
-    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
-    border-radius:var(--r);box-shadow:var(--shadow);padding:16px 17px;
-  }
-  .acard .ahead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .acard .ahead span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-  .acard .ahead b{font-size:12px;color:var(--green);font-weight:700}
-  .kpirow{display:flex;gap:8px;flex-wrap:wrap}
-  .kpi{flex:1;min-width:64px;text-align:center;background:var(--card-solid);border:1px solid var(--line);border-radius:12px;padding:8px 4px}
-  .kpi b{display:block;font-size:17px;color:var(--ink);letter-spacing:-.01em}
-  .kpi span{font-size:9.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
-  .kpi.warn b{color:#c0563c}
-  .amsg{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;text-align:center}
-  .trow{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12px;color:var(--body);line-height:1.4}
-  .trow:first-child{border-top:none}
-  .trow .dot{width:6px;height:6px;border-radius:50%;background:var(--green-mid);margin-top:5px;flex:none}
-  .trow.cal .dot{background:var(--green)}
-  .trow.over .dot{background:#c0563c}
-  .trow b{color:var(--ink);font-weight:600}
-  .trow .tt{font-family:var(--mono);font-size:10px;color:var(--muted);flex:none;margin-top:1px}
-  .tmore{font-family:var(--mono);font-size:10px;color:var(--faint);padding-top:6px;letter-spacing:.08em}
-  /* calendar split: filming and meetings read as separate groups */
-  .cgrp{margin-top:10px}
-  .cgrp:first-child{margin-top:0}
-  .cgrp .clab{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;
-    letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding-bottom:2px}
-  .cgrp .clab i{width:5px;height:5px;border-radius:50%;background:var(--green);display:block;flex:none}
-  .cgrp.meet .clab i{background:var(--green-mid)}
-  .cgrp.meet .trow.cal .dot{background:var(--green-mid)}
-  /* ---- Reminders ----
-     Sits above Today because it's the one card that is entirely yours: things
-     you asked to be reminded of, and things the team asked of you. */
-  .rem-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
-  .rem-head b{font-size:12px;color:var(--green);font-weight:700;margin-left:auto}
-  .remtab{display:flex;gap:4px;margin-bottom:9px}
-  .remtab button{flex:1;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;
-    padding:6px 0;cursor:pointer}
-  .remtab button.on{background:var(--green);color:#fff;border-color:var(--green)}
-  html[data-theme="dark"] .remtab button.on{color:#0a100f}
-  .rem-new{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-  .rem-new input,.rem-new select{width:100%;font:inherit;font-size:12px;color:var(--ink);
-    background:var(--card-solid);border:1px solid var(--line);border-radius:9px;padding:8px 10px;outline:none}
-  .rem-new input:focus,.rem-new select:focus{border-color:var(--green-soft)}
-  .rem-new .row2{display:flex;gap:6px}
-  .rem-new .row2 input[type=date]{flex:1}
-  .rem-add{flex:none;background:var(--green);color:#fff;border:0;border-radius:9px;
-    padding:0 14px;font-weight:700;font-size:12px;cursor:pointer}
-  html[data-theme="dark"] .rem-add{color:#0a100f}
-  .rem-add:disabled{opacity:.4;cursor:default}
-  .remrow{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-top:1px solid var(--line);
-    font-size:12px;color:var(--body);line-height:1.35}
-  .remrow:first-child{border-top:none}
-  .remrow .tick{width:14px;height:14px;border-radius:5px;border:1.5px solid var(--line);
-    background:none;cursor:pointer;flex:none;margin-top:1px;padding:0}
-  .remrow .tick:hover{border-color:var(--green)}
-  .remrow .body{flex:1;min-width:0}
-  .remrow .body b{display:block;color:var(--ink);font-weight:600}
-  .remrow .meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--faint);margin-top:2px}
-  .remrow.over .meta{color:#c0563c}
-  .remrow .x{border:0;background:none;color:var(--faint);cursor:pointer;font-size:12px;padding:2px 3px;line-height:1}
-  .remrow .x:hover{color:#c0563c}
-  .rem-empty{font-size:11px;color:var(--muted);padding:8px 0;text-align:center}
+/* action lists (revision / footage) */
+.alist .arw{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
+.alist .arw:first-child{border-top:0}
+.alist .bd{flex:1;min-width:0}
+.alist .ttl{font-size:12.5px;line-height:1.35;display:flex;gap:6px;align-items:baseline;min-width:0}
+.alist .ttl b{font-family:var(--mono);font-size:10px;font-weight:600;flex:none}
+.alist .ttl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alist .sub{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:3px}
+.age{font-family:var(--mono);font-size:9.5px;padding:3px 7px;border-radius:999px;flex:none;
+  background:var(--line);color:var(--mid);margin-top:1px}
+.age.warn{background:var(--amber-tint);color:var(--amber)}
+.age.hot{background:var(--red-tint);color:var(--red)}
 
-  /* Mine / Team switch — its own row; the 250px card can't fit it beside the date */
-  .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;
-    background:var(--card-solid);margin-bottom:10px}
-  .seg[hidden]{display:none}
-  .seg button{flex:1;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--muted);background:none;border:0;cursor:pointer;padding:5px 0;line-height:1.4}
-  .seg button.on{background:var(--green);color:#fff}
-  /* --green lightens in dark mode, so white-on-green loses contrast — flip to ink */
-  html[data-theme="dark"] .seg button.on{color:#0a100f}
-  .seg button:not(.on):hover{color:var(--ink)}
-  .chart{width:100%;display:block}
-  .chart .bar{fill:var(--green-mid);transition:fill .2s}
-  .chart .bar:hover{fill:var(--green)}
-  .chart .bar2{fill:var(--green-pale)}
-  .chart text{font-family:var(--mono);font-size:8px;fill:var(--muted)}
-  .chart .vlabel{font-size:8.5px;fill:var(--body);font-weight:600}
+/* my clients board */
+.wknav{display:flex;align-items:center;gap:3px}
+.wknav button{border:0;background:transparent;color:var(--faint);cursor:pointer;font-size:13px;
+  width:22px;height:22px;border-radius:6px}
+.wknav button:hover{background:var(--line);color:var(--ink)}
+.wknav .rng{font-family:var(--mono);font-size:10px;color:var(--mid);padding:0 4px;white-space:nowrap}
+.board{width:100%;border-collapse:collapse}
+.board th{text-align:right;padding:0 0 8px;border-bottom:1px solid var(--line)}
+.board th:first-child{text-align:left}
+.board td{padding:10px 0;border-bottom:1px solid var(--line);text-align:right;
+  font-family:var(--mono);font-size:15px;font-weight:500}
+.board tbody tr:last-child td{border-bottom:0}
+.board td:first-child{text-align:left;font-family:var(--sans);font-size:13px;font-weight:400}
+.board .cl{display:flex;align-items:center;gap:9px;min-width:0}
+.board .ab{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--line);
+  padding:4px 7px;border-radius:7px;min-width:44px;text-align:center;flex:none}
+.board .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board .u{color:var(--green-deep)} .board .f{color:var(--amber)}
+.board .e{color:var(--ink)} .board .d{color:var(--faint)}
+.board td.z{color:var(--line-2)}
+.board tfoot td{border-top:1px solid var(--line-2);border-bottom:0;padding-top:10px;font-weight:600}
+.board tbody tr{cursor:pointer}
+.board tbody tr:hover td{background:var(--line)}
+.board tbody tr:hover .nm::after{content:" \2197";color:var(--green-deep)}
 
-  /* ── Category cards (right) ──────── */
-  .catcol{position:absolute;right:2%;top:10%;width:250px;z-index:4;display:flex;flex-direction:column;gap:14px}
-  .cat{
-    background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);
-    border-radius:var(--r);box-shadow:var(--shadow);padding:20px;cursor:pointer;text-align:left;
-    transition:all .3s var(--ease);
-  }
-  .cat:hover{transform:translateY(-4px);background:var(--card-solid);border-color:var(--green-soft)}
-  .cat .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .cat .num{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.14em}
-  .cat .arrow{color:var(--faint);transition:all .3s var(--ease);font-size:15px}
-  .cat:hover .arrow{color:var(--green);transform:translate(3px,-3px)}
-  .cat h3{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
-  .cat p{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
-  .cat .count{
-    display:inline-block;margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--green);border:1px solid var(--line);border-radius:99px;padding:4px 10px;
-  }
+/* unplanned tiles */
+.unp{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:11px}
+.up{border:1px dashed var(--feat-line);border-radius:var(--r-sm);padding:11px 13px;cursor:pointer;
+  display:flex;align-items:center;gap:11px;transition:.15s;background:transparent;text-align:left;color:inherit}
+.up:hover{border-color:var(--green);border-style:solid;background:rgba(143,179,172,.1)}
+.up b{font-size:23px;font-weight:600;letter-spacing:-.02em;line-height:1;color:var(--green)}
+.up .w{flex:1;min-width:0}
+.up .w .lbl{display:block;color:var(--feat-mid)}
+.up .w em{font-style:normal;font-size:10px;color:var(--feat-mid);display:block;margin-top:2px}
+.up .go{font-size:14px;color:var(--feat-mid);flex:none}
+.up:hover .go{color:var(--green)}
 
-  /* ── Bottom pills ────────────────── */
-  .pillrow{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);display:flex;gap:12px;z-index:3;flex-wrap:wrap;justify-content:center}
-  .pill{
-    display:flex;align-items:center;gap:10px;background:var(--card);backdrop-filter:blur(12px);
-    border:1px solid var(--line);border-radius:var(--pill-r);padding:11px 20px 11px 12px;
-    box-shadow:var(--shadow-sm);transition:all .25s var(--ease);white-space:nowrap;
-  }
-  .pill:hover{transform:translateY(-3px);background:var(--card-solid)}
-  .pill .ico{width:26px;height:26px;border-radius:50%;background:var(--card-solid);border:1px solid var(--line);display:grid;place-items:center}
-  .pill .ico svg{width:12px;height:12px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .pill .t small{display:block;font-size:10px;color:var(--muted);letter-spacing:.05em}
-  .pill .t b{font-size:12.5px;color:var(--ink);font-weight:700}
+/* ── embedded app viewer ── */
+.viewer{position:fixed;inset:0;z-index:120;background:var(--page);display:none;flex-direction:column}
+.viewer.open{display:flex}
+.vbar{display:flex;align-items:center;gap:10px;padding:9px 14px;background:#111315}
+.vbadge{width:26px;height:26px;border-radius:50%;background:#1C1F20;display:grid;place-items:center;flex:none}
+.vbadge img{width:15px;height:15px;object-fit:contain}
+.vtitle b{display:block;color:#F2F3F3;font-size:12.5px;line-height:1.2}
+.vtitle span{color:#6B7175;font-size:10px;font-family:var(--mono)}
+.vspacer{flex:1}
+.vbtn{width:30px;height:30px;border-radius:9px;border:0;background:rgba(255,255,255,.08);color:#9BA1A5;
+  display:grid;place-items:center;cursor:pointer;font-size:13px;text-decoration:none}
+.vbtn:hover{color:#fff;background:rgba(255,255,255,.15)}
+.viewer iframe{flex:1;border:0;width:100%;background:#fff}
 
-  /* ── Ares switch ─────────────────── */
-  .ares-switch{
-    position:fixed;right:26px;bottom:26px;z-index:40;
-    display:none;align-items:center;gap:9px;cursor:pointer;
-    background:#0a0a0a;border:1px solid #2a2a2a;border-radius:var(--pill-r);
-    padding:8px 18px 8px 9px;box-shadow:0 14px 34px -12px rgba(0,0,0,.65);
-    transition:all .25s var(--ease);
-  }
-  .ares-switch.show{display:flex}
-  .ares-switch:hover{transform:translateY(-3px);border-color:#e3120b;box-shadow:0 16px 40px -10px rgba(227,18,11,.45)}
-  .ares-switch img{width:30px;height:30px;object-fit:contain;object-position:top}
-  .ares-switch .t small{display:block;font-size:9px;color:#8a8a8a;letter-spacing:.16em;text-transform:uppercase;font-family:var(--mono)}
-  .ares-switch .t b{font-size:12.5px;color:#fff;font-weight:700;letter-spacing:.06em}
+/* ── overlays: category + admin ── */
+.ovl{position:fixed;inset:0;z-index:110;display:none}
+.ovl.open{display:block}
+.ovl .back{position:absolute;inset:0;background:rgba(0,0,0,.45);cursor:pointer}
+.panel{position:absolute;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--card);
+  box-shadow:var(--shadow);padding:26px;overflow-y:auto}
+.phead{display:flex;align-items:flex-start;gap:12px}
+.pkick{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.phead h2{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.pdesc{font-size:12.5px;color:var(--mid);margin-top:7px;line-height:1.5}
+.pclose{margin-left:auto;border:0;background:var(--line);color:var(--mid);width:30px;height:30px;
+  border-radius:9px;cursor:pointer;font-size:13px;flex:none}
+.pclose:hover{color:var(--ink)}
+.plist{margin-top:20px;display:flex;flex-direction:column;gap:9px}
+.prow{display:flex;align-items:center;gap:12px;background:var(--card-2);border-radius:var(--r-sm);
+  padding:13px 14px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow-sm)}
+.prow:hover{box-shadow:var(--shadow)}
+.prow .pi{width:34px;height:34px;border-radius:10px;background:var(--line);display:grid;place-items:center;flex:none}
+.prow .pi svg{width:17px;height:17px;fill:none;stroke:var(--mid);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.prow .pt{flex:1;min-width:0}
+.prow .pt b{display:block;font-size:13px;font-weight:600}
+.prow .pt span{display:block;font-size:11px;color:var(--faint);margin-top:2px;line-height:1.4}
+.prow .tag{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--faint);border:1px solid var(--line-2);border-radius:999px;padding:2px 8px;flex:none}
+.prow .go{color:var(--faint);flex:none}
+.pempty{font-size:12.5px;color:var(--faint);padding:18px 0}
+.arow{background:var(--card-2);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:9px;box-shadow:var(--shadow-sm)}
+.arow .atop{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.arow .atop b{font-size:12.5px}
+.arow select{border:1px solid var(--line-2);background:var(--card);border-radius:9px;padding:6px 9px;
+  font-size:11.5px;color:var(--ink);outline:none}
+.arow input{display:none;width:100%;margin-top:9px;border:1px solid var(--line-2);background:var(--card);
+  border-radius:9px;padding:7px 10px;font-size:11.5px;color:var(--ink);outline:none;font-family:var(--mono)}
+.arow input.show{display:block}
+.asave{margin-top:14px;border:0;background:var(--feat);color:var(--feat-ink);border-radius:11px;
+  padding:11px 20px;font-size:12.5px;font-weight:600;cursor:pointer}
+.anote{font-size:11.5px;color:var(--faint);margin-top:11px;line-height:1.5}
+.anote.err{color:var(--red)}
+.anote a{color:var(--green-deep);font-weight:600}
 
-  /* ── Overlay panels (categories + admin) ── */
-  .ovl{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
-  .ovl.open{display:flex}
-  .ovl .back{position:absolute;inset:0;background:rgba(10,13,12,.45);backdrop-filter:blur(8px)}
-  .panel{
-    position:relative;width:min(560px,94vw);max-height:84vh;overflow:auto;
-    background:var(--card-solid);border:1px solid var(--line);border-radius:24px;
-    box-shadow:0 40px 90px -30px rgba(0,0,0,.5);padding:30px;
-  }
-  .panel .phead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
-  .panel .pkick{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--green)}
-  .panel h2{font-size:28px;color:var(--ink);letter-spacing:-.01em;margin-top:4px}
-  .panel .pdesc{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.55}
-  .pclose{border:1px solid var(--line);background:transparent;color:var(--muted);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;transition:all .2s}
-  .pclose:hover{color:var(--ink);border-color:var(--ink)}
-  .plist{margin-top:20px;display:flex;flex-direction:column;gap:10px}
-  .prow{
-    display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:16px;
-    padding:15px 17px;transition:all .25s var(--ease);
-  }
-  .prow:hover{border-color:var(--green-soft);transform:translateX(4px)}
-  .prow .pi{width:38px;height:38px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;flex:none}
-  .prow .pi svg{width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .prow .pt{flex:1;min-width:0}
-  .prow .pt b{display:block;font-size:15px;color:var(--ink);font-weight:700}
-  .prow .pt span{font-size:12px;color:var(--muted);line-height:1.45;display:block;margin-top:2px}
-  .prow .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 9px;flex:none}
-  .prow .go{color:var(--faint);font-size:15px;flex:none}
-  .prow:hover .go{color:var(--green)}
-  .pempty{font-size:13px;color:var(--muted);text-align:center;padding:26px 0}
-
-  /* admin rows */
-  .arow{border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px}
-  .arow .atop{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .arow .atop b{font-size:14px;color:var(--ink)}
-  .arow select{
-    font-family:inherit;font-size:12.5px;color:var(--ink);background:var(--card);
-    border:1px solid var(--line);border-radius:10px;padding:7px 10px;outline:none;cursor:pointer;
-  }
-  .arow input{
-    width:100%;margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);
-    color:var(--ink);font-size:12px;padding:9px 11px;outline:none;font-family:var(--mono);display:none;
-  }
-  .arow input.show{display:block}
-  .asave{
-    width:100%;margin-top:6px;height:44px;border:none;border-radius:13px;background:var(--ink);
-    color:var(--card-solid);font-weight:600;font-size:14px;cursor:pointer;transition:all .25s var(--ease);
-  }
-  .asave:hover{transform:translateY(-2px)}
-  .anote{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55}
-  .anote.err{color:#c0563c}
-
-  /* ── Preview mode ────────────────── */
-  .pvbanner{
-    position:fixed;top:0;left:0;right:0;z-index:95;display:none;align-items:center;justify-content:center;gap:14px;
-    padding:9px 16px;font-size:12.5px;font-weight:600;color:#3a2c10;
-    background:repeating-linear-gradient(-45deg,#f5c869,#f5c869 14px,#eebd54 14px,#eebd54 28px);
-    box-shadow:0 6px 18px -8px rgba(0,0,0,.35);
-  }
-  .pvbanner.on{display:flex}
-  .pvbanner b{font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
-  .pvbanner button{
-    border:1.5px solid #3a2c10;background:transparent;color:#3a2c10;border-radius:99px;
-    padding:5px 14px;font-size:11.5px;font-weight:700;cursor:pointer;
-  }
-  .pvbanner button:hover{background:#3a2c10;color:#f5c869}
-  body.previewing .stage{padding-top:64px}
-  .umenu{
-    position:absolute;top:calc(100% + 10px);right:0;min-width:250px;z-index:70;display:none;
-    background:var(--card-solid);border:1px solid var(--line);border-radius:18px;
-    box-shadow:0 30px 60px -24px rgba(0,0,0,.4);padding:8px;
-  }
-  .umenu.open{display:block}
-  .umenu .uh{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
-  .umenu button{
-    display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
-    background:transparent;border:none;border-radius:11px;padding:9px 12px;
-    font-size:12.5px;color:var(--ink);transition:background .15s;
-  }
-  .umenu button:hover{background:var(--card)}
-  .umenu button small{color:var(--muted);font-size:10.5px;margin-left:auto;font-family:var(--mono)}
-  .umenu .eye{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-
-  /* ── Embedded app viewer ─────────── */
-  .viewer{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:var(--bg)}
-  .viewer.open{display:flex;animation:vup .45s var(--ease)}
-  @keyframes vup{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
-  .vbar{
-    display:flex;align-items:center;gap:12px;padding:9px 16px;flex:none;
-    background:var(--card);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
-  }
-  .vbadge{width:26px;height:26px;border-radius:50%;background:#92ABA7;flex:none;display:grid;place-items:center}
-  .vbadge img{width:14px;height:14px;object-fit:contain}
-  .vtitle b{display:block;font-size:12.5px;color:var(--ink);font-weight:700;line-height:1.15}
-  .vtitle span{font-size:10px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em}
-  .vspacer{flex:1}
-  .vbtn{
-    width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
-    background:var(--card-solid);border:1px solid var(--line);color:var(--muted);
-    font-size:13px;transition:all .2s var(--ease);text-decoration:none;
-  }
-  .vbtn:hover{color:var(--ink);transform:translateY(-1px)}
-  .viewer iframe{flex:1;width:100%;border:0;background:#fff}
-
-  /* ── Auth gate — team photo backdrop ── */
-  .gate{
-    position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
-    background:#050505 url("login-bg.jpg") center 30%/cover no-repeat;
-  }
-  .gate::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 40%, rgba(5,5,5,.38) 0%, rgba(5,5,5,.82) 78%, rgba(5,5,5,.95) 100%)}
-  .gate.off{display:none}
-  .gcard{position:relative;text-align:center;width:min(360px,90vw)}
-  .gcard>img{width:64px;height:64px;object-fit:contain;margin-bottom:18px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.6))}
-  .gcard .gk{font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:6px}
-  .gcard h2{font-size:24px;color:#fff;font-weight:700;letter-spacing:-.01em;margin-bottom:26px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
-  .gbtn{
-    width:100%;height:48px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    background:#fff;color:#111417;border:1px solid rgba(255,255,255,.3);
-    box-shadow:0 14px 34px -12px rgba(0,0,0,.8);transition:all .25s var(--ease);
-  }
-  .gbtn:hover{transform:translateY(-2px)}
-  .gbtn .gdot{width:16px;height:16px;border-radius:50%;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
-  .gmsg{margin-top:14px;font-size:12px;color:rgba(255,255,255,.75);min-height:16px;line-height:1.5}
-  .gmsg.err{color:#ff8a70}
-  .gsub{margin-top:18px;font-size:11.5px;color:rgba(255,255,255,.45);line-height:1.6}
-  .gout{
-    margin-top:14px;background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);
-    border-radius:99px;padding:8px 18px;font-size:12px;cursor:pointer;display:none;
-  }
-  .gout.show{display:inline-block}
-
-  /* ── Entrance animation (post-login, ~3s total) ── */
-  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes riseC{from{opacity:0;transform:translate(-50%,-46%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  body.enter .topbar{animation:rise .7s var(--ease) .1s backwards}
-  body.enter .titleblock{animation:rise .8s var(--ease) .35s backwards}
-  body.enter .scene{animation:riseC 1.1s var(--ease) .55s backwards}
-  body.enter .podium{animation:fadeIn 1.2s var(--ease) .9s backwards}
-  body.enter .astrip .acard:nth-child(1){animation:rise .7s var(--ease) 1.05s backwards}
-  body.enter .astrip .acard:nth-child(2){animation:rise .7s var(--ease) 1.25s backwards}
-  body.enter .astrip .acard:nth-child(3){animation:rise .7s var(--ease) 1.45s backwards}
-  body.enter .astrip .acard:nth-child(4){animation:rise .7s var(--ease) 1.6s backwards}
-  body.enter .astrip .acard:nth-child(5){animation:rise .7s var(--ease) 1.75s backwards}
-  body.enter .catcol .cat:nth-child(1){animation:rise .7s var(--ease) 1.15s backwards}
-  body.enter .catcol .cat:nth-child(2){animation:rise .7s var(--ease) 1.35s backwards}
-  body.enter .catcol .cat:nth-child(3){animation:rise .7s var(--ease) 1.55s backwards}
-  body.enter .pillrow .pill:nth-child(1){animation:rise .6s var(--ease) 1.9s backwards}
-  body.enter .pillrow .pill:nth-child(2){animation:rise .6s var(--ease) 2.05s backwards}
-  body.enter .pillrow .pill:nth-child(3){animation:rise .6s var(--ease) 2.2s backwards}
-  body.enter .ares-switch.show{animation:rise .7s var(--ease) 2.5s backwards}
-
-  /* ── Mobile ──────────────────────── */
-  @media(max-width:1080px){
-    .stage{padding:18px 18px 90px}
-    .navpills{display:none}
-    .canvas{min-height:0;margin-top:26px}
-    .titleblock{position:static;max-width:none;text-align:center;margin:0 auto}
-    .scene{position:relative;left:auto;top:auto;transform:none;margin:26px auto 4px;width:min(280px,70vw)}
-    .podium{position:relative;left:auto;top:auto;transform:none;margin:-44% auto 0;width:min(400px,88vw)}
-    /* On a phone "what am I doing today?" beats the brand moment, so the
-       calendar comes right after the title and the logomark drops below it.
-       Ordered on .canvas — .stage only holds the topbar and .canvas itself,
-       so ordering there just pushed the topbar to the bottom. Podium keeps its
-       negative margin against .scene, so the two must stay adjacent. */
-    .canvas{display:flex;flex-direction:column}
-    .titleblock{order:1} .astrip{order:2}
-    .podium{order:3} .scene{order:4} .catcol{order:5} .pillrow{order:6}
-    .astrip{position:static;width:auto;margin-top:18px}   /* flows instead of overlapping */
-    .catcol{position:static;width:auto;margin-top:14px}
-    .pillrow{position:static;transform:none;margin-top:16px}
-    .deck{padding:0 18px 44px}
-    .scrollcue{display:none}   /* the hero already collapses to a scroll on mobile */
-  }
-
-  /* ---- phones ----------------------------------------------------------
-     Everything below is about thumbs and 390px of width: nothing may push
-     the page sideways, and anything tappable gets a real target. */
-  @media(max-width:560px){
-    .stage{padding:14px 14px 70px}
-    .topbar{flex-wrap:wrap;row-gap:10px}
-    .brand{flex:1 1 auto;min-width:0}
-    .brand-name{min-width:0}
-    .brand-name b,.brand-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
-    .tb-right{flex:0 0 auto;margin-left:auto}
-    .titleblock h1{font-size:clamp(34px,11vw,52px)}
-    .deck{padding:0 14px 40px}
-    .deckhead{flex-wrap:wrap;row-gap:6px}
-    .deckhint{flex:1 1 100%;order:3}
-    /* thumbs, not cursors */
-    .gear-btn,.theme-btn,.logout-btn{width:44px;height:44px;font-size:16px}
-    /* the name and role are already in the account menu — the avatar is enough here */
-    .userchip{padding:5px;gap:0}
-    .userchip .who{display:none}
-    .avatar{width:34px;height:34px}
-    .deckreset{padding:0 16px;min-height:44px;font-size:10.5px}
-    .wtools{top:10px;right:10px;gap:8px}
-    .wtools button{min-width:42px;min-height:42px;display:grid;place-items:center;font-size:11px}
-    .seg button{padding:11px 0;font-size:10px}
-    .cat{padding:16px 18px}
-    .pill{padding:12px 16px}
-    /* the 3D logomark is expensive and mostly decorative on a phone */
-    .scene{width:min(210px,56vw);margin:18px auto 2px}
-    .podium{width:min(300px,76vw);margin:-40% auto 0}
-  }
-    /* embedded apps: give the bar real buttons and stop the host line
-       stealing a third of the screen */
-    .vbar{padding:7px 12px;gap:9px}
-    .vtitle b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:46vw}
-    .vtitle span{display:none}
-    .vbar button,.vbar a{min-width:42px;min-height:42px;display:inline-flex;
-      align-items:center;justify-content:center}
-  }
-  @media(max-width:390px){
-    .titleblock h1{font-size:clamp(30px,10vw,40px)}
-    .brand-name span{display:none}
-  }
+/* ── mobile ── */
+@media(max-width:1100px){
+  .acard,.acard[data-size="m"],.acard[data-size="l"]{grid-column:span 6}
+}
+@media(max-width:820px){
+  .shell{grid-template-columns:1fr;padding:10px;gap:10px}
+  .side{position:static;height:auto;flex-direction:row;align-items:center;gap:6px;padding:10px;overflow-x:auto;overflow-y:hidden}
+  .brand{padding:0;flex:none}
+  .navlbl,.navsep{display:none}
+  .nav{flex-direction:row;flex:none}
+  .nav a,.nav button{white-space:nowrap;width:auto;padding:8px 11px}
+  .nav .tag{display:none}
+  .side .foot{margin:0 0 0 auto;padding:0;display:flex;gap:8px;align-items:center}
+  .ares-switch{margin:0}
+  .ares-switch .t{display:none}
+  .userchip .who{display:none}
+  .umenu{bottom:auto;top:56px;left:auto;right:10px;width:min(320px,90vw)}
+  .acard,.acard[data-size="m"],.acard[data-size="l"]{grid-column:span 12}
+  .top h1{font-size:21px;width:100%}
+  .search{max-width:none}
+  .board .nm{display:none}
+  .wtools{opacity:1}
+  .rem-new input,.rem-new select{font-size:16px} /* stop iOS zoom-on-focus */
+  .panel{width:100%}
+}
 </style>
 </head>
 <body>
@@ -579,25 +418,33 @@
   <button id="pvExit">Exit preview</button>
 </div>
 
-<div class="room"></div>
+<div class="shell">
 
-<div class="stage">
-
-  <div class="topbar">
+  <aside class="side">
     <div class="brand">
-      <span class="badge"><img id="brandLogo" src="logomark-white.png" alt="Anomaly logomark"></span>
-      <div class="brand-name"><b>Anomaly</b><span>Studio Hub</span></div>
+      <span class="mk"><img class="lt" id="brandLogo" src="logomark.png" alt="Anomaly logomark"><img class="dk" src="logomark-white.png" alt=""></span>
+      <b>Studio Hub</b>
       <span class="appver" id="vBadge" title="Studio Hub version"></span>
     </div>
-    <nav class="navpills">
-      <button class="active" id="navHome">Home</button>
-      <button data-cat="client">Client</button>
-      <button data-cat="pre">Pre-Production</button>
-      <button data-cat="post">Post-Production</button>
+    <div class="navlbl lbl">Sections</div>
+    <nav class="nav">
+      <button class="active" id="navHome"><span class="ic">⌂</span>Home</button>
+      <button data-cat="client"><span class="ic">◇</span>Client<span class="tag" data-count="client">—</span></button>
+      <button data-cat="pre"><span class="ic">◈</span>Pre-Production<span class="tag" data-count="pre">—</span></button>
+      <button data-cat="post"><span class="ic">▤</span>Post-Production<span class="tag" data-count="post">—</span></button>
     </nav>
-    <div class="tb-right">
-      <button class="gear-btn" id="gearBtn" title="Access control" aria-label="Access control">⚙</button>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+    <div class="navsep"></div>
+    <div class="navlbl lbl">Quick open</div>
+    <nav class="nav">
+      <a id="pillAutomations" href="automations.html" target="_blank" rel="noopener" style="display:none"><span class="ic">✳</span>Client Automations</a>
+      <a id="pillAnalytics" href="analytics.html" target="_blank" rel="noopener" style="display:none"><span class="ic">◱</span>Analytics Dashboard</a>
+      <a id="pillFinancials" href="financials.html" target="_blank" rel="noopener" style="display:none"><span class="ic">$</span>Financials</a>
+    </nav>
+    <div class="foot">
+      <a class="ares-switch" id="aresSwitch" href="ares.html" title="Switch to Ares Digital">
+        <img src="ares-head.png?v=3" alt="Ares Digital">
+        <span class="t"><small>Switch to</small><b>ARES</b></span>
+      </a>
       <div style="position:relative">
         <div class="userchip" id="userChip" title="Account">
           <div class="avatar" id="uAvatar">·</div>
@@ -605,133 +452,104 @@
         </div>
         <div class="umenu" id="uMenu"></div>
       </div>
-      <button class="theme-btn logout-btn" id="logoutBtn" title="Sign out" aria-label="Sign out">
-        <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-      </button>
     </div>
-  </div>
+  </aside>
 
-  <div class="canvas">
-
-    <div class="titleblock">
-      <div class="kicker">Internal Platform Collection</div>
-      <h1>Studio Hub</h1>
-      <div class="sub">Every tool the studio runs on — one front door.</div>
-    </div>
-
-    <div class="podium"><div class="ring"></div><div class="shade"></div></div>
-    <div class="scene"><div class="spinner" id="spinner"></div></div>
-
-
-    <!-- category cards -->
-    <div class="catcol">
-      <button class="cat" data-cat="client">
-        <div class="row"><span class="num">SEC·01</span><span class="arrow">↗</span></div>
-        <h3>Client</h3>
-        <p>Onboarding, ownership, and client-facing platforms.</p>
-        <span class="count" data-count="client">—</span>
+  <main class="main">
+    <header class="top">
+      <h1 id="greet">Studio Hub</h1>
+      <div class="pill-time"><div class="ico">◷</div><div class="tx"><b id="hubTime">—</b><span id="hubDate"></span></div></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="hubSearch" placeholder="Search platforms…" autocomplete="off">
+        <div class="sdrop" id="searchDrop"></div>
+      </div>
+      <div class="spacer"></div>
+      <button class="tbtn" id="gearBtn" title="Access control" aria-label="Access control" style="display:none">⚙</button>
+      <button class="tbtn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+      <button class="tbtn" id="logoutBtn" title="Sign out" aria-label="Sign out">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
       </button>
-      <button class="cat" data-cat="pre">
-        <div class="row"><span class="num">SEC·02</span><span class="arrow">↗</span></div>
-        <h3>Pre-Production</h3>
-        <p>Planning, concepts, and content calendars before cameras roll.</p>
-        <span class="count" data-count="pre">—</span>
-      </button>
-      <button class="cat" data-cat="post">
-        <div class="row"><span class="num">SEC·03</span><span class="arrow">↗</span></div>
-        <h3>Post-Production</h3>
-        <p>Editing pipeline — ingest to delivery, with live stats at left.</p>
-        <span class="count" data-count="post">—</span>
-      </button>
-    </div>
+    </header>
 
-      <!-- the calendar sits back on the hero — it's the thing you look at first -->
-    <div class="astrip" id="astrip" hidden>
-      <div class="acard" id="remCard">
-        <div class="rem-head"><span id="remLabel">Reminders</span><b id="remBadge"></b></div>
-        <div class="remtab" id="remTabs">
-          <button data-rt="mine" class="on">For me</button><button data-rt="sent">I sent</button>
-        </div>
-        <div class="rem-new" id="remNew">
-          <input id="remText" placeholder="Remind me to&hellip;" maxlength="140">
-          <select id="remWho" hidden></select>
-          <div class="row2">
-            <input type="date" id="remDue" title="When (optional)">
-            <button class="rem-add" id="remAdd" disabled>Add</button>
+    <section class="deck" id="deck" hidden>
+      <div class="wgrid" id="wgrid">
+
+        <div class="acard" id="todayCard" data-w="today">
+          <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
+          <div class="seg" id="todayScope" hidden>
+            <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
           </div>
+          <div id="todayCal"></div>
+          <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
         </div>
-        <div id="remList"></div>
-      </div>
-      <div class="acard" id="todayCard">
-        <div class="ahead"><span id="todayLabel">Today</span><b id="todayBadge"></b></div>
-        <div class="seg" id="todayScope" hidden>
-          <button data-scope="mine" class="on">Mine</button><button data-scope="team">Team</button>
+
+        <div class="acard" id="revCard" data-w="rev" style="display:none">
+          <div class="ahead"><span>Needs revision</span><b id="revBadge"></b></div>
+          <div class="alist" id="revBody"><div class="amsg">Loading…</div></div>
         </div>
-        <div id="todayCal"></div>
-        <div id="todayTasks"><div class="amsg">Loading your day…</div></div>
+
+        <div class="acard" id="footCard" data-w="foot" style="display:none">
+          <div class="ahead"><span>Shot · no footage linked</span><b id="footBadge"></b></div>
+          <div class="alist" id="footBody"><div class="amsg">Loading…</div></div>
+        </div>
+
+        <div class="acard" id="cdCard" data-w="cds" style="display:none">
+          <div class="ahead"><span id="cdLabel">My clients</span><b id="cdBadge"></b>
+            <span class="wknav" id="cdNav"><button data-wk="-1">‹</button><span class="rng" id="cdRange"></span><button data-wk="1">›</button></span>
+          </div>
+          <div id="cdBody"><div class="amsg">Loading your clients…</div></div>
+        </div>
+
+        <div class="acard feat" id="aKpis" data-w="kpis">
+          <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
+          <div id="aBody"><div class="amsg">Loading production stats…</div></div>
+          <div class="unp" id="unpTiles" style="display:none"></div>
+        </div>
+
+        <div class="acard" id="aChartCard" data-w="chart" style="display:none">
+          <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
+          <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
+          <div id="aChartFoot" style="display:none"></div>
+        </div>
+
+        <div class="acard" id="aClientCard" data-w="clients" style="display:none">
+          <div class="ahead"><span>Open tasks · by client</span></div>
+          <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
+          <div class="tmore" id="aClientsMore" style="display:none"></div>
+        </div>
+
+        <div class="acard" id="edsCard" data-w="eds" style="display:none">
+          <div class="ahead"><span>Editor load · open tasks</span></div>
+          <div id="edsBody"><div class="amsg">Loading…</div></div>
+        </div>
+
+        <div class="acard" id="joshCard" data-w="josh" style="display:none">
+          <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
+          <div id="jBody"><div class="amsg">Loading tracker…</div></div>
+        </div>
+
+        <div class="acard" id="remCard" data-w="rem">
+          <div class="rem-head"><span id="remLabel">Reminders</span><b id="remBadge"></b></div>
+          <div class="remtab" id="remTabs">
+            <button data-rt="mine" class="on">For me</button><button data-rt="sent">I sent</button>
+          </div>
+          <div class="rem-new" id="remNew">
+            <input id="remText" placeholder="Remind me to&hellip;" maxlength="140">
+            <select id="remWho" hidden></select>
+            <div class="row2">
+              <input type="date" id="remDue" title="When (optional)">
+              <button class="rem-add" id="remAdd" disabled>Add</button>
+            </div>
+          </div>
+          <div id="remList"></div>
+        </div>
+
       </div>
-    </div>
-
-  <button class="scrollcue" id="scrollCue" hidden aria-label="Scroll to your widgets">
-    <span>Your day</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-  </button>
-
-  <div class="pillrow">
-      <a class="pill" id="pillAutomations" href="automations.html" target="_blank" rel="noopener" style="display:none">
-        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></span>
-        <span class="t"><small>Claude Code</small><b>Client Automations</b></span>
-      </a>
-      <a class="pill" id="pillAnalytics" href="analytics.html" target="_blank" rel="noopener" style="display:none">
-        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-7"/></svg></span>
-        <span class="t"><small>Revenue · 2026</small><b>Analytics Dashboard</b></span>
-      </a>
-      <a class="pill" id="pillFinancials" href="financials.html" target="_blank" rel="noopener" style="display:none">
-        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1-5 3 2.2 2.7 5 3.5 5 1.6 5 3.5-2.2 3-5 3-5-1.1-5-3"/></svg></span>
-        <span class="t"><small>QuickBooks · P&amp;L</small><b>Financials</b></span>
-      </a>
-    </div>
-
-  </div>
-
+      <div class="gridfoot"><button id="wReset" title="Restore the default layout">Reset layout</button></div>
+    </section>
+  </main>
 </div>
-<!-- widget deck — today, live pipeline stats, client trackers.
-     Lives below the hero so it can scroll and keep growing. -->
-<section class="deck" id="deck" hidden>
-  <div class="deckhead"><h2>Widgets</h2><span class="line"></span>
-    <span class="deckhint">drag to reorder &middot; click the size chip to resize</span>
-    <button class="deckreset" id="wReset" title="Restore the default layout">Reset</button>
-  </div>
-  <div class="wgrid" id="wgrid">
-    <div class="acard" id="aKpis" data-w="kpis">
-      <div class="ahead"><span>Post-Production · Live</span><b id="aState">—</b></div>
-      <div id="aBody"><div class="amsg">Loading production stats…</div></div>
-    </div>
-    <div class="acard" id="aChartCard" data-w="chart" style="display:none">
-      <div class="ahead"><span id="aChartLabel">Posted · by week</span></div>
-      <svg class="chart" id="aChart" viewBox="0 0 216 74"></svg>
-      <div id="aChartFoot" style="display:none"></div>
-    </div>
-    <div class="acard" id="aClientCard" data-w="clients" style="display:none">
-      <div class="ahead"><span>Open tasks · by client</span></div>
-      <svg class="chart" id="aClients" viewBox="0 0 216 96"></svg>
-      <div class="tmore" id="aClientsMore" style="display:none"></div>
-    </div>
-    <div class="acard" id="cdCard" data-w="cds" style="display:none">
-      <div class="ahead"><span id="cdLabel">My clients</span><b id="cdBadge"></b></div>
-      <div id="cdBody"><div class="amsg">Loading your clients…</div></div>
-    </div>
-    <div class="acard" id="joshCard" data-w="josh" style="display:none">
-      <div class="ahead"><span>Josh Holyfield · RAW</span><b id="jBadge">—</b></div>
-      <div id="jBody"><div class="amsg">Loading tracker…</div></div>
-    </div>
-  </div>
-</section>
-
-<a class="ares-switch" id="aresSwitch" href="ares.html" title="Switch to Ares Digital">
-  <img src="ares-head.png?v=3" alt="Ares Digital">
-  <span class="t"><small>Switch to</small><b>ARES</b></span>
-</a>
 
 <!-- embedded app viewer -->
 <div class="viewer" id="viewer">
@@ -771,8 +589,8 @@
     <div class="anote" id="adminNote"></div>
     <div class="anote" style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
       Source ·
-      <a href="https://github.com/anomalycreativeco" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">GitHub org</a> ·
-      <a href="https://github.com/anomalycreativeco/anomalycreativeco.github.io" target="_blank" rel="noopener" style="color:var(--green);font-weight:600">Hub repo</a>
+      <a href="https://github.com/anomalycreativeco" target="_blank" rel="noopener">GitHub org</a> ·
+      <a href="https://github.com/anomalycreativeco/anomalycreativeco.github.io" target="_blank" rel="noopener">Hub repo</a>
     </div>
   </div>
 </div>
@@ -785,11 +603,11 @@ import {getFirestore,doc,getDoc,setDoc,getDocs,collection} from "https://www.gst
 
 const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
 const auth=getAuth(app), db=getFirestore(app);
+const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.getIdToken()):null;}};
 
-/* Bump on every deploy. Shown next to the wordmark so anyone reporting a
-   problem can say which build they're on — GitHub Pages caches at the edge for
-   ~10 minutes, which makes "have you got the fix yet?" a real question. */
-const APP_VERSION="1.6.0", APP_BUILD="2026-08-01";
+/* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
+   makes "have you got the fix yet?" a real question. */
+const APP_VERSION="2.0.0", APP_BUILD="2026-08-18";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -827,6 +645,7 @@ const CATMETA={
   pre:{kick:"SEC·02 — Pre-Production",title:"Pre-Production",desc:"Planning before cameras roll — calendars, concepts, and approvals."},
   post:{kick:"SEC·03 — Post-Production",title:"Post-Production",desc:"The editing engine room. Live production stats surface on the hub front page."}
 };
+const PIPE_URL=ITEMS.post[0].url;
 
 let USER=null, MYEMAIL="", MYROLE="none", ACCESS=null, PREVIEW=null, LASTTASKS=null;
 const isOwner=()=>OWNERS.includes(MYEMAIL);
@@ -835,26 +654,25 @@ const effEmail=()=>PREVIEW?PREVIEW.email:MYEMAIL;
 const effRole=()=>PREVIEW?PREVIEW.role:MYROLE;
 const effOwner=()=>!PREVIEW&&isOwner();
 
-/* ───────── theme + spinner ───────── */
-const root=document.documentElement, spinner=document.getElementById("spinner");
-const LAYERS=24, DEPTH=26;
-function buildSpinner(){
-  const dark=root.getAttribute("data-theme")==="dark";
-  // dark mode spins the fuzzy AI mark (soft volumetric stack); light mode the machined black mark
-  const src=dark?"logomark-fuzzy.png?v=2":"logomark.png";
-  spinner.innerHTML="";
-  for(let i=0;i<LAYERS;i++){
-    const img=document.createElement("img");
-    img.src=src; img.alt=i===0?"Anomaly logomark, rotating in 3D":"";
-    img.style.transform=`translateZ(${(i-(LAYERS-1)/2)*(DEPTH/(LAYERS-1))}px)`;
-    if(!dark && i>1&&i<LAYERS-2) img.style.filter="invert(.42)";
-    spinner.appendChild(img);
-  }
-}
+/* ───────── theme + clock ───────── */
+const root=document.documentElement;
 function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");
-  localStorage.setItem("hub-theme",t);buildSpinner();}
+  localStorage.setItem("hub-theme",t);}
 setTheme(localStorage.getItem("hub-theme")||"light");
 document.getElementById("themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+
+function tickClock(){
+  const d=new Date();
+  document.getElementById("hubTime").textContent=d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+  document.getElementById("hubDate").textContent=d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+tickClock(); setInterval(tickClock,15000);
+function setGreeting(){
+  const h=new Date().getHours();
+  const part=h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+  const name=firstName();
+  document.getElementById("greet").textContent=name?part+", "+name.charAt(0).toUpperCase()+name.slice(1):part;
+}
 
 /* ───────── auth ───────── */
 const gate=document.getElementById("gate"), gMsg=document.getElementById("gMsg"), gOut=document.getElementById("gOut");
@@ -869,7 +687,6 @@ document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
   if(!u){ USER=null; MYEMAIL=""; MYROLE="none";
     gate.classList.remove("off"); gOut.classList.remove("show");
-    document.body.classList.remove("enter");
     document.getElementById("gateTitle").textContent="Studio Hub";
     gMsg.className="gmsg"; gMsg.textContent="";
     return; }
@@ -885,9 +702,6 @@ onAuthStateChanged(auth,async u=>{
   }
   ACCESS=await loadAccess();
   gate.classList.add("off");
-  // cinematic entrance — restart the stagger on every login
-  document.body.classList.remove("enter"); void document.body.offsetWidth;
-  document.body.classList.add("enter");
   renderUser(); applyAccess(); pullStats().catch(()=>{});
   if(!restoreFromHash()){
     const catParam=new URLSearchParams(location.search).get("cat");
@@ -985,36 +799,38 @@ function renderUser(){
     document.getElementById("uName").textContent=USER.displayName||MYEMAIL.split("@")[0];
     document.getElementById("uRole").textContent=isOwner()?"Founder":MYROLE.charAt(0).toUpperCase()+MYROLE.slice(1);
   }
-  document.getElementById("gearBtn").style.display=effOwner()?"block":"none";
+  document.getElementById("gearBtn").style.display=effOwner()?"grid":"none";
+  setGreeting();
 }
 function visibleItems(cat){ return ITEMS[cat].filter(it=>canSee(it.key)); }
 function applyAccess(){
   ["client","post","pre"].forEach(c=>{
     const n=visibleItems(c).length;
-    document.querySelector(`[data-count="${c}"]`).textContent=n+" platform"+(n===1?"":"s");
+    document.querySelector(`[data-count="${c}"]`).textContent=n;
   });
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
   document.getElementById("pillFinancials").style.display=canSee("financials")?"flex":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
-  document.getElementById("astrip").hidden=false;
   document.getElementById("deck").hidden=false;
-  document.getElementById("scrollCue").hidden=false;
   WL=wlLoad(); mountTools(); applyLayout();
   initReminders(); loadReminders(); loadClients();
-  document.getElementById("aKpis").style.display=canSee("pipeline")?"block":"none";
+  const pipe=canSee("pipeline");
+  document.getElementById("aKpis").style.display=pipe?"block":"none";
+  document.getElementById("revCard").style.display=pipe?"block":"none";
+  document.getElementById("footCard").style.display=pipe?"block":"none";
+  document.getElementById("edsCard").style.display=pipe?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
   loadToday(); loadJosh();
 }
 
-/* ── Josh Holyfield RAW tracker card — reads the hub/joshTracker doc the daily
-   Frame.io sync writes; the card is a shortcut into josh.html ── */
+/* ── Josh Holyfield RAW tracker card ── */
 async function loadJosh(){
   if(!canSee("josh")) return;
   const card=document.getElementById("joshCard");
   card.style.cursor="pointer";
-  card.onclick=()=>openApp("Josh Holyfield · RAW Tracker","josh.html");
-  const body=document.getElementById("jBody"), badge=document.getElementById("jBadge");
+  card.onclick=e=>{ if(e.target.closest(".wtools")) return; openApp("Josh Holyfield · RAW Tracker","josh.html"); };
+  const body=document.getElementById("jBody");
   try{
     const d=await getDoc(doc(db,"hub","joshTracker"));
     if(!d.exists()){ body.innerHTML='<div class="amsg">No Frame.io sync yet.</div>'; return; }
@@ -1031,8 +847,6 @@ async function loadJosh(){
     renderJoshBody();
   }catch(e){ body.innerHTML='<div class="amsg">Couldn\'t load tracker.</div>'; }
 }
-/* The RAW tracker earns its size: the KPI row is the whole story at S/M, and
-   from L on it also names the clips that have been sitting longest. */
 let JOSH=null;
 function renderJoshBody(){
   if(!JOSH) return;
@@ -1040,7 +854,7 @@ function renderJoshBody(){
   if(!body) return;
   const {un,inedit,oldest}=JOSH;
   badge.textContent=un.length?un.length+" waiting":"clear";
-  badge.style.color=un.length?"#c0563c":"";
+  badge.className=un.length?"hot":"";
   const size=wSize("josh");
   const big=size==="l";
   const age=c=>{const t=Date.parse(c.uploadedAt||c.date||"");return isNaN(t)?null:Math.floor((Date.now()-t)/864e5);};
@@ -1072,11 +886,6 @@ function firstName(){
   if(PREVIEW) return PREVIEW.email.split("@")[0].split(/[.\-_]/)[0].toLowerCase();
   return ((USER&&USER.displayName)||MYEMAIL.split("@")[0]).trim().split(/\s+/)[0].toLowerCase();
 }
-/* ---- today's calendar ----
-   Events arrive from hub/today as {cal,title,start,attendees,organizer}, written each
-   weekday morning by the hub-today-sync task. Filming and meetings render as separate
-   groups, and the Mine/Team switch filters on attendees — but only when the payload
-   actually carries them, since docs written before that field existed have none. */
 let TODAY_EVENTS=[];
 const SCOPE_KEY="hub.today.scope";
 const scopePref=()=>{ try{ return localStorage.getItem(SCOPE_KEY)||"mine"; }catch(e){ return "mine"; } };
@@ -1088,7 +897,7 @@ function evtIsMine(e){
 }
 function calGroup(list,cls,label){
   if(!list.length) return "";
-  return `<div class="cgrp ${cls}"><div class="clab"><i></i>${label}</div>`+
+  return `<div class="cgrp ${cls}"><div class="clab"><i></i>${label} · ${list.length}</div>`+
     list.map(e=>`<div class="trow cal"><span class="dot"></span><span class="tt">${e.start||""}</span>
       <span><b>${e.title}</b></span></div>`).join("")+`</div>`;
 }
@@ -1119,14 +928,7 @@ async function loadToday(){
   renderTodayCal();
   renderTodayTasks(null);
 }
-/* ---- Reminders -----------------------------------------------------------
-   Replaces the pipeline's sticky notes. Two kinds: ones you set for yourself
-   and ones the team sets for you — same list, because from your side there is
-   no difference in what you have to do. "I sent" is a separate tab so you can
-   see what you have asked of other people without it cluttering your own list.
-
-   Stored in hub/reminders as a JSON list, the same shape and path family as
-   hub/automations and hub/briefs, which this project already writes to. */
+/* ---- Reminders ---- */
 let REMS=[], REM_TAB="mine", TEAM=[];
 const remDoc=()=>doc(db,"hub","reminders");
 const remId=()=>"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -1150,12 +952,7 @@ async function loadReminders(){
   renderReminders();
   if(!REM_MIGRATED) migrateStickyNotes();
 }
-
-/* One-off import of the pipeline's sticky notes. They were real work people
-   had written down, so they come across rather than being dropped. Sticky
-   notes carry an editor NAME, not an email, so it's matched back to the team
-   by first name; anything unmatchable lands with whoever runs the migration
-   rather than vanishing. Runs once, guarded by a flag on the doc. */
+/* One-off import of the pipeline's sticky notes; runs once, guarded by a flag. */
 async function migrateStickyNotes(){
   try{
     const snap=await getDocs(collection(db,"tasks"));
@@ -1177,11 +974,9 @@ async function migrateStickyNotes(){
     REM_MIGRATED=true;
     await saveReminders();
     if(added) renderReminders();
-  }catch(e){ /* migration is best-effort; reminders still work without it */ }
+  }catch(e){ /* migration is best-effort */ }
 }
-
-/* Ping the person in Slack. Fired after the save, never before: a Slack
-   outage should cost a notification, not the reminder. */
+/* Ping the person in Slack. Fired after the save, never before. */
 async function pingSlack(toEmail,text){
   try{
     if(!AUTH_USER||!AUTH_USER.getIdToken) return;
@@ -1200,7 +995,7 @@ async function saveReminders(){
     // a silent permission-denied is indistinguishable from a dead button
     const l=document.getElementById("remList");
     if(l) l.insertAdjacentHTML("afterbegin",
-      `<div class="rem-empty" style="color:#c0563c">Couldn't save (${esc(e.code||e.message)}).</div>`);
+      `<div class="rem-empty" style="color:var(--red)">Couldn't save (${esc(e.code||e.message)}).</div>`);
     return false;
   }
 }
@@ -1226,7 +1021,6 @@ function renderReminders(){
   document.getElementById("remTabs").querySelectorAll("button")
     .forEach(b=>b.classList.toggle("on",b.dataset.rt===REM_TAB));
 
-  // the composer only needs a person picker when you're reminding someone else
   const who=document.getElementById("remWho");
   who.hidden = REM_TAB!=="sent";
   if(REM_TAB==="sent" && !who.dataset.filled){
@@ -1235,7 +1029,7 @@ function renderReminders(){
     who.dataset.filled="1";
   }
   document.getElementById("remText").placeholder =
-    REM_TAB==="sent" ? "Ask someone to\u2026" : "Remind me to\u2026";
+    REM_TAB==="sent" ? "Ask someone to…" : "Remind me to…";
 
   list.innerHTML = rows.length ? rows.map(r=>{
     const over=r.due&&r.due<t;
@@ -1245,8 +1039,8 @@ function renderReminders(){
     if(REM_TAB==="sent") bits.push("for "+firstOf(r.for));
     return `<div class="remrow ${over?"over":""}" data-rid="${r.id}">
       <button class="tick" data-rdone title="Mark done"></button>
-      <div class="body"><b>${esc(r.text)}</b>${bits.length?`<div class="meta">${esc(bits.join(" \u00b7 "))}</div>`:""}</div>
-      <button class="x" data-rdel title="Delete">\u2715</button>
+      <div class="body"><b>${esc(r.text)}</b>${bits.length?`<div class="meta">${esc(bits.join(" · "))}</div>`:""}</div>
+      <button class="x" data-rdel title="Delete">✕</button>
     </div>`;
   }).join("")
   : `<div class="rem-empty">${REM_TAB==="mine"?"Nothing on your list.":"You haven't asked anyone for anything."}</div>`;
@@ -1255,6 +1049,7 @@ function initReminders(){
   const tabs=document.getElementById("remTabs"), list=document.getElementById("remList");
   const text=document.getElementById("remText"), add=document.getElementById("remAdd");
   if(!tabs||!list||!text) return;
+  if(tabs.dataset.wired) return; tabs.dataset.wired="1";
   tabs.addEventListener("click",e=>{
     const b=e.target.closest("[data-rt]"); if(!b) return;
     REM_TAB=b.dataset.rt; renderReminders();
@@ -1283,16 +1078,15 @@ function initReminders(){
   });
 }
 
-/* ---- widget layout: order + size, per person ----------------------------
-   Stored per email in localStorage rather than Firestore, deliberately: a
-   layout is a response to the screen in front of you, so it should not follow
-   you from a 27" desktop to a laptop. Unknown widgets fall to the end, so
-   adding one later never strands it. */
-const WKEYS=["cds","kpis","chart","clients","josh"];
+/* ---- widget layout: order + size, per person ----
+   Stored per email in localStorage: a layout is a response to the screen in
+   front of you, so it should not follow you from a 27" desktop to a laptop.
+   Key is versioned — v2 rebuilt the deck, old saved layouts don't apply. */
+const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","rem"];
 const WSIZES=["s","m","l"];
 const WLABEL={s:"S",m:"M",l:"L"};
-const WDEFAULT={cds:"s",kpis:"s",chart:"m",clients:"s",josh:"s"};
-const wlKey=()=>"hub.widgets."+((effEmail()||"anon").toLowerCase());
+const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",rem:"s"};
+const wlKey=()=>"hub.widgets2."+((effEmail()||"anon").toLowerCase());
 function wlLoad(){
   try{
     const raw=localStorage.getItem(wlKey());
@@ -1301,10 +1095,8 @@ function wlLoad(){
     const order=(p.order||[]).filter(k=>WKEYS.includes(k));
     WKEYS.forEach(k=>{ if(!order.includes(k)) order.push(k); });
     const size={...WDEFAULT};
-    // "xl" existed briefly; fold any saved ones down rather than ignoring them
     Object.entries(p.size||{}).forEach(([k,v])=>{ if(!WKEYS.includes(k)) return;
-      const vv = v==="xl" ? "l" : v;
-      if(WSIZES.includes(vv)) size[k]=vv; });
+      if(WSIZES.includes(v)) size[k]=v; });
     return {order,size};
   }catch(e){ return {order:WKEYS.slice(),size:{...WDEFAULT}}; }
 }
@@ -1331,8 +1123,9 @@ function mountTools(){
     card.appendChild(t);
   });
 }
-/* Pointer-based sorting rather than HTML5 drag-and-drop: it works the same on
-   touch, and it lets the card reorder live under the finger. */
+/* Pointer-based sorting: works on touch, and the card reorders live under the
+   finger. Rect hit-testing, not elementFromPoint — that only sees what is
+   scrolled into view. */
 function initWidgetDrag(){
   const grid=document.getElementById("wgrid"); if(!grid) return;
   let drag=null;
@@ -1345,8 +1138,6 @@ function initWidgetDrag(){
   });
   grid.addEventListener("pointermove",e=>{
     if(!drag) return;
-    // hit-test against the rects directly — elementFromPoint only sees what is
-    // scrolled into view, so a card near the edge would silently refuse a drop
     let over=null;
     for(const c of grid.querySelectorAll("[data-w]")){
       if(c===drag||!c.offsetParent) continue;
@@ -1385,31 +1176,11 @@ function initWidgetDrag(){
   });
 }
 
-/* version badge + scroll cue */
+/* version badge */
 (()=>{
   initWidgetDrag();
   const b=document.getElementById("vBadge");
   if(b){ b.textContent="v"+APP_VERSION; b.title="Studio Hub v"+APP_VERSION+" — built "+APP_BUILD; }
-  const cue=document.getElementById("scrollCue"), deck=document.getElementById("deck");
-  if(cue&&deck){
-    cue.addEventListener("click",()=>{
-      const y=deck.offsetTop, before=window.scrollY;
-      const smooth=!matchMedia("(prefers-reduced-motion: reduce)").matches;
-      window.scrollTo(smooth?{top:y,behavior:"smooth"}:{top:y});
-      // some engines quietly no-op on smooth scrolling — make sure the click still lands
-      if(smooth) setTimeout(()=>{ if(Math.abs(window.scrollY-before)<2) window.scrollTo(0,y); },350);
-    });
-    /* Once the deck is in view the cue is just clutter. Watched with an
-       observer rather than a scroll listener: body carries its own
-       overflow-y, so window never sees scroll events on this page. */
-    if("IntersectionObserver" in window){
-      new IntersectionObserver(([e])=>{
-        const seen=e.isIntersecting;
-        cue.style.opacity=seen?"0":"";
-        cue.style.pointerEvents=seen?"none":"";
-      },{rootMargin:"-30% 0px 0px 0px"}).observe(deck);
-    }
-  }
 })();
 
 document.getElementById("todayScope").addEventListener("click",e=>{
@@ -1427,7 +1198,8 @@ function renderTodayTasks(tasks){
   const open=tasks.filter(t=>!t.completed&&mine(t));
   const due=open.filter(t=>t.dueDate===today);
   const overdue=open.filter(t=>t.dueDate&&t.dueDate<today);
-  let html=due.slice(0,5).map(t=>`
+  let html=due.length?`<div class="wsub">My tasks due</div>`:"";
+  html+=due.slice(0,5).map(t=>`
     <div class="trow"><span class="dot"></span><span><b>${(t.clientAbbr||"—")}</b> · ${t.projectName||t.type||"task"}</span></div>`).join("");
   if(due.length>5) html+=`<div class="tmore">+${due.length-5} more due today</div>`;
   if(overdue.length) html+=`<div class="trow over"><span class="dot"></span><span><b>${overdue.length} overdue</b> — open the pipeline</span></div>`;
@@ -1435,6 +1207,38 @@ function renderTodayTasks(tasks){
   document.getElementById("todayBadge").textContent=due.length?due.length+" due":"";
   box.innerHTML=html;
 }
+
+/* ── platform search ── */
+(()=>{
+  const inp=document.getElementById("hubSearch"), drop=document.getElementById("searchDrop");
+  if(!inp||!drop) return;
+  const all=()=>{
+    const list=[];
+    ["client","pre","post"].forEach(c=>visibleItems(c).forEach(it=>list.push({name:it.name,url:it.url,tag:CATMETA[c].title})));
+    if(canSee("automations"))list.push({name:"Client Automations",url:"automations.html",tag:"Quick"});
+    if(canSee("analytics"))list.push({name:"Analytics Dashboard",url:"analytics.html",tag:"Quick"});
+    if(canSee("financials"))list.push({name:"Financials",url:"financials.html",tag:"Quick"});
+    return list;
+  };
+  function show(){
+    const q=inp.value.trim().toLowerCase();
+    if(!q){ drop.classList.remove("open"); drop.innerHTML=""; return; }
+    const hits=all().filter(x=>x.name.toLowerCase().includes(q)).slice(0,6);
+    drop.innerHTML=hits.length?hits.map((h,i)=>`<button data-url="${esc(h.url)}" data-name="${esc(h.name)}" class="${i===0?"hot":""}">${esc(h.name)}<small>${esc(h.tag)}</small></button>`).join("")
+      :`<button disabled style="color:var(--faint)">No matches</button>`;
+    drop.classList.add("open");
+    drop.querySelectorAll("[data-url]").forEach(b=>b.onclick=()=>{
+      drop.classList.remove("open"); inp.value="";
+      openApp(b.dataset.name,b.dataset.url);
+    });
+  }
+  inp.addEventListener("input",show);
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){ const first=drop.querySelector("[data-url]"); if(first) first.click(); }
+    if(e.key==="Escape"){ drop.classList.remove("open"); inp.blur(); }
+  });
+  addEventListener("click",e=>{ if(!e.target.closest(".search")) drop.classList.remove("open"); });
+})();
 
 /* category panels */
 const ovl=document.getElementById("ovl");
@@ -1451,7 +1255,6 @@ function openCat(key,skipHash){
       <span class="pt"><b>${it.name}</b><span>${it.desc}</span></span>
       <span class="tag">${it.tag}</span><span class="go">↗</span>
     </a>`).join(""):`<div class="pempty">Nothing here for your account yet.</div>`;
-  // normal click = open inside the hub; ⌘/ctrl-click or middle-click still opens a real tab
   document.querySelectorAll("#pList .prow").forEach(a=>a.addEventListener("click",e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey) return;
     e.preventDefault();
@@ -1475,18 +1278,18 @@ function openApp(name,url,skipHash){
 }
 function closeApp(){viewer.classList.remove("open");if(location.hash)history.replaceState(null,"",location.pathname+location.search);}
 document.getElementById("vClose").onclick=closeApp;
-["pillAnalytics","pillAutomations"].forEach(id=>{
+["pillAnalytics","pillAutomations","pillFinancials"].forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener("click",e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey) return;
     e.preventDefault();
-    openApp(el.querySelector(".t b").textContent, el.getAttribute("href"));
+    openApp(el.textContent.trim(), el.getAttribute("href"));
   });
 });
 document.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>openCat(el.dataset.cat)));
 function goHome(){ ovl.classList.remove("open"); if(viewer.classList.contains("open"))closeApp(); else clearHash(); }
 const _nh=document.getElementById("navHome"); if(_nh)_nh.onclick=goHome;
-const _brand=document.querySelector(".brand"); if(_brand){_brand.style.cursor="pointer";_brand.onclick=goHome;}
+const _brand=document.querySelector(".brand"); if(_brand)_brand.onclick=goHome;
 document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",()=>{ovl.classList.remove("open");clearHash();}));
 
 /* admin panel */
@@ -1537,7 +1340,7 @@ document.getElementById("adminSave").onclick=async()=>{
     note.className="anote"; note.textContent="Saved. Changes apply the next time each person loads the hub.";
   }catch(e){
     note.className="anote err";
-    note.textContent="Couldn't save ("+(e.code||e.message)+"). The Firestore rules for the pipeline project need a small addition — ask Claude for the snippet.";
+    note.textContent="Couldn't save ("+(e.code||e.message)+").";
   }
 };
 
@@ -1554,39 +1357,72 @@ function drawStats(tasks){
   const delivered=open.filter(t=>t.delivered).length;
   const inprod=open.length-delivered;
   document.getElementById("aState").textContent="LIVE";
-  document.getElementById("aChartCard").style.display="block";
-  document.getElementById("aClientCard").style.display="block";
-  // Everything the widgets might want, computed once. Which slice of it each
-  // one actually shows is decided by its size, in renderWidgetBodies().
+  document.getElementById("aChartCard").style.display=canSee("pipeline")?"block":"none";
+  document.getElementById("aClientCard").style.display=canSee("pipeline")?"block":"none";
   STATS={weeks,posted,open,overdue,delivered,inprod,today:todayISO()};
   LASTTASKS=tasks;
   renderWidgetBodies();
   renderTodayTasks(tasks);
 }
 
-/* ---- widget bodies -------------------------------------------------------
+/* ---- widget bodies ----
    S is the headline, M adds the "so what", L is everything short of opening
    the app. Re-run whenever data OR size changes. */
 let STATS=null;
 const wSize=k=>((WL&&WL.size&&WL.size[k])||"s");
 function renderWidgetBodies(){
-  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody(); renderMyClients();
+  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody();
+  renderMyClients(); renderRevBody(); renderFootBody(); renderEdsBody(); renderUnplanned();
 }
 function taskLine(t,extra){
   return `<div class="trow${extra&&extra.over?" over":""}"><span class="dot"></span>
     ${extra&&extra.tt?`<span class="tt">${esc(extra.tt)}</span>`:""}
     <span><b>${esc(t.clientAbbr||"—")}</b> · ${esc(t.projectName||t.type||"task")}</span></div>`;
 }
-/* ---- My clients ----
-   Every client we post for has exactly one creative director. A blank director
-   means we don't post for them, so those simply never appear here. */
-let CLIENTS=[];
+
+/* ---- schedule + ghosts ----
+   Mirrors the pipeline exactly: config/schedule maps abbr → posting weekdays,
+   config/skips holds "ABBR|YYYY-MM-DD" dismissals, and an unplanned slot is a
+   scheduled weekday with no non-filming/braindump task and no skip. */
+let HUB_SCHEDULE={}, HUB_SKIPS=new Set();
+const ymdOf=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const weekStartSun=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-x.getDay());return x;};
+function slotOpen(abbr,ds,wd,tasks){
+  if(!(HUB_SCHEDULE[abbr]||[]).includes(wd)) return false;
+  if(HUB_SKIPS.has(abbr+"|"+ds)) return false;
+  return !tasks.some(t=>t.clientAbbr===abbr&&t.dueDate===ds&&t.type!=="filming"&&t.type!=="braindump");
+}
+function unplannedRange(abbr,from,to){ // Date, Date inclusive; abbr null = all clients
+  const tasks=LASTTASKS||[]; let n=0;
+  const abbrs=abbr?[abbr]:CLIENTS.map(c=>c.abbr).filter(a=>(HUB_SCHEDULE[a]||[]).length);
+  for(let d=new Date(from);d<=to;d=addDays(d,1)){
+    const ds=ymdOf(d), wd=d.getDay();
+    abbrs.forEach(a=>{ if(slotOpen(a,ds,wd,tasks)) n++; });
+  }
+  return n;
+}
+
+/* ---- My clients: week-by-week board ----
+   Columns read left→right as a pipeline: unplanned → footage needed →
+   in editing → completed. A row heavy on the left is a client in trouble.
+   Delivered-but-not-posted counts as completed — the edit work is done. */
+let CLIENTS=[], BOARD_OFF=0;
 async function loadClients(){
   try{
     const snap=await getDocs(collection(db,"clients"));
     CLIENTS=snap.docs.map(d=>d.data());
   }catch(e){ CLIENTS=[]; }
-  renderMyClients();
+  try{
+    const d=await getDoc(doc(db,"config","schedule"));
+    const list=d.exists()?(d.data()||{}).list:[];
+    HUB_SCHEDULE=Object.fromEntries((list||[]).map(e=>[e.abbr,e.days||[]]));
+  }catch(e){ HUB_SCHEDULE={}; }
+  try{
+    const d=await getDoc(doc(db,"config","skips"));
+    HUB_SKIPS=new Set(d.exists()?((d.data()||{}).list||[]):[]);
+  }catch(e){ HUB_SKIPS=new Set(); }
+  renderMyClients(); renderUnplanned();
 }
 function renderMyClients(){
   const box=document.getElementById("cdBody"), card=document.getElementById("cdCard");
@@ -1598,25 +1434,134 @@ function renderMyClients(){
   if(!mine.length){ card.style.display="none"; return; }
   card.style.display="block";
   document.getElementById("cdBadge").textContent=mine.length;
-  const size=wSize("cds"), tasks=LASTTASKS||[], today=todayISO();
-  const openFor=a=>tasks.filter(t=>!t.completed&&t.clientAbbr===a&&t.type!=="filming"&&t.type!=="braindump");
-  if(size==="s"){
-    box.innerHTML=`<div class="cdcodes">${mine.map(c=>`<span class="cdchip">${esc(c.abbr)}</span>`).join("")}</div>`;
-    return;
-  }
-  box.innerHTML=mine.map(c=>{
-    const op=openFor(c.abbr);
-    const late=op.filter(t=>t.dueDate&&t.dueDate<today).length;
-    const due=op.filter(t=>t.dueDate===today).length;
-    const bits=[];
-    if(size==="l"){
-      bits.push(op.length+" open");
-      if(due) bits.push(due+" due today");
-      if(late) bits.push(late+" overdue");
-    } else bits.push(op.length+" open");
-    return `<div class="trow ${late&&size==="l"?"over":""}"><span class="dot"></span>
-      <span><b>${esc(c.abbr)}</b> · ${esc(c.name||"")}<div class="meta">${esc(bits.join(" · "))}</div></span></div>`;
-  }).join("");
+
+  const ws=addDays(weekStartSun(new Date()),BOARD_OFF*7), we=addDays(ws,6);
+  const wsY=ymdOf(ws), weY=ymdOf(we);
+  const fmt=d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  document.getElementById("cdRange").textContent=
+    (BOARD_OFF===0?"This week":BOARD_OFF===-1?"Last week":BOARD_OFF===1?"Next week":fmt(ws))+" · "+fmt(ws)+" – "+fmt(we);
+
+  const tasks=LASTTASKS||[];
+  const inWeek=t=>t.dueDate&&t.dueDate>=wsY&&t.dueDate<=weY&&t.type!=="filming"&&t.type!=="braindump";
+  const rows=mine.map(c=>{
+    const wk=tasks.filter(t=>t.clientAbbr===c.abbr&&inWeek(t));
+    const done=wk.filter(t=>t.completed||t.delivered).length;
+    const open=wk.filter(t=>!t.completed&&!t.delivered);
+    const noFoot=open.filter(t=>!t.footageUrl).length;
+    const editing=open.length-noFoot;
+    const unp=unplannedRange(c.abbr,ws,we);
+    return {c,unp,noFoot,editing,done};
+  });
+  const tot=rows.reduce((a,r)=>({unp:a.unp+r.unp,noFoot:a.noFoot+r.noFoot,editing:a.editing+r.editing,done:a.done+r.done}),{unp:0,noFoot:0,editing:0,done:0});
+  const cell=(v,cls)=>`<td class="${v?cls:"z"}">${v}</td>`;
+  box.innerHTML=`<table class="board">
+    <thead><tr><th><span class="lbl">Client</span></th><th><span class="lbl">Unplanned</span></th>
+      <th><span class="lbl">Footage needed</span></th><th><span class="lbl">In editing</span></th>
+      <th><span class="lbl">Completed</span></th></tr></thead>
+    <tbody>${rows.map(r=>`<tr data-abbr="${esc(r.c.abbr)}">
+      <td><div class="cl"><span class="ab">${esc(r.c.abbr)}</span><span class="nm">${esc(r.c.name||"")}</span></div></td>
+      ${cell(r.unp,"u")}${cell(r.noFoot,"f")}${cell(r.editing,"e")}${cell(r.done,"d")}</tr>`).join("")}</tbody>
+    <tfoot><tr><td><span class="lbl">All my clients</span></td>
+      ${cell(tot.unp,"u")}${cell(tot.noFoot,"f")}${cell(tot.editing,"e")}${cell(tot.done,"d")}</tr></tfoot>
+  </table>`;
+  // a row click lands on that exact week in the pipeline calendar, filtered
+  // to that client — the v2.16.0 deep link
+  box.querySelectorAll("tbody tr").forEach(tr=>tr.onclick=()=>{
+    openApp("Editing Pipeline",PIPE_URL+"?view=calendar&client="+encodeURIComponent(tr.dataset.abbr)+"&week="+wsY);
+  });
+}
+document.getElementById("cdNav").addEventListener("click",e=>{
+  const b=e.target.closest("[data-wk]"); if(!b) return;
+  e.stopPropagation();
+  BOARD_OFF+=Number(b.dataset.wk);
+  renderMyClients();
+});
+
+/* ---- Unplanned tiles: rest of this week (today onward — earlier empty days
+   are "missed", a different problem) + all of next week ---- */
+function renderUnplanned(){
+  const box=document.getElementById("unpTiles"); if(!box) return;
+  if(!canSee("pipeline")||!LASTTASKS||!CLIENTS.length||!Object.keys(HUB_SCHEDULE).length){ box.style.display="none"; return; }
+  const today=new Date(); today.setHours(0,0,0,0);
+  const thisEnd=addDays(weekStartSun(today),6);
+  const nextStart=addDays(weekStartSun(today),7), nextEnd=addDays(nextStart,6);
+  const a=unplannedRange(null,today,thisEnd);
+  const b=unplannedRange(null,nextStart,nextEnd);
+  const fmt=d=>d.toLocaleDateString("en-US",{weekday:"short",day:"numeric"});
+  box.style.display="grid";
+  box.innerHTML=`
+    <button class="up" data-wk="${ymdOf(weekStartSun(today))}"><b>${a}</b><div class="w"><span class="lbl">Unplanned · rest of week</span>
+      <em>${fmt(today)} – ${fmt(thisEnd)}</em></div><span class="go">→</span></button>
+    <button class="up" data-wk="${ymdOf(nextStart)}"><b>${b}</b><div class="w"><span class="lbl">Unplanned · next week</span>
+      <em>${fmt(nextStart)} – ${fmt(nextEnd)}</em></div><span class="go">→</span></button>`;
+  box.querySelectorAll(".up").forEach(btn=>btn.onclick=()=>{
+    openApp("Editing Pipeline",PIPE_URL+"?view=calendar&week="+btn.dataset.wk);
+  });
+}
+
+/* ---- Needs revision: a client asked for a change; it is invisible on every
+   other dashboard. Oldest due first — a stale revision is the worst kind. ---- */
+function renderRevBody(){
+  const box=document.getElementById("revBody"), badge=document.getElementById("revBadge");
+  if(!box||!canSee("pipeline")) return;
+  if(!LASTTASKS){ return; }
+  const revs=LASTTASKS.filter(t=>t.revision&&!t.completed)
+    .sort((a,b)=>(a.dueDate||"9999")<(b.dueDate||"9999")?-1:1);
+  badge.textContent=revs.length||"";
+  badge.className=revs.length?"hot":"";
+  if(!revs.length){ box.innerHTML='<div class="amsg">No open revisions.</div>'; return; }
+  const size=wSize("rev"), max=size==="l"?10:size==="m"?6:4;
+  box.innerHTML=revs.slice(0,max).map(t=>`
+    <div class="arw" data-abbr="${esc(t.clientAbbr||"")}">
+      <div class="bd"><div class="ttl"><b>${esc(t.clientAbbr||"—")}</b><span>${esc(t.projectName||t.type||"task")}</span></div>
+      <div class="sub">${esc(t.assignee||"Unassigned")}${t.dueDate?" · due "+esc(t.dueDate.slice(5)):""}</div></div>
+    </div>`).join("")+(revs.length>max?`<div class="tmore">+${revs.length-max} more</div>`:"");
+  box.querySelectorAll(".arw").forEach(r=>r.onclick=()=>{
+    openApp("Editing Pipeline",PIPE_URL+"?view=list"+(r.dataset.abbr?"&client="+encodeURIComponent(r.dataset.abbr):""));
+  });
+}
+
+/* ---- Shot · no footage linked: filming happened, the footage link never
+   landed, so post-production can't start. Last 7 days. ---- */
+function renderFootBody(){
+  const box=document.getElementById("footBody"), badge=document.getElementById("footBadge");
+  if(!box||!canSee("pipeline")) return;
+  if(!LASTTASKS){ return; }
+  const today=todayISO();
+  const weekAgo=ymdOf(addDays(new Date(),-7));
+  const stalled=LASTTASKS.filter(t=>t.type==="filming"&&t.dueDate&&t.dueDate<=today&&t.dueDate>=weekAgo&&!t.footageUrl)
+    .sort((a,b)=>a.dueDate<b.dueDate?-1:1);
+  badge.textContent=stalled.length||"";
+  badge.className=stalled.length?"warn":"";
+  if(!stalled.length){ box.innerHTML='<div class="amsg">Every recent shoot has footage linked.</div>'; return; }
+  const size=wSize("foot"), max=size==="l"?10:size==="m"?6:4;
+  box.innerHTML=stalled.slice(0,max).map(t=>{
+    const d=Math.round((new Date(today+"T12:00")-new Date(t.dueDate+"T12:00"))/864e5);
+    const cls=d>=3?"hot":d>=2?"warn":"";
+    return `<div class="arw">
+      <div class="bd"><div class="ttl"><b>${esc(t.clientAbbr||"—")}</b><span>${esc(t.projectName||"Filming")}</span></div>
+      <div class="sub">Filmed ${esc(new Date(t.dueDate+"T12:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}))}</div></div>
+      <span class="age ${cls}">${d}d</span></div>`;
+  }).join("")+(stalled.length>max?`<div class="tmore">+${stalled.length-max} more</div>`:"");
+  box.querySelectorAll(".arw").forEach(r=>r.onclick=()=>{
+    openApp("Editing Pipeline",PIPE_URL+"?view=filming");
+  });
+}
+
+/* ---- Editor load: who is over capacity, and the red bar nobody owns ---- */
+function renderEdsBody(){
+  const box=document.getElementById("edsBody");
+  if(!box||!STATS) return;
+  const byEd={}; STATS.open.forEach(t=>{ const a=t.assignee||"Unassigned"; byEd[a]=(byEd[a]||0)+1; });
+  const eds=Object.entries(byEd).sort((a,b)=>{
+    if(a[0]==="Unassigned") return 1; if(b[0]==="Unassigned") return -1; return b[1]-a[1];
+  });
+  if(!eds.length){ box.innerHTML='<div class="amsg">No open tasks.</div>'; return; }
+  const max=Math.max(...eds.map(e=>e[1]),1);
+  const size=wSize("eds"), lim=size==="l"?12:size==="m"?8:5;
+  box.innerHTML=`<div class="wbars">`+eds.slice(0,lim).map(([n,v])=>
+    `<div class="wbar ${n==="Unassigned"?"red":""}"><span>${esc(n)}</span><i style="width:${Math.round(v/max*100)}%"></i><b>${v}</b></div>`
+  ).join("")+`</div>`;
 }
 
 function renderKpiBody(){
@@ -1641,12 +1586,6 @@ function renderKpiBody(){
         const d=Math.round((new Date(today+"T12:00")-new Date(t.dueDate+"T12:00"))/864e5);
         return taskLine(t,{tt:d+"d",over:true});
       }).join("") : `<div class="amsg">Nothing overdue — clear runway.</div>`;
-    const byEd={}; open.forEach(t=>{ const a=t.assignee||"Unassigned"; byEd[a]=(byEd[a]||0)+1; });
-    const eds=Object.entries(byEd).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    if(eds.length){
-      html+=`<div class="wsub">By editor</div><div class="wbars">`+
-        eds.map(([n,v])=>`<div class="wbar"><span>${esc(n)}</span><i style="width:${Math.round(v/eds[0][1]*100)}%"></i><b>${v}</b></div>`).join("")+`</div>`;
-    }
   }
   box.innerHTML=html;
 }
@@ -1675,10 +1614,9 @@ function renderChartBody(){
       const best=Math.max(...posted);
       const thisWk=posted[posted.length-1], prev=posted[posted.length-2]||0;
       const delta=thisWk-prev;
-      foot.innerHTML=`<div class="kpirow">
+      foot.innerHTML=`<div class="kpirow" style="margin-top:10px">
         <div class="kpi"><b>${tot}</b><span>8-wk total</span></div>
         <div class="kpi"><b>${avg}</b><span>Avg / wk</span></div>
-        <div class="kpi"><b>${best}</b><span>Best wk</span></div>
         <div class="kpi ${delta<0?"warn":""}"><b>${delta>0?"+":""}${delta}</b><span>vs last</span></div>
       </div>`;
       foot.style.display="block";
@@ -1696,7 +1634,6 @@ function renderClientsBody(){
   const cm=Math.max(...top.map(x=>x[1].n),1);
   const rowH=19, H=Math.max(top.length*rowH+8,24);
   svg.setAttribute("viewBox",`0 0 216 ${H}`);
-  // at L the bar splits: delivered-but-not-posted shown lighter inside the total
   svg.innerHTML=top.map(([c,v],i)=>{
     const y=i*rowH+4, w=Math.round(v.n/cm*130), dw=Math.round(v.dl/cm*130);
     const split = size==="l" && v.dl
