@@ -374,14 +374,20 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
   .acard,.acard[data-size="m"],.acard[data-size="l"]{grid-column:span 6}
 }
 @media(max-width:820px){
-  .shell{grid-template-columns:1fr;padding:10px;gap:10px}
-  .side{position:static;height:auto;flex-direction:row;align-items:center;gap:6px;padding:10px;overflow-x:auto;overflow-y:hidden}
+  .shell{grid-template-columns:1fr;padding:10px;gap:10px;max-width:100%;overflow-x:clip}
+  .side{max-width:100%;min-width:0}
+  /* the whole bar used to scroll, which pushed the account chip ~350px off a
+     phone screen — sign-out and preview were behind a horizontal scroll nobody
+     would find. Now only the sections nav scrolls; brand and account are pinned. */
+  .side{position:static;height:auto;flex-direction:row;align-items:center;gap:8px;padding:10px;overflow:visible}
   .brand{padding:0;flex:none}
   .navlbl,.navsep{display:none}
-  .nav{flex-direction:row;flex:none}
-  .nav a,.nav button{white-space:nowrap;width:auto;padding:8px 11px}
+  .nav{flex-direction:row;flex:1 1 0%;min-width:0;overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a,.nav button{white-space:nowrap;width:auto;flex:none;padding:8px 11px}
   .nav .tag{display:none}
-  .side .foot{margin:0 0 0 auto;padding:0;display:flex;gap:8px;align-items:center}
+  .side .foot{margin:0;padding:0;flex:none;display:flex;gap:8px;align-items:center}
   .ares-switch{margin:0}
   .ares-switch .t{display:none}
   .userchip .who{display:none}
@@ -393,6 +399,81 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
   .wtools{opacity:1}
   .rem-new input,.rem-new select{font-size:16px} /* stop iOS zoom-on-focus */
   .panel{width:100%}
+}
+
+/* ── phone ──────────────────────────────────────────────────────────────
+   Matches the 560px tier the rest of the hub already uses. Three things
+   genuinely break below this width rather than merely getting tight: the
+   topbar collapses into seven rows, the five-column client board runs its
+   headers into each other at 0px gaps, and the quick-open nav pushes the
+   sections nav out of reach. */
+@media(max-width:560px){
+  .shell{padding:8px;gap:8px}
+
+  /* topbar: title + actions on one row, search on its own. The clock goes —
+     the phone already shows the time in its own status bar. */
+  .top{gap:8px}
+  .top h1{font-size:19px;flex:1 1 auto;min-width:0;width:auto;margin:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pill-time{display:none}
+  .spacer{display:none}
+  .tbtn{width:36px;height:36px;flex:none}
+  .search{order:9;flex:0 0 100%;width:100%;max-width:none;padding:7px 8px 7px 12px}
+
+  /* quick-open is owner-only and reachable from search; drop it so the
+     sections nav gets the whole strip */
+  .side .nav:last-of-type{display:none}
+  .brand b{display:none}
+  .appver{margin-left:0}
+  .ares-switch{padding:6px}
+
+  /* Today's Mine/Team switch shared the top-right corner with the widget
+     tools; on a phone that corner is 60px wide, so it moves into the flow */
+  #todayCard .seg{position:static;margin:0 0 10px;width:max-content}
+  #todayCal{max-height:230px}
+
+  .unp{grid-template-columns:1fr}
+  .kpirow{gap:8px}
+  .kpi b{font-size:21px}
+
+  /* client board: five numeric columns cannot share 375px, so each client
+     becomes a stacked block with its numbers labelled inline */
+  .board thead{display:none}
+  .board,.board tbody,.board tfoot,.board tr,.board td{display:block;width:100%}
+  .board tr{padding:11px 0;border-bottom:1px solid var(--line)}
+  .board tbody tr:last-child{border-bottom:0}
+  .board td{border:0;padding:3px 0;text-align:left;font-size:13px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .board td:first-child{margin-bottom:5px;padding:0;justify-content:flex-start}
+  .board td::before{content:attr(data-l);font-family:var(--mono);font-size:9px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  .board td.z{display:none}          /* zeros carry no information here */
+  .board .nm{display:inline}          /* room for the full name again */
+  .board tfoot tr{border-top:1px solid var(--line-2);padding-top:11px}
+  .board tbody tr:hover td{background:transparent}
+  .board tbody tr:hover .nm::after{content:""}
+
+  .ahead{flex-wrap:wrap;row-gap:8px;padding-right:46px}
+  #cdCard .wknav{flex:0 0 100%;margin-left:0;justify-content:space-between}
+  #cdCard .wknav button{width:32px;height:28px}
+  .rem-head{padding-right:46px}
+  .panel{padding:20px 16px}
+}
+
+/* ── touch targets ──────────────────────────────────────────────────────
+   Expands the hit area to 44px without changing what anything looks like:
+   a transparent inset overlay rather than a bigger button. Applied on touch
+   pointers only, so the desktop layout is untouched. */
+@media(hover:none){
+  .wtools button,.remrow .tick,.remrow .x,.seg button,.remtab button,
+  .wknav button,.pclose,.up,.tbtn{position:relative}
+  .wtools button::after,.remrow .tick::after,.remrow .x::after,
+  .seg button::after,.remtab button::after,.wknav button::after,
+  .pclose::after{content:"";position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%);width:max(100%,44px);height:max(100%,44px)}
+  .wtools{opacity:1}
+  .wtools button{width:26px;height:26px}
+  .remrow{padding:11px 0}
 }
 </style>
 </head>
@@ -607,7 +688,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.0.0", APP_BUILD="2026-08-18";
+const APP_VERSION="2.0.1", APP_BUILD="2026-08-21";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -1453,16 +1534,17 @@ function renderMyClients(){
     return {c,unp,noFoot,editing,done};
   });
   const tot=rows.reduce((a,r)=>({unp:a.unp+r.unp,noFoot:a.noFoot+r.noFoot,editing:a.editing+r.editing,done:a.done+r.done}),{unp:0,noFoot:0,editing:0,done:0});
-  const cell=(v,cls)=>`<td class="${v?cls:"z"}">${v}</td>`;
+  // data-l feeds the stacked phone layout, where there is no header row
+  const cell=(v,cls,lab)=>`<td class="${v?cls:"z"}" data-l="${lab}">${v}</td>`;
   box.innerHTML=`<table class="board">
     <thead><tr><th><span class="lbl">Client</span></th><th><span class="lbl">Unplanned</span></th>
       <th><span class="lbl">Footage needed</span></th><th><span class="lbl">In editing</span></th>
       <th><span class="lbl">Completed</span></th></tr></thead>
     <tbody>${rows.map(r=>`<tr data-abbr="${esc(r.c.abbr)}">
       <td><div class="cl"><span class="ab">${esc(r.c.abbr)}</span><span class="nm">${esc(r.c.name||"")}</span></div></td>
-      ${cell(r.unp,"u")}${cell(r.noFoot,"f")}${cell(r.editing,"e")}${cell(r.done,"d")}</tr>`).join("")}</tbody>
+      ${cell(r.unp,"u","Unplanned")}${cell(r.noFoot,"f","Footage needed")}${cell(r.editing,"e","In editing")}${cell(r.done,"d","Completed")}</tr>`).join("")}</tbody>
     <tfoot><tr><td><span class="lbl">All my clients</span></td>
-      ${cell(tot.unp,"u")}${cell(tot.noFoot,"f")}${cell(tot.editing,"e")}${cell(tot.done,"d")}</tr></tfoot>
+      ${cell(tot.unp,"u","Unplanned")}${cell(tot.noFoot,"f","Footage needed")}${cell(tot.editing,"e","In editing")}${cell(tot.done,"d","Completed")}</tr></tfoot>
   </table>`;
   // a row click lands on that exact week in the pipeline calendar, filtered
   // to that client — the v2.16.0 deep link
