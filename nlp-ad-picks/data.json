@@ -1,0 +1,5756 @@
+{
+ "meta": {
+  "brand": {
+   "agency_name": "Anomaly Creative & Co.",
+   "client_name": "Next Level Physio",
+   "tagline": "Build a brand the algorithm can't ignore."
+  },
+  "client_name": "Next Level Physio",
+  "title": "Anomaly × Next Level Physio Ad Picks",
+  "generated_at": "2026-08-24T10:54:48Z",
+  "run_date": "2026-08-24",
+  "mode": "public",
+  "lookback_days": 365,
+  "since": "2025-08-24",
+  "accounts": [
+   {
+    "username": "drjerryyoo",
+    "label": "Dr. Jerry Yoo",
+    "slot": 1,
+    "posts_analyzed": 105,
+    "coverage_from": "2025-12-31",
+    "coverage_to": "2026-08-19",
+    "covered": false,
+    "avatar": null
+   },
+   {
+    "username": "nextlevelphysiopt",
+    "label": "Next Level Physio",
+    "slot": 2,
+    "posts_analyzed": 28,
+    "coverage_from": "2026-06-19",
+    "coverage_to": "2026-08-20",
+    "covered": false,
+    "avatar": null
+   }
+  ],
+  "scoring": {
+   "weights_configured": {
+    "views": 0.3,
+    "shares": 0.25,
+    "saves": 0.2,
+    "reach": 0.15,
+    "likes": 0.05,
+    "comments": 0.05
+   },
+   "weights_used": {
+    "views": 0.75,
+    "likes": 0.125,
+    "comments": 0.125
+   },
+   "metrics_available": [
+    "views",
+    "likes",
+    "comments"
+   ],
+   "metrics_missing": [
+    "shares",
+    "saves",
+    "reach"
+   ],
+   "tiers": {
+    "top_pick": 80,
+    "strong": 65
+   },
+   "posts_scored": 129
+  },
+  "warnings": [],
+  "runs": [
+   "2026-08-21"
+  ],
+  "previous_run": null,
+  "top_n": 25
+ },
+ "posts": [
+  {
+   "id": "3962993227680058808",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/Db_YVf_Jg24/",
+   "shortcode": "Db_YVf_Jg24",
+   "timestamp": "2026-08-13T18:30:15Z",
+   "epoch": 1786645815,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you have been going to PT and all you are getting is a hot pack and some basic exercises without any real explanation of why you are in pain in the first place it is time to find someone else!\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Rehabilitation…",
+   "duration": 137.0,
+   "metrics": {
+    "views": 43774,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 1448,
+    "comments": 20
+   },
+   "extra": {},
+   "pct": {
+    "views": 99.5,
+    "likes": 99.6,
+    "comments": 98.8
+   },
+   "score": 99.4,
+   "tier": "top_pick",
+   "rank": 1,
+   "rank_in_account": 1,
+   "signals": {
+    "engagement_rate": 3.35,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3894850736449937382",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DYNShvnRF_m/",
+   "shortcode": "DYNShvnRF_m",
+   "timestamp": "2026-05-11T18:02:49Z",
+   "epoch": 1778522569,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Carbon plated shoes might be overrated for the average runner but a good heart rate monitor and the right gels could actually change how you train and race👀",
+   "duration": 74.5,
+   "metrics": {
+    "views": 34559,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 409,
+    "comments": 8
+   },
+   "extra": {},
+   "pct": {
+    "views": 98.6,
+    "likes": 98.8,
+    "comments": 93.4
+   },
+   "score": 98.0,
+   "tier": "top_pick",
+   "rank": 2,
+   "rank_in_account": 1,
+   "signals": {
+    "engagement_rate": 1.21,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3874629826741609708",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DXFc0x7ESTs/",
+   "shortcode": "DXFc0x7ESTs",
+   "timestamp": "2026-04-13T20:26:16Z",
+   "epoch": 1776111976,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Not all recovery tools are as effective as you might think and some may not be worth the investment. \n\nHere’s a breakdown of the most popular ones and how they actually perform.",
+   "duration": 51.17499923706055,
+   "metrics": {
+    "views": 5933,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 85,
+    "comments": 7
+   },
+   "extra": {},
+   "pct": {
+    "views": 96.6,
+    "likes": 95.7,
+    "comments": 91.9
+   },
+   "score": 95.9,
+   "tier": "top_pick",
+   "rank": 3,
+   "rank_in_account": 2,
+   "signals": {
+    "engagement_rate": 1.55,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3871074008419077860",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DW40U0DEQ7k/",
+   "shortcode": "DW40U0DEQ7k",
+   "timestamp": "2026-04-08T22:40:41Z",
+   "epoch": 1775688041,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "We need some treatment too😅",
+   "duration": 16.13599967956543,
+   "metrics": {
+    "views": 4089,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 102,
+    "comments": 11
+   },
+   "extra": {},
+   "pct": {
+    "views": 92.8,
+    "likes": 98.1,
+    "comments": 96.5
+   },
+   "score": 93.9,
+   "tier": "top_pick",
+   "rank": 4,
+   "rank_in_account": 3,
+   "signals": {
+    "engagement_rate": 2.76,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3876138104600515336",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DXKzxHJEdMI/",
+   "shortcode": "DXKzxHJEdMI",
+   "timestamp": "2026-04-15T22:24:27Z",
+   "epoch": 1776291867,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Recovery is more than what you do after a workout and some methods may be working against you more than you think. Here’s where the most popular ones actually stand.",
+   "duration": 87.74600219726562,
+   "metrics": {
+    "views": 4797,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 101,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 94.7,
+    "likes": 97.3,
+    "comments": 74.4
+   },
+   "score": 92.5,
+   "tier": "top_pick",
+   "rank": 5,
+   "rank_in_account": 4,
+   "signals": {
+    "engagement_rate": 2.17,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3963789183108855144",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DcCNULPvTVo/",
+   "shortcode": "DcCNULPvTVo",
+   "timestamp": "2026-08-14T20:49:06Z",
+   "epoch": 1786740546,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Moving a patient from the floor to a chair takes serious strength and range of motion. It’s a great reminder that taking care of your own body is what lets you care for others!\n\nWork on your mobility now so you can stay strong for the people you love.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.…",
+   "duration": 64.73500061035156,
+   "metrics": {
+    "views": 4155,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 93,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 93.8,
+    "likes": 96.5,
+    "comments": 60.1
+   },
+   "score": 89.9,
+   "tier": "top_pick",
+   "rank": 6,
+   "rank_in_account": 2,
+   "signals": {
+    "engagement_rate": 2.29,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3915100796181963193",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DZVO25YRmG5/",
+   "shortcode": "DZVO25YRmG5",
+   "timestamp": "2026-06-08T16:42:23Z",
+   "epoch": 1780936943,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Giving you my opinion on my top three running shoes and what I actually use each one for from long runs to the gym🤔",
+   "duration": 38.38100051879883,
+   "metrics": {
+    "views": 3099,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 53,
+    "comments": 5
+   },
+   "extra": {},
+   "pct": {
+    "views": 89.9,
+    "likes": 90.3,
+    "comments": 87.2
+   },
+   "score": 89.6,
+   "tier": "top_pick",
+   "rank": 7,
+   "rank_in_account": 5,
+   "signals": {
+    "engagement_rate": 1.87,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3886169657883867686",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DXucrbLEbom/",
+   "shortcode": "DXucrbLEbom",
+   "timestamp": "2026-04-29T18:34:03Z",
+   "epoch": 1777487643,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Would you rank these races the same way or does your list look completely different?👀",
+   "duration": 31.13599967956543,
+   "metrics": {
+    "views": 5744,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 36,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 95.7,
+    "likes": 84.9,
+    "comments": 39.5
+   },
+   "score": 87.3,
+   "tier": "top_pick",
+   "rank": 8,
+   "rank_in_account": 6,
+   "signals": {
+    "engagement_rate": 0.64,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3956558732032122477",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbohTQ7vp5t/",
+   "shortcode": "DbohTQ7vp5t",
+   "timestamp": "2026-08-04T21:26:17Z",
+   "epoch": 1785878777,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Most women over 50 are not doing enough resistance training and the scary part is you will not know how much it mattered until you fall. It’s okay to do yoga and pilates but make sure you are loading your skeleton too💪🏻\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#Physica…",
+   "duration": 123.64399719238281,
+   "metrics": {
+    "views": 8454,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 77,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 97.6,
+    "likes": 95.0,
+    "comments": 14.7
+   },
+   "score": 86.9,
+   "tier": "top_pick",
+   "rank": 9,
+   "rank_in_account": 3,
+   "signals": {
+    "engagement_rate": 0.91,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3958645587618289665",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/Dbv7zApp9gB/",
+   "shortcode": "Dbv7zApp9gB",
+   "timestamp": "2026-08-07T18:30:06Z",
+   "epoch": 1786127406,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Looks easier than it seems😅\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Recovery #Wellness #PainManagement #BackPainRelief",
+   "duration": 18.06599998474121,
+   "metrics": {
+    "views": 3230,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 42,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 90.9,
+    "likes": 88.0,
+    "comments": 60.1
+   },
+   "score": 86.7,
+   "tier": "top_pick",
+   "rank": 10,
+   "rank_in_account": 4,
+   "signals": {
+    "engagement_rate": 1.36,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3901339928298375847",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DYkV_6eRcqn/",
+   "shortcode": "DYkV_6eRcqn",
+   "timestamp": "2026-05-20T16:55:30Z",
+   "epoch": 1779296130,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Bird dogs, McGill big three, Jefferson curls and GHD all get recommended for back pain but some are more useful than others depending on where you are. \n\nHere is how I actually rank them🤔",
+   "duration": 22.381999969482422,
+   "metrics": {
+    "views": 3071,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 29,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 88.9,
+    "likes": 79.1,
+    "comments": 60.1
+   },
+   "score": 84.1,
+   "tier": "top_pick",
+   "rank": 11,
+   "rank_in_account": 7,
+   "signals": {
+    "engagement_rate": 1.01,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3936203831024547513",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DagNIeHv_a5/",
+   "shortcode": "DagNIeHv_a5",
+   "timestamp": "2026-07-07T19:23:35Z",
+   "epoch": 1783452215,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you have chronic low back pain chances are the muscles that stabilize your spine have basically shut off and this exercise is one of the best ways to wake them back up!\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Rehabilitation #Recovery #FitnessMotiv…",
+   "duration": 89.9520034790039,
+   "metrics": {
+    "views": 3002,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 56,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 88.0,
+    "likes": 91.9,
+    "comments": 39.5
+   },
+   "score": 82.4,
+   "tier": "top_pick",
+   "rank": 12,
+   "rank_in_account": 5,
+   "signals": {
+    "engagement_rate": 1.9,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3895092808432639676",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DYOJkWtzl68/",
+   "shortcode": "DYOJkWtzl68",
+   "timestamp": "2026-05-12T02:12:48Z",
+   "epoch": 1778551968,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "first-time full hyrox sim in the books in preparation for the upcoming NYC men’s open event @hyroxamerica @hyroxworld in June 5. \n\nHyrox is hard! and while I usually go all out, I paced the sim well at 80% effort, so I was happy with the 1:21 on my first go.\n\nAiming for a <1:15 on race day😅\n\nShout out to @f45_trainingc…",
+   "duration": 49.85100173950195,
+   "metrics": {
+    "views": 2388,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 55,
+    "comments": 6
+   },
+   "extra": {},
+   "pct": {
+    "views": 79.3,
+    "likes": 91.1,
+    "comments": 90.3
+   },
+   "score": 82.2,
+   "tier": "top_pick",
+   "rank": 13,
+   "rank_in_account": 8,
+   "signals": {
+    "engagement_rate": 2.55,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3811755615350186012",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTmE4lfjGAc/",
+   "shortcode": "DTmE4lfjGAc",
+   "timestamp": "2026-01-17T02:27:11Z",
+   "epoch": 1768616831,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "One of the biggest lessons I’ve learned in 2025 as a multi-practice owner is this: growth isn’t possible without the RIGHT people.\n\nThe years leading up to this one had plenty of valleys: setbacks, doubt, growing pains that tested everything and everyone. But in 2025, we rose to the occasion and hit a peak I’m incredib…",
+   "duration": 81.91799926757812,
+   "metrics": {
+    "views": 2230,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 59,
+    "comments": 16
+   },
+   "extra": {},
+   "pct": {
+    "views": 77.4,
+    "likes": 92.6,
+    "comments": 98.1
+   },
+   "score": 81.9,
+   "tier": "top_pick",
+   "rank": 14,
+   "rank_in_account": 9,
+   "signals": {
+    "engagement_rate": 3.36,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3824766557566944640",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DUUTOtskkWA/",
+   "shortcode": "DUUTOtskkWA",
+   "timestamp": "2026-02-04T01:17:04Z",
+   "epoch": 1770167824,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you’re over 40 and still want to train hard, this is what actually matters.\n\nI dropped into a session with Coach Janae at Oak & Iron Cary, and within five minutes it was obvious why this place works.\n\nThis isn’t random workouts or “figure it out as you go” training. Every session is structured. Every movement is coa…",
+   "duration": 145.98199462890625,
+   "metrics": {
+    "views": 2170,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 63,
+    "comments": 26
+   },
+   "extra": {},
+   "pct": {
+    "views": 76.4,
+    "likes": 94.2,
+    "comments": 99.6
+   },
+   "score": 81.5,
+   "tier": "top_pick",
+   "rank": 15,
+   "rank_in_account": 10,
+   "signals": {
+    "engagement_rate": 4.1,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3804473319438378310",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTMNFO6k2VG/",
+   "shortcode": "DTMNFO6k2VG",
+   "timestamp": "2026-01-07T01:18:10Z",
+   "epoch": 1767748690,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Most research on iliotibial band syndrome focuses on altered hip and knee rotation mechanics.\n\nClinically, however, I often see another consistent finding in runners with lateral knee pain: reduced tibial internal rotation during weight-bearing knee flexion.\n\nThis matters because limited tibial internal rotation has be…",
+   "duration": 65.73400115966797,
+   "metrics": {
+    "views": 2838,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 28,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 85.1,
+    "likes": 77.1,
+    "comments": 60.1
+   },
+   "score": 81.0,
+   "tier": "top_pick",
+   "rank": 16,
+   "rank_in_account": 11,
+   "signals": {
+    "engagement_rate": 1.06,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3810949736443399375",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTjNpgRk8zP/",
+   "shortcode": "DTjNpgRk8zP",
+   "timestamp": "2026-01-16T00:00:33Z",
+   "epoch": 1768521633,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "5 AM. New Jersey.\nBack in my old stomping grounds.\n\n@risefitness_nj in Bloomfield is where my strength journey in my late 40s really took off, and honestly where the HYROX idea even started for me. This place just feels like home when I visit my practices in NJ.\n\nGreat people, great coaching, and programming that actua…",
+   "duration": 57.5369987487793,
+   "metrics": {
+    "views": 2133,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 60,
+    "comments": 10
+   },
+   "extra": {},
+   "pct": {
+    "views": 75.5,
+    "likes": 93.4,
+    "comments": 95.7
+   },
+   "score": 80.3,
+   "tier": "top_pick",
+   "rank": 17,
+   "rank_in_account": 12,
+   "signals": {
+    "engagement_rate": 3.28,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3801642300175773922",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTCJYexE3Di/",
+   "shortcode": "DTCJYexE3Di",
+   "timestamp": "2026-01-03T03:34:26Z",
+   "epoch": 1767411266,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Aging changes the rules, not the game.\nStrength, speed, and power don’t disappear unless you stop training them.\nTrain smart. Train hard. Stay in the fight.\n\n🎙️ Voiceover credit: @fred_duncan \n\n📌 @empiretrainingacademyraleigh @oakandironfitness \n\n#TrainForLongevity #StrongAtAnyAge #AgingAthlete #FitnessOver40 #Lifelong…",
+   "duration": 61.2760009765625,
+   "metrics": {
+    "views": 2638,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 41,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 82.2,
+    "likes": 87.2,
+    "comments": 60.1
+   },
+   "score": 80.1,
+   "tier": "top_pick",
+   "rank": 18,
+   "rank_in_account": 13,
+   "signals": {
+    "engagement_rate": 1.63,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3955828371501638454",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/Dbl7PHrxGM2/",
+   "shortcode": "Dbl7PHrxGM2",
+   "timestamp": "2026-08-03T21:13:05Z",
+   "epoch": 1785791585,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you are running a marathon or less a running belt probably does the job but once you start going longer a vest is going to serve you a lot better🏃🏻",
+   "duration": 24.006999969482422,
+   "metrics": {
+    "views": 3378,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 24,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 91.8,
+    "likes": 73.3,
+    "comments": 14.7
+   },
+   "score": 79.8,
+   "tier": "strong",
+   "rank": 19,
+   "rank_in_account": 14,
+   "signals": {
+    "engagement_rate": 0.71,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3820236511492820074",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DUENN3hgcxq/",
+   "shortcode": "DUENN3hgcxq",
+   "timestamp": "2026-01-28T19:17:40Z",
+   "epoch": 1769627860,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Why is the ACL injury rate so much higher for female and youth athletes? 🤔\n\nIt all comes down to how the body handles movement, things like how they land, core stability, and being more quad dominant.\n\nTogether, these factors place extra stress on the knee, making it more susceptible to ACL tears.",
+   "duration": 17.01799964904785,
+   "metrics": {
+    "views": 2639,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 17,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 83.2,
+    "likes": 57.4,
+    "comments": 81.8
+   },
+   "score": 79.8,
+   "tier": "strong",
+   "rank": 20,
+   "rank_in_account": 15,
+   "signals": {
+    "engagement_rate": 0.8,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3947822124415880024",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbJe05CPItY/",
+   "shortcode": "DbJe05CPItY",
+   "timestamp": "2026-07-23T20:06:16Z",
+   "epoch": 1784837176,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "How long do you think it would take you to try this movement challege?😂\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Recovery #Wellness #PTExercises",
+   "duration": 46.87900161743164,
+   "metrics": {
+    "views": 2533,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 31,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 81.2,
+    "likes": 81.0,
+    "comments": 60.1
+   },
+   "score": 78.5,
+   "tier": "strong",
+   "rank": 21,
+   "rank_in_account": 6,
+   "signals": {
+    "engagement_rate": 1.3,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3950634709360795169",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbTeVY4x14h/",
+   "shortcode": "DbTeVY4x14h",
+   "timestamp": "2026-07-27T17:14:27Z",
+   "epoch": 1785172467,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Two of the biggest lessons my first hyrox taught me were to prioritize running in the lead up and to actually follow the course instructions😅",
+   "duration": 33.132999420166016,
+   "metrics": {
+    "views": 2792,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 33,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 84.1,
+    "likes": 82.6,
+    "comments": 39.5
+   },
+   "score": 78.3,
+   "tier": "strong",
+   "rank": 22,
+   "rank_in_account": 16,
+   "signals": {
+    "engagement_rate": 1.22,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3891868604257711397",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DYCseAlRrUl/",
+   "shortcode": "DYCseAlRrUl",
+   "timestamp": "2026-05-07T15:18:01Z",
+   "epoch": 1778167081,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Here is my honest opinion on footwear and whether they’re actually worth it🤔",
+   "duration": 49.80500030517578,
+   "metrics": {
+    "views": 2896,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 27,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 87.0,
+    "likes": 75.6,
+    "comments": 14.7
+   },
+   "score": 76.5,
+   "tier": "strong",
+   "rank": 23,
+   "rank_in_account": 17,
+   "signals": {
+    "engagement_rate": 0.93,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3965854243365443140",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo",
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DcJi2wexdZE/",
+   "shortcode": "DcJi2wexdZE",
+   "timestamp": "2026-08-17T17:12:23Z",
+   "epoch": 1786986743,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Handheld or belt comes down to what you can tolerate but the real question is whether you even need water at all depending on how hard you are going🤔",
+   "duration": 39.5,
+   "metrics": {
+    "views": 2839,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 28,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 86.1,
+    "likes": 77.1,
+    "comments": 14.7
+   },
+   "score": 76.0,
+   "tier": "strong",
+   "rank": 24,
+   "rank_in_account": 18,
+   "signals": {
+    "engagement_rate": 0.99,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3961604507560686889",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/Db6ck9lvbUp/",
+   "shortcode": "Db6ck9lvbUp",
+   "timestamp": "2026-08-11T20:29:52Z",
+   "epoch": 1786480192,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "This is what happens when you never stop! Not everyone is able to get here but the ones who do spent years doing the work and refusing to slow down💪🏻\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #FitnessMotivation #Wellness #PTExercises #RunningCommunity",
+   "duration": 57.28200149536133,
+   "metrics": {
+    "views": 1980,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 46,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 72.6,
+    "likes": 89.5,
+    "comments": 74.4
+   },
+   "score": 74.9,
+   "tier": "strong",
+   "rank": 25,
+   "rank_in_account": 7,
+   "signals": {
+    "engagement_rate": 2.47,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3884704084800907987",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DXpPch4ESrT/",
+   "shortcode": "DXpPch4ESrT",
+   "timestamp": "2026-04-27T18:02:22Z",
+   "epoch": 1777312942,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Not everything marketed to marathon runners is going to make you faster and some of the simplest things are what actually will!🏃🏻",
+   "duration": 25.841999053955078,
+   "metrics": {
+    "views": 2433,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 22,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 80.3,
+    "likes": 69.8,
+    "comments": 39.5
+   },
+   "score": 73.9,
+   "tier": "strong",
+   "rank": 26,
+   "rank_in_account": 19,
+   "signals": {
+    "engagement_rate": 0.95,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3813824286080337007",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTtbPtPk4Rv/",
+   "shortcode": "DTtbPtPk4Rv",
+   "timestamp": "2026-01-19T22:59:53Z",
+   "epoch": 1768863593,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "I know that kettlebells sometimes still get poo-pooed, especially in the gym bro circles, but for runners and hyrox athletes over 40, I honestly think they’re one of the most useful tools that you can use to build strength and stamina. \n\nOne of the reasons is simple, the off-center weight. Because the bell sits below y…",
+   "duration": 77.64600372314453,
+   "metrics": {
+    "views": 2093,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 35,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 74.5,
+    "likes": 83.7,
+    "comments": 60.1
+   },
+   "score": 73.9,
+   "tier": "strong",
+   "rank": 27,
+   "rank_in_account": 20,
+   "signals": {
+    "engagement_rate": 1.77,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3890762074117010985",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DX-w34FTnYp/",
+   "shortcode": "DX-w34FTnYp",
+   "timestamp": "2026-05-06T02:42:42Z",
+   "epoch": 1778035362,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "So I was Back in NJ and got to sneak in a workout yesterday at my favorite hybrid training gym back home- Rise Fitness in Bloomfield, NJ with THE one and only Coach Ayo. and If you’ve been here, You know how this goes.\n\nas usual the workout did not disappoint. strength(Curl and press), power (Medball slams), accessory …",
+   "duration": 38.845001220703125,
+   "metrics": {
+    "views": 1811,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 44,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 68.8,
+    "likes": 88.8,
+    "comments": 81.8
+   },
+   "score": 72.9,
+   "tier": "strong",
+   "rank": 28,
+   "rank_in_account": 21,
+   "signals": {
+    "engagement_rate": 2.65,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3896340468229144157",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DYSlQMcxv5d/",
+   "shortcode": "DYSlQMcxv5d",
+   "timestamp": "2026-05-13T19:21:36Z",
+   "epoch": 1778700096,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Good runners plan their training, eat right and find shoes that actually fit. Bad runners wing it and wonder why they keep getting hurt. \n\nWhich one sounds more like you?🤔",
+   "duration": 24.70400047302246,
+   "metrics": {
+    "views": 1952,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 71.6,
+    "likes": 63.2,
+    "comments": 60.1
+   },
+   "score": 69.1,
+   "tier": "strong",
+   "rank": 29,
+   "rank_in_account": 22,
+   "signals": {
+    "engagement_rate": 1.08,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3834034204971231411",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DU1Ocu8Aeiz/",
+   "shortcode": "DU1Ocu8Aeiz",
+   "timestamp": "2026-02-16T20:08:57Z",
+   "epoch": 1771272537,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Over the years, I’ve learned that getting stronger and faster is not about shortcuts, it is about consistency.\n\nWhen I prioritize proper nutrition, quality sleep, and fueling my body the right way, my performance completely changes.\n\nAdding dedicated strength training and treating it seriously has made me fitter at 50 …",
+   "duration": 16.113000869750977,
+   "metrics": {
+    "views": 1352,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 39,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 63.9,
+    "likes": 86.0,
+    "comments": 81.8
+   },
+   "score": 68.9,
+   "tier": "strong",
+   "rank": 30,
+   "rank_in_account": 23,
+   "signals": {
+    "engagement_rate": 3.18,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3854485508551027321",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DV94iXpEyp5/",
+   "shortcode": "DV94iXpEyp5",
+   "timestamp": "2026-03-17T01:23:09Z",
+   "epoch": 1773710589,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "12 weeks out from my HYROX debut in New York City and I just got a reality check. 😅\n\nOn Saturday, I did my first HalfRox simulation at F45 Cary, and let me tell you… it was humbling. Even though it was “just” a half event, it quickly reminded me that HYROX rewards smart pacing, not ego.\n\nI’ll admit, I was pretty proud …",
+   "duration": 51.268001556396484,
+   "metrics": {
+    "views": 1325,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 35,
+    "comments": 5
+   },
+   "extra": {},
+   "pct": {
+    "views": 63.0,
+    "likes": 83.7,
+    "comments": 87.2
+   },
+   "score": 68.6,
+   "tier": "strong",
+   "rank": 31,
+   "rank_in_account": 24,
+   "signals": {
+    "engagement_rate": 3.02,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3940562730335253596",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DavsOzcxrRc/",
+   "shortcode": "DavsOzcxrRc",
+   "timestamp": "2026-07-13T19:44:07Z",
+   "epoch": 1783971847,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Most PTs treat the pain and move on and that is exactly why so many people are still hurting six months later.\n\nThere are two things going on every time, what hurts and why it hurts, and if nobody is looking at the second one you are just going in circles.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlph…",
+   "duration": 34.34000015258789,
+   "metrics": {
+    "views": 2068,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 73.6,
+    "likes": 63.2,
+    "comments": 39.5
+   },
+   "score": 68.0,
+   "tier": "strong",
+   "rank": 32,
+   "rank_in_account": 25,
+   "signals": {
+    "engagement_rate": 0.97,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3907959268308870327",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DY73D_QPuS3/",
+   "shortcode": "DY73D_QPuS3",
+   "timestamp": "2026-05-29T20:08:06Z",
+   "epoch": 1780085286,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Static stretching before a run is overrated and if you are over 40 you need proper activation drills more than anyone and most people are still skipping it.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Wellness #PainManagement #BackPainRelief",
+   "duration": 52.24300003051758,
+   "metrics": {
+    "views": 2247,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 78.4,
+    "likes": 51.6,
+    "comments": 14.7
+   },
+   "score": 67.1,
+   "tier": "strong",
+   "rank": 33,
+   "rank_in_account": 26,
+   "signals": {
+    "engagement_rate": 0.67,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3932689179737012204",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DaTt_kCPzfs/",
+   "shortcode": "DaTt_kCPzfs",
+   "timestamp": "2026-07-02T22:59:01Z",
+   "epoch": 1783033141,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Sometimes we need treatment, too😂\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Rehabilitation #Recovery #FitnessMotivation #Wellness",
+   "duration": 12.899999618530273,
+   "metrics": {
+    "views": 1398,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 23,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 65.9,
+    "likes": 72.1,
+    "comments": 60.1
+   },
+   "score": 66.0,
+   "tier": "strong",
+   "rank": 34,
+   "rank_in_account": 8,
+   "signals": {
+    "engagement_rate": 1.79,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3859881294411241215",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWRDZY0jpb_/",
+   "shortcode": "DWRDZY0jpb_",
+   "timestamp": "2026-03-24T12:02:29Z",
+   "epoch": 1774353749,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "I’m preparing for my first HYROX this June and working through this myself in real time. I also work with a lot of athletes who’ve already been through it. Here’s what actually matters.\n\nEgo will cost you more than any hard training session ever will.\n\nPushing through pain to prove something isn’t toughness. You’re jus…",
+   "duration": 5.269000053405762,
+   "metrics": {
+    "views": 1256,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 29,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 60.1,
+    "likes": 79.1,
+    "comments": 81.8
+   },
+   "score": 65.2,
+   "tier": "strong",
+   "rank": 35,
+   "rank_in_account": 27,
+   "signals": {
+    "engagement_rate": 2.63,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3931861503179085350",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DaQxzSLBdYm/",
+   "shortcode": "DaQxzSLBdYm",
+   "timestamp": "2026-07-01T19:34:32Z",
+   "epoch": 1782934472,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Training in the heat means adjusting your effort, not forcing the same pace every time!",
+   "duration": 29.069000244140625,
+   "metrics": {
+    "views": 1946,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 32,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 70.7,
+    "likes": 81.8,
+    "comments": 14.7
+   },
+   "score": 65.1,
+   "tier": "strong",
+   "rank": 36,
+   "rank_in_account": 28,
+   "signals": {
+    "engagement_rate": 1.64,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3805717253158173309",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTQn62eEXp9/",
+   "shortcode": "DTQn62eEXp9",
+   "timestamp": "2026-01-08T18:29:38Z",
+   "epoch": 1767896978,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "People often ask me, ‘What do you eat to stay fit at 50?’ 🤔\n\nMy answer is simple but powerful: I make sure I get enough protein and carbohydrates every day.\n\nProtein helps repair and build muscle, while the right carbs give me energy for workouts and daily life.\n\nThis combination has completely transformed how I feel, …",
+   "duration": 21.5,
+   "metrics": {
+    "views": 1195,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 22,
+    "comments": 9
+   },
+   "extra": {},
+   "pct": {
+    "views": 58.2,
+    "likes": 69.8,
+    "comments": 95.0
+   },
+   "score": 64.3,
+   "tier": "",
+   "rank": 37,
+   "rank_in_account": 29,
+   "signals": {
+    "engagement_rate": 2.59,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3863082113788836323",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWcbLcKjHnj/",
+   "shortcode": "DWcbLcKjHnj",
+   "timestamp": "2026-03-28T22:01:53Z",
+   "epoch": 1774735313,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The YouTube videos made it look so clean. The training is a little less cinematic. Recovery takes longer, the pacing is harder to figure out, and your body gives you feedback you didn’t ask for. But you’re still doing it and that part matters more than any of the rest. Comment HYROX if this is you right now.",
+   "duration": 7.500999927520752,
+   "metrics": {
+    "views": 1396,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 14,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 64.9,
+    "likes": 47.3,
+    "comments": 60.1
+   },
+   "score": 62.1,
+   "tier": "",
+   "rank": 38,
+   "rank_in_account": 30,
+   "signals": {
+    "engagement_rate": 1.15,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3928207517695679675",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DaDy-zARRy7/",
+   "shortcode": "DaDy-zARRy7",
+   "timestamp": "2026-06-26T18:35:03Z",
+   "epoch": 1782498903,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If your lower leg is beat up after a hard run this lacrosse ball trick targets the posterior tibialis and gets blood flow back into the muscle fast🏃🏻‍♀️\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Rehabilitation #Wellness #PainManagement #PTExercises",
+   "duration": 28.81399917602539,
+   "metrics": {
+    "views": 1856,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 16,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 69.7,
+    "likes": 54.7,
+    "comments": 14.7
+   },
+   "score": 61.0,
+   "tier": "",
+   "rank": 39,
+   "rank_in_account": 9,
+   "signals": {
+    "engagement_rate": 0.86,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3805060199221494526",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTOShdTkwL-/",
+   "shortcode": "DTOShdTkwL-",
+   "timestamp": "2026-01-07T20:44:30Z",
+   "epoch": 1767818670,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "For several decades, something about doing hard sh*t has always appealed to me. While I was never a top athlete, I often received the “most improved” award, which really means I sucked less than when I started.\n\nThat being, I always enjoyed training hard and being ready for anything- whether it was Spartan racing, road…",
+   "duration": 44.604000091552734,
+   "metrics": {
+    "views": 1700,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 20,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 66.8,
+    "likes": 66.7,
+    "comments": 14.7
+   },
+   "score": 60.3,
+   "tier": "",
+   "rank": 40,
+   "rank_in_account": 31,
+   "signals": {
+    "engagement_rate": 1.18,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3935471209445524716",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DadmjbGxwTs/",
+   "shortcode": "DadmjbGxwTs",
+   "timestamp": "2026-07-06T19:07:26Z",
+   "epoch": 1783364846,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Early morning runs win every time because the temperature is cooler, it’s done before the day gets away from you and there is no chance work stress tanks your performance. \n\nWhich do you prefer, morning or evening runs?",
+   "duration": 20.222999572753906,
+   "metrics": {
+    "views": 1791,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 67.8,
+    "likes": 32.6,
+    "comments": 39.5
+   },
+   "score": 59.9,
+   "tier": "",
+   "rank": 41,
+   "rank_in_account": 32,
+   "signals": {
+    "engagement_rate": 0.67,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3800832421403603869",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DS_RPMYjLOd/",
+   "shortcode": "DS_RPMYjLOd",
+   "timestamp": "2026-01-02T00:44:10Z",
+   "epoch": 1767314650,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "How you warm up can have a big impact on how your body performs 🔥\n\nWhen athletes prioritize dynamic warm ups and mobility work that match the activity ahead, their joints feel more controlled.\n\nThis keeps the body responsive and better prepared before training or competition.",
+   "duration": 22.288999557495117,
+   "metrics": {
+    "views": 1064,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 14,
+    "comments": 5
+   },
+   "extra": {},
+   "pct": {
+    "views": 53.4,
+    "likes": 47.3,
+    "comments": 87.2
+   },
+   "score": 56.9,
+   "tier": "",
+   "rank": 42,
+   "rank_in_account": 33,
+   "signals": {
+    "engagement_rate": 1.79,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3859156657662452834",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWOeoiQjeRi/",
+   "shortcode": "DWOeoiQjeRi",
+   "timestamp": "2026-03-23T12:02:45Z",
+   "epoch": 1774267365,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Nobody handed me this when I signed up for my first one.\n\nWarm-ups actually matter now. Your body doesn’t just go from zero to ready anymore. Skip the prep, pay for it later.\n\nRecovery is where you actually get better. Most guys think more training equals more progress. Train hard, skip recovery, and you’re just grindi…",
+   "duration": 7.010000228881836,
+   "metrics": {
+    "views": 1272,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 20,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 62.0,
+    "likes": 66.7,
+    "comments": 14.7
+   },
+   "score": 56.7,
+   "tier": "",
+   "rank": 43,
+   "rank_in_account": 34,
+   "signals": {
+    "engagement_rate": 1.57,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3863806895793992745",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWe_-aAgXQp/",
+   "shortcode": "DWe_-aAgXQp",
+   "timestamp": "2026-03-29T22:01:44Z",
+   "epoch": 1774821704,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The ski erg doesn’t care how old you are. Neither does the sled. But here’s what I’ve learned working with athletes over 40 and training for this myself. The ones who respect recovery, build their strength, and stop trying to train like they’re 28 are the ones who actually make it to race day feeling ready. Comment HYR…",
+   "duration": 3.7860000133514404,
+   "metrics": {
+    "views": 1267,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 61.1,
+    "likes": 39.5,
+    "comments": 39.5
+   },
+   "score": 55.7,
+   "tier": "",
+   "rank": 44,
+   "rank_in_account": 35,
+   "signals": {
+    "engagement_rate": 1.03,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3860183227869499003",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWSIDGRFQ57/",
+   "shortcode": "DWSIDGRFQ57",
+   "timestamp": "2026-03-24T22:02:20Z",
+   "epoch": 1774389740,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "This is the stuff that keeps you actually running past 40.\n\nDynamic warmups before you head out. Your muscles and joints need a proper warm-up. Skipping it is the fastest way to start a run already fighting your own body.\n\nActivation drills. Wake up the right muscles before you ask them to do real work. Your glutes and…",
+   "duration": 8.197999954223633,
+   "metrics": {
+    "views": 1100,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 17,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 55.3,
+    "likes": 57.4,
+    "comments": 39.5
+   },
+   "score": 53.6,
+   "tier": "",
+   "rank": 45,
+   "rank_in_account": 36,
+   "signals": {
+    "engagement_rate": 1.64,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3868215889044974966",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWuqds9DC12/",
+   "shortcode": "DWuqds9DC12",
+   "timestamp": "2026-04-05T00:01:48Z",
+   "epoch": 1775347308,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Does your shoulder hurt when you throw a ball or lift overhead? 👀\n\nWatch this to see a simple fix that can help you move better and reduce pain.\n\nSend this to someone who’s always dealing with shoulder aches 💪",
+   "duration": 30.256999969482422,
+   "metrics": {
+    "views": 1091,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 54.3,
+    "likes": 39.5,
+    "comments": 60.1
+   },
+   "score": 53.2,
+   "tier": "",
+   "rank": 46,
+   "rank_in_account": 37,
+   "signals": {
+    "engagement_rate": 1.28,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3830433801147940159",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DUobz9lEn0_/",
+   "shortcode": "DUobz9lEn0_",
+   "timestamp": "2026-02-11T20:56:46Z",
+   "epoch": 1770843406,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Your health comes down to three essentials: nutrition, rest, and exercise.\n\nAs a physical therapist, I always stress the importance of combining cardio and strength training. Cardio strengthens your heart and lungs, while strength training preserves muscle, supports joints, and maintains mobility as you age🏃🏻 \n\nBalanci…",
+   "duration": 15.949999809265137,
+   "metrics": {
+    "views": 955,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 47.6,
+    "likes": 51.6,
+    "comments": 81.8
+   },
+   "score": 52.4,
+   "tier": "",
+   "rank": 47,
+   "rank_in_account": 38,
+   "signals": {
+    "engagement_rate": 1.99,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3862357561060162701",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWZ2bz2iPyN/",
+   "shortcode": "DWZ2bz2iPyN",
+   "timestamp": "2026-03-27T22:02:26Z",
+   "epoch": 1774648946,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Looking back with what I know now, both as a clinician and as someone currently in a HYROX training block for the first time, here’s what I’d tell myself.\n\nPrioritize recovery from day one. Your body will tell you what it needs if you actually listen. The athletes who get hurt are almost always the ones who ignored tho…",
+   "duration": 5.7829999923706055,
+   "metrics": {
+    "views": 1101,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 56.2,
+    "likes": 32.6,
+    "comments": 39.5
+   },
+   "score": 51.2,
+   "tier": "",
+   "rank": 48,
+   "rank_in_account": 39,
+   "signals": {
+    "engagement_rate": 1.09,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3865272433729143134",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWkNMykiQFe/",
+   "shortcode": "DWkNMykiQFe",
+   "timestamp": "2026-03-31T22:33:40Z",
+   "epoch": 1774996420,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Does your neck hurt after walking and texting for a while?\n\nWatch this 👀\nThis could be why—and what you can do to fix it before it gets worse.\n\nSend this to someone who’s always on their phone while walking 📱",
+   "duration": 10.965999603271484,
+   "metrics": {
+    "views": 1190,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 9,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 57.2,
+    "likes": 23.3,
+    "comments": 39.5
+   },
+   "score": 50.8,
+   "tier": "",
+   "rank": 49,
+   "rank_in_account": 40,
+   "signals": {
+    "engagement_rate": 0.84,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3868940581258948814",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWxPPXLCHDO/",
+   "shortcode": "DWxPPXLCHDO",
+   "timestamp": "2026-04-06T00:01:44Z",
+   "epoch": 1775433704,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Hear me out… here’s my take on staying active 👀\n\nSend this to someone who needs a little nudge to move more 💪",
+   "duration": 12.609000205993652,
+   "metrics": {
+    "views": 1016,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 50.5,
+    "likes": 63.2,
+    "comments": 39.5
+   },
+   "score": 50.7,
+   "tier": "",
+   "rank": 50,
+   "rank_in_account": 41,
+   "signals": {
+    "engagement_rate": 1.97,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3942653827479826296",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/Da3HsRbRO94/",
+   "shortcode": "Da3HsRbRO94",
+   "timestamp": "2026-07-16T16:58:11Z",
+   "epoch": 1784221091,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If your ankles are stiff a higher heel to toe drop shoe can buy you some relief but it shouldn’t be a long term fix🏃🏻‍♀️\n\nThe goal is to improve your ankle mobility so you are not forever dependent on your shoe to compensate for it.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.…",
+   "duration": 22.079999923706055,
+   "metrics": {
+    "views": 1202,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 59.1,
+    "likes": 32.6,
+    "comments": 14.7
+   },
+   "score": 50.2,
+   "tier": "",
+   "rank": 51,
+   "rank_in_account": 10,
+   "signals": {
+    "engagement_rate": 0.92,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3804354509779695049",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTLyEUzEvXJ/",
+   "shortcode": "DTLyEUzEvXJ",
+   "timestamp": "2026-01-06T21:21:56Z",
+   "epoch": 1767734516,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you want to keep running and competing even if you’re over 40, how you train matters 👀\n\nSingle-leg exercises build strength and stability to support your knees and hips for running and high-intensity events like Hyrox.\n\nSave this video for the next time you train to protect your knees.\n-\nBook a consultation with us …",
+   "duration": 58.733001708984375,
+   "metrics": {
+    "views": 1006,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 13,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 49.5,
+    "likes": 44.2,
+    "comments": 60.1
+   },
+   "score": 50.2,
+   "tier": "",
+   "rank": 52,
+   "rank_in_account": 42,
+   "signals": {
+    "engagement_rate": 1.49,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3855695503506342116",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWCLqHQkQDk/",
+   "shortcode": "DWCLqHQkQDk",
+   "timestamp": "2026-03-18T17:28:19Z",
+   "epoch": 1773854899,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "A lot of Hyrox athletes focus on training harder but forget to prepare their body for the demands of the race🏃🏻\n\nMobility and joint health are what actually allow you to move efficiently through wall balls, lunges, and sled pushes without breaking down.\n\nThe older you get, the more this becomes the thing that separates…",
+   "duration": 38.00899887084961,
+   "metrics": {
+    "views": 880,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 22,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 42.8,
+    "likes": 69.8,
+    "comments": 74.4
+   },
+   "score": 50.1,
+   "tier": "",
+   "rank": 53,
+   "rank_in_account": 43,
+   "signals": {
+    "engagement_rate": 2.84,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3906505684031931923",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DY2sjjZxIYT/",
+   "shortcode": "DY2sjjZxIYT",
+   "timestamp": "2026-05-27T19:57:41Z",
+   "epoch": 1779911861,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The food you eat before a race can change how the whole race feels🍯",
+   "duration": 40.67900085449219,
+   "metrics": {
+    "views": 912,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 17,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 44.7,
+    "likes": 57.4,
+    "comments": 74.4
+   },
+   "score": 50.0,
+   "tier": "",
+   "rank": 54,
+   "rank_in_account": 44,
+   "signals": {
+    "engagement_rate": 2.19,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3815136937515275685",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTyFtTKEdWl/",
+   "shortcode": "DTyFtTKEdWl",
+   "timestamp": "2026-01-21T18:25:53Z",
+   "epoch": 1769019953,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "As a physical therapist, I’m seeing a lot more ACL injuries nowadays🦵🏻\n\nThere are certain factors that contribute to these injuries that are beyond my control and depend more on the individual. However, I can help by understanding a client’s previous injuries and recommending exercises that reduce the risk of future AC…",
+   "duration": 24.93600082397461,
+   "metrics": {
+    "views": 881,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 17,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 43.8,
+    "likes": 57.4,
+    "comments": 60.1
+   },
+   "score": 47.5,
+   "tier": "",
+   "rank": 55,
+   "rank_in_account": 45,
+   "signals": {
+    "engagement_rate": 2.16,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3881152424057083074",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DXcn5EDEZTC/",
+   "shortcode": "DXcn5EDEZTC",
+   "timestamp": "2026-04-22T20:25:04Z",
+   "epoch": 1776889504,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Getting fitter in your 50s isn’t about training harder, it’s about training smarter and being consistent with the things that actually matter.\n\nStrength work, knowing when to pull back, real rest and recovery, these are the things that keep you moving well not just now but for the next 30 years.",
+   "duration": 95.73300170898438,
+   "metrics": {
+    "views": 823,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 28,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 38.0,
+    "likes": 77.1,
+    "comments": 74.4
+   },
+   "score": 47.4,
+   "tier": "",
+   "rank": 56,
+   "rank_in_account": 46,
+   "signals": {
+    "engagement_rate": 3.77,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3845583624041748348",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DVeQe5pEVd8/",
+   "shortcode": "DVeQe5pEVd8",
+   "timestamp": "2026-03-04T18:42:27Z",
+   "epoch": 1772649747,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Doing well in a hyrox competition comes from working on the movements you’ll actually do in the race!💪🏻\n\nWhen you train with the same exercises, your body learns to move more efficiently, build endurance, and maintain your form.\n\nThis makes a big difference on race day, helping you conserve your energy and perform at y…",
+   "duration": 24.889999389648438,
+   "metrics": {
+    "views": 819,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 8
+   },
+   "extra": {},
+   "pct": {
+    "views": 37.0,
+    "likes": 63.2,
+    "comments": 93.4
+   },
+   "score": 47.3,
+   "tier": "",
+   "rank": 57,
+   "rank_in_account": 47,
+   "signals": {
+    "engagement_rate": 3.3,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3911479423354030955",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DZIXc_HREtr/",
+   "shortcode": "DZIXc_HREtr",
+   "timestamp": "2026-06-03T16:42:24Z",
+   "epoch": 1780504944,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Which of these activities do you do for your back pain?🤔",
+   "duration": 63.53300094604492,
+   "metrics": {
+    "views": 842,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 39.9,
+    "likes": 63.2,
+    "comments": 74.4
+   },
+   "score": 47.1,
+   "tier": "",
+   "rank": 58,
+   "rank_in_account": 48,
+   "signals": {
+    "engagement_rate": 2.61,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3860967944541252880",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWU6eOnjS0Q/",
+   "shortcode": "DWU6eOnjS0Q",
+   "timestamp": "2026-03-26T00:01:24Z",
+   "epoch": 1774483284,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "I hear this a lot. From patients, from athletes I work with, and honestly sometimes from myself on a rough training day.\n\nMoving daily. Not every session needs to be brutal. Consistent daily movement keeps your body working the way it’s supposed to.\n\nStrength training. Muscle isn’t just for performance. It protects you…",
+   "duration": 7.500999927520752,
+   "metrics": {
+    "views": 1050,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 8,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 52.4,
+    "likes": 19.4,
+    "comments": 39.5
+   },
+   "score": 46.7,
+   "tier": "",
+   "rank": 59,
+   "rank_in_account": 49,
+   "signals": {
+    "engagement_rate": 0.86,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3813778442999107956",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTtQ0mjARF0/",
+   "shortcode": "DTtQ0mjARF0",
+   "timestamp": "2026-01-19T21:26:05Z",
+   "epoch": 1768857965,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The reason I train so hard at 50 is to ensure that I can continue performing at a certain level of intensity as I get older.\n\nDeveloping the ability to move well, maintain strength, and build resilience across all areas of life is an essential habit for me. It’s about investing in my capacity now so I can continue show…",
+   "duration": 20.80299949645996,
+   "metrics": {
+    "views": 824,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 38.9,
+    "likes": 51.6,
+    "comments": 74.4
+   },
+   "score": 44.9,
+   "tier": "",
+   "rank": 60,
+   "rank_in_account": 50,
+   "signals": {
+    "engagement_rate": 2.18,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3844320766997573448",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DVZxV6XjC9I/",
+   "shortcode": "DVZxV6XjC9I",
+   "timestamp": "2026-03-03T00:52:13Z",
+   "epoch": 1772499133,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If all you are doing is running or training for triathlons, your missing out on strength that could make a difference👇🏻\n\nIncorporating strength training helps build the durability and power that endurance athletes often miss.\n\nBy getting stronger, you not only reduce your risk of injury, but you also run faster and mai…",
+   "duration": 24.14699935913086,
+   "metrics": {
+    "views": 799,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 23,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 34.1,
+    "likes": 72.1,
+    "comments": 81.8
+   },
+   "score": 44.8,
+   "tier": "",
+   "rank": 61,
+   "rank_in_account": 51,
+   "signals": {
+    "engagement_rate": 3.38,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3863505036358732106",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWd7VxgGElK/",
+   "shortcode": "DWd7VxgGElK",
+   "timestamp": "2026-03-29T12:02:12Z",
+   "epoch": 1774785732,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "There’s a specific kind of suffering that comes with being an older first timer. You know enough to know what’s coming. You just didn’t fully believe it until now. The good news is showing up consistently at this age means more than it ever did. Keep going. Comment HYROX if you’re in the middle of your first training b…",
+   "duration": 8.197999954223633,
+   "metrics": {
+    "views": 1002,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 14,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 48.6,
+    "likes": 47.3,
+    "comments": 14.7
+   },
+   "score": 44.2,
+   "tier": "",
+   "rank": 62,
+   "rank_in_account": 52,
+   "signals": {
+    "engagement_rate": 1.4,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3859457989825150118",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWPjJftEjym/",
+   "shortcode": "DWPjJftEjym",
+   "timestamp": "2026-03-23T22:01:26Z",
+   "epoch": 1774303286,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "At some point, the mirror stops being the reason you show up.\n\nYou train because you’ve got more energy for the people who matter. Because a hard workout is the best mood reset I know. Because showing up on a day you really don’t feel like it builds something in you that goes way beyond the gym.\n\nAnd because ten, twent…",
+   "duration": 7.869999885559082,
+   "metrics": {
+    "views": 1039,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 9,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 51.4,
+    "likes": 23.3,
+    "comments": 14.7
+   },
+   "score": 43.3,
+   "tier": "",
+   "rank": 63,
+   "rank_in_account": 53,
+   "signals": {
+    "engagement_rate": 0.87,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3861632752093500245",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWXRoc5jBNV/",
+   "shortcode": "DWXRoc5jBNV",
+   "timestamp": "2026-03-26T22:02:16Z",
+   "epoch": 1774562536,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Some days the motivation just isn’t there. I train anyway and here’s why.\n\nIt clears my head in a way nothing else does. Whatever was weighing on me before the session is smaller after it.\n\nIt resets my stress. Movement is the best tool I’ve found for actually processing a hard day.\n\nIt builds discipline. Showing up wh…",
+   "duration": 5.5970001220703125,
+   "metrics": {
+    "views": 934,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 17,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 45.7,
+    "likes": 57.4,
+    "comments": 14.7
+   },
+   "score": 43.3,
+   "tier": "",
+   "rank": 64,
+   "rank_in_account": 54,
+   "signals": {
+    "engagement_rate": 1.82,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3849219791958141062",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DVrLQG6EWiG/",
+   "shortcode": "DVrLQG6EWiG",
+   "timestamp": "2026-03-09T19:03:00Z",
+   "epoch": 1773082980,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "As we get older, our bodies don’t bounce back as quickly as they used to.\n\nThat means we need to give ourselves extra rest between races, not just to perform better, but also to avoid injuries and keep doing what we love.\n\nSkipping recovery might feel like saving time now, but it often leads to longer setbacks and make…",
+   "duration": 36.152000427246094,
+   "metrics": {
+    "views": 852,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 40.9,
+    "likes": 32.6,
+    "comments": 60.1
+   },
+   "score": 42.3,
+   "tier": "",
+   "rank": 65,
+   "rank_in_account": 55,
+   "signals": {
+    "engagement_rate": 1.53,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3810061730882587572",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTgDvUpkQu0/",
+   "shortcode": "DTgDvUpkQu0",
+   "timestamp": "2026-01-14T18:21:36Z",
+   "epoch": 1768414896,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Getting injured while doing for HYROX over 40 is often more about sudden spikes in workload 👀\n\nWhen a single session jumps far beyond what your body has been used to recently, injury risk climbs quickly across running and everyday activities.\n\nStaying consistent, sticking to your plan, and avoiding huge days can go a l…",
+   "duration": 65.23300170898438,
+   "metrics": {
+    "views": 783,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 25,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 31.2,
+    "likes": 74.4,
+    "comments": 60.1
+   },
+   "score": 40.2,
+   "tier": "",
+   "rank": 66,
+   "rank_in_account": 56,
+   "signals": {
+    "engagement_rate": 3.45,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3823889865175555112",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DURL5KSAVwo/",
+   "shortcode": "DURL5KSAVwo",
+   "timestamp": "2026-02-02T20:14:55Z",
+   "epoch": 1770063295,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The reason I’m able to perform at a high level at the age of 50 is because of how much I value fitness.\n\nMaking fitness a priority has allowed me to navigate life without getting burnt out or stressed. I now have the energy and balance to run a business and be a parent at my best.",
+   "duration": 12.305000305175781,
+   "metrics": {
+    "views": 755,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 21,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 27.9,
+    "likes": 67.8,
+    "comments": 81.8
+   },
+   "score": 39.6,
+   "tier": "",
+   "rank": 67,
+   "rank_in_account": 57,
+   "signals": {
+    "engagement_rate": 3.31,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3860606331808319103",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWToQEhDwZ_/",
+   "shortcode": "DWToQEhDwZ_",
+   "timestamp": "2026-03-25T12:02:59Z",
+   "epoch": 1774440179,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "This is the stuff that keeps you actually running past 40.\n\nDynamic warmups before you head out. Your muscles and joints need a proper warm-up. Skipping it is the fastest way to start a run already fighting your own body.\n\nActivation drills. Wake up the right muscles before you ask them to do real work. Your glutes and…",
+   "duration": 8.01200008392334,
+   "metrics": {
+    "views": 947,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 7,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 46.6,
+    "likes": 15.5,
+    "comments": 14.7
+   },
+   "score": 38.7,
+   "tier": "",
+   "rank": 68,
+   "rank_in_account": 58,
+   "signals": {
+    "engagement_rate": 0.74,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3809358282692317067",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTdjyzeEU-L/",
+   "shortcode": "DTdjyzeEU-L",
+   "timestamp": "2026-01-13T19:06:30Z",
+   "epoch": 1768331190,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Stretching alone won’t fix your pelvic position or back posture.\n\nWhat actually helps is improving control and strength through movements that train how your pelvis, spine, and hips work together.\n\nOver time, this type of focused training leads to better positioning, especially for runners and Hyrox athletes dealing wi…",
+   "duration": 46.900001525878906,
+   "metrics": {
+    "views": 755,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 8
+   },
+   "extra": {},
+   "pct": {
+    "views": 27.9,
+    "likes": 39.5,
+    "comments": 93.4
+   },
+   "score": 37.5,
+   "tier": "",
+   "rank": 69,
+   "rank_in_account": 59,
+   "signals": {
+    "engagement_rate": 2.65,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3931211594226999334",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DaOeB3SzCAm/",
+   "shortcode": "DaOeB3SzCAm",
+   "timestamp": "2026-06-30T22:05:02Z",
+   "epoch": 1782857102,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Your knee pain might not actually be a knee problem. \n\nIt could be your hips, your movement patterns, or how your whole body is loading under stress and that is exactly what we look at. \n\nWe find the real cause, treat it with the right tools and get you back to doing what you love!\n-\nRequest Your Total Body Assessment …",
+   "duration": 28.0939998626709,
+   "metrics": {
+    "views": 798,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 33.2,
+    "likes": 39.5,
+    "comments": 60.1
+   },
+   "score": 37.4,
+   "tier": "",
+   "rank": 70,
+   "rank_in_account": 11,
+   "signals": {
+    "engagement_rate": 1.75,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3828947443703156002",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DUjJ2nVkQ0i/",
+   "shortcode": "DUjJ2nVkQ0i",
+   "timestamp": "2026-02-09T19:44:56Z",
+   "epoch": 1770666296,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Maintaining the physique and health I have at 50 comes from treating my body and mind with care every day🌿\n\nFor me, that care comes from three simple pillars: eating well, working out regularly, and getting enough sleep. When I focus on these, my blood sugar stays steady and my body recovers better, so my performance d…",
+   "duration": 20.013999938964844,
+   "metrics": {
+    "views": 711,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 5
+   },
+   "extra": {},
+   "pct": {
+    "views": 24.5,
+    "likes": 51.6,
+    "comments": 87.2
+   },
+   "score": 35.7,
+   "tier": "",
+   "rank": 71,
+   "rank_in_account": 60,
+   "signals": {
+    "engagement_rate": 2.81,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3820255724559234669",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DUERldFgXZt/",
+   "shortcode": "DUERldFgXZt",
+   "timestamp": "2026-01-28T19:54:38Z",
+   "epoch": 1769630078,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Such a great time at our Pain & Back Mobility Pop-Up with @drjerryyoo 👏\nWe loved bringing the community together to learn, move, and take a proactive approach to back health and mobility. Huge thanks to Dr. Yoo for sharing his expertise and making this event such a success.\n\n#CaryNorthCarolina #CaryNCPersonalTraining #…",
+   "duration": 17.316999435424805,
+   "metrics": {
+    "views": 731,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 18,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 26.4,
+    "likes": 60.1,
+    "comments": 60.1
+   },
+   "score": 34.8,
+   "tier": "",
+   "rank": 72,
+   "rank_in_account": 61,
+   "signals": {
+    "engagement_rate": 2.74,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3862055454385960965",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWYxvlFiPgF/",
+   "shortcode": "DWYxvlFiPgF",
+   "timestamp": "2026-03-27T12:02:13Z",
+   "epoch": 1774612933,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Your recovery takes longer now. This is just physiology. The sooner you accept it and train around it, the better everything gets.\n\nStrength matters more than cardio at this point in your life. Muscle protects your joints, keeps your metabolism running, and extends how long you can actually do the things you love.\n\nMob…",
+   "duration": 6.433000087738037,
+   "metrics": {
+    "views": 854,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 6,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 41.8,
+    "likes": 11.6,
+    "comments": 14.7
+   },
+   "score": 34.6,
+   "tier": "",
+   "rank": 73,
+   "rank_in_account": 62,
+   "signals": {
+    "engagement_rate": 0.7,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3850708965894758446",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DVwd2cNkaAu/",
+   "shortcode": "DVwd2cNkaAu",
+   "timestamp": "2026-03-11T20:20:58Z",
+   "epoch": 1773260458,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "A lot of people think stretching before a workout is the key, but the truth is, stretching won’t give you much of a performance boost.\n\nWhat really helps is strength training and working on your joint mobility. \n\nThis way you activate your muscles and get them moving while you build strength, which actually makes a dif…",
+   "duration": 20.687000274658203,
+   "metrics": {
+    "views": 675,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 21.6,
+    "likes": 63.2,
+    "comments": 60.1
+   },
+   "score": 31.6,
+   "tier": "",
+   "rank": 74,
+   "rank_in_account": 63,
+   "signals": {
+    "engagement_rate": 3.11,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3813633704002073307",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTsv6X2gDLb/",
+   "shortcode": "DTsv6X2gDLb",
+   "timestamp": "2026-01-19T16:38:51Z",
+   "epoch": 1768840731,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "This past Saturday we had @drjerryyoo with @nextlevelphysiopt come in and educate our members on the benefits of mobility and how to improve! \n\nThank you Dr. Jerry , we learned so much about our bodies and how to improve! \n\nIf you want to work on your mobility reach out to Dr. Jerry and his team for help! \n\n#carynorthc…",
+   "duration": 21.600000381469727,
+   "metrics": {
+    "views": 801,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 3,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 35.1,
+    "likes": 1.2,
+    "comments": 39.5
+   },
+   "score": 31.4,
+   "tier": "",
+   "rank": 75,
+   "rank_in_account": 64,
+   "signals": {
+    "engagement_rate": 0.5,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3825301442744385357",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DUWM2UVkX9N/",
+   "shortcode": "DUWM2UVkX9N",
+   "timestamp": "2026-02-04T18:59:49Z",
+   "epoch": 1770231589,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Did you know you cannot fully prevent an injury, only reduce the risk? 🤔\n\nSo many factors in sports are outside of our control, which is why preparation matters. When athletes stay consistent with their preparation, it allows them to maintain their health and perform at their best under pressure.",
+   "duration": 21.5,
+   "metrics": {
+    "views": 769,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 7,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 29.3,
+    "likes": 15.5,
+    "comments": 60.1
+   },
+   "score": 31.4,
+   "tier": "",
+   "rank": 76,
+   "rank_in_account": 65,
+   "signals": {
+    "engagement_rate": 1.17,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3866736138778381600",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWpaAgIDQ0g/",
+   "shortcode": "DWpaAgIDQ0g",
+   "timestamp": "2026-04-02T23:01:51Z",
+   "epoch": 1775170911,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Do you ever catch yourself hunched over the computer while working?\n\nTry this 👀\nA simple fix that can instantly help you reset your posture and feel better.\n\nSend this to someone who’s always stuck at their desk 💻",
+   "duration": 43.39799880981445,
+   "metrics": {
+    "views": 780,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 10,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 30.3,
+    "likes": 27.1,
+    "comments": 39.5
+   },
+   "score": 31.1,
+   "tier": "",
+   "rank": 77,
+   "rank_in_account": 66,
+   "signals": {
+    "engagement_rate": 1.41,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3899939141282198308",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DYfXfx5xHMk/",
+   "shortcode": "DYfXfx5xHMk",
+   "timestamp": "2026-05-18T18:31:18Z",
+   "epoch": 1779129078,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "My pre-race meal includes a toasted bagel with honey because it’s a fast-digesting carbohydrate and helps give me energy🥯\n\nWhat does your pre-race meal look like?",
+   "duration": 16.437999725341797,
+   "metrics": {
+    "views": 650,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 13
+   },
+   "extra": {},
+   "pct": {
+    "views": 18.8,
+    "likes": 32.6,
+    "comments": 97.3
+   },
+   "score": 30.3,
+   "tier": "",
+   "rank": 78,
+   "rank_in_account": 67,
+   "signals": {
+    "engagement_rate": 3.69,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3862780552683813773",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWbWnJgAXuN/",
+   "shortcode": "DWbWnJgAXuN",
+   "timestamp": "2026-03-28T12:02:32Z",
+   "epoch": 1774699352,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "At some point the goal shifts. You stop chasing a number on the scale and you start chasing how you feel when you wake up, how you move through your day, how much energy you have for the people and things that actually matter.\n\nThat’s what fitness looks like after 40 when you’re doing it right. Consistent, sustainable,…",
+   "duration": 7.0370001792907715,
+   "metrics": {
+    "views": 790,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 32.2,
+    "likes": 32.6,
+    "comments": 14.7
+   },
+   "score": 30.1,
+   "tier": "",
+   "rank": 79,
+   "rank_in_account": 68,
+   "signals": {
+    "engagement_rate": 1.39,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3860908105908329483",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWUs3djF5wL/",
+   "shortcode": "DWUs3djF5wL",
+   "timestamp": "2026-03-25T22:02:33Z",
+   "epoch": 1774476153,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Going all out every session isn’t the move. The athletes I work with who do the best at HYROX are the ones who build their aerobic base steadily, take strength seriously, actually practice their transitions, and treat recovery like it’s part of the program because it is.\n\nI’m Dr. Jerry Yoo. I work with runners and hybr…",
+   "duration": 6.61899995803833,
+   "metrics": {
+    "views": 806,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 36.1,
+    "likes": 7.0,
+    "comments": 14.7
+   },
+   "score": 29.8,
+   "tier": "",
+   "rank": 80,
+   "rank_in_account": 69,
+   "signals": {
+    "engagement_rate": 0.62,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3806502702867888555",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTTagphATmr/",
+   "shortcode": "DTTagphATmr",
+   "timestamp": "2026-01-09T20:30:23Z",
+   "epoch": 1767990623,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "One of the most important life lessons I’ve learned is that your health is your most important asset.\n\nPrioritizing what you eat and your fitness allows you to keep showing up for the hard things in life, even when motivation is low or circumstances aren’t ideal.\n\nWhen you take care of your body, you build the energy a…",
+   "duration": 17.71500015258789,
+   "metrics": {
+    "views": 658,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 20.7,
+    "likes": 51.6,
+    "comments": 60.1
+   },
+   "score": 29.5,
+   "tier": "",
+   "rank": 81,
+   "rank_in_account": 70,
+   "signals": {
+    "engagement_rate": 2.58,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3841350597412499346",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DVPOAQYga-S/",
+   "shortcode": "DVPOAQYga-S",
+   "timestamp": "2026-02-26T22:26:40Z",
+   "epoch": 1772144800,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "One of the biggest mistakes runners make is increasing mileage too quickly🏃🏻\n\nMuscles, joints, and connective tissues need time to adjust, so pushing too hard can easily cause injury!\n\nAdding a little distance each week is the safest way to build endurance and stay healthy.",
+   "duration": 24.402000427246094,
+   "metrics": {
+    "views": 647,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 17,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 17.3,
+    "likes": 57.4,
+    "comments": 60.1
+   },
+   "score": 27.7,
+   "tier": "",
+   "rank": 82,
+   "rank_in_account": 71,
+   "signals": {
+    "engagement_rate": 2.94,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3867490956714535580",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWsFojHAWqc/",
+   "shortcode": "DWsFojHAWqc",
+   "timestamp": "2026-04-04T00:01:30Z",
+   "epoch": 1775260890,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Hear me out… warming up actually matters 👀\n\nWatch this before you jump straight into your workout—it might change the way you move.\n\nSend this to someone who skips their warm-up 💪",
+   "duration": 9.498000144958496,
+   "metrics": {
+    "views": 699,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 13,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 22.6,
+    "likes": 44.2,
+    "comments": 39.5
+   },
+   "score": 27.4,
+   "tier": "",
+   "rank": 83,
+   "rank_in_account": 72,
+   "signals": {
+    "engagement_rate": 2.0,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3818850471624394066",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DT_SEVTgUVS/",
+   "shortcode": "DT_SEVTgUVS",
+   "timestamp": "2026-01-26T21:23:31Z",
+   "epoch": 1769462611,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Being a good physical therapist means being part coach, part consultant, and part cop. It’s knowing when to push for more strength, when to look at the data, and when to step in to prevent a setback.\n\nOur goal is to help our athletes get back to their sports safely and stronger than before 💪🏻",
+   "duration": 38.70600128173828,
+   "metrics": {
+    "views": 647,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 13,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 17.3,
+    "likes": 44.2,
+    "comments": 60.1
+   },
+   "score": 26.0,
+   "tier": "",
+   "rank": 84,
+   "rank_in_account": 73,
+   "signals": {
+    "engagement_rate": 2.32,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3910051746680276392",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DZDS1jmRgWo/",
+   "shortcode": "DZDS1jmRgWo",
+   "timestamp": "2026-06-01T17:23:51Z",
+   "epoch": 1780334631,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you are just getting into running over 40 the best thing you can do is find a good coach and be honest about where you are starting from🏃🏻",
+   "duration": 21.336999893188477,
+   "metrics": {
+    "views": 631,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": 15.4,
+    "likes": 39.5,
+    "comments": 74.4
+   },
+   "score": 25.8,
+   "tier": "",
+   "rank": 85,
+   "rank_in_account": 74,
+   "signals": {
+    "engagement_rate": 2.38,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3808678685368728609",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DTbJRXJATwh/",
+   "shortcode": "DTbJRXJATwh",
+   "timestamp": "2026-01-12T20:34:29Z",
+   "epoch": 1768250069,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Using recovery tools as a quick fix can mask underlying issues instead of addressing them 😅\n\nReal recovery starts with the basics like enough sleep, proper nutrition, good breathing, and intentional mobility work.\n\nWhen those foundations are in place, tools like saunas or cold plunges can support your recovery instead …",
+   "duration": 26.933000564575195,
+   "metrics": {
+    "views": 591,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": 12.0,
+    "likes": 51.6,
+    "comments": 81.8
+   },
+   "score": 25.7,
+   "tier": "",
+   "rank": 86,
+   "rank_in_account": 75,
+   "signals": {
+    "engagement_rate": 3.21,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3960838308648756474",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo",
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/Db3uXTPxKT6/",
+   "shortcode": "Db3uXTPxKT6",
+   "timestamp": "2026-08-10T19:07:01Z",
+   "epoch": 1786388821,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The patients who get the best results are the ones who treat PT like coaching and are always asking how to make sure they never need to come back for the same thing!",
+   "duration": 12.003000259399414,
+   "metrics": {
+    "views": 700,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 9,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 23.6,
+    "likes": 23.3,
+    "comments": 39.5
+   },
+   "score": 25.6,
+   "tier": "",
+   "rank": 87,
+   "rank_in_account": 76,
+   "signals": {
+    "engagement_rate": 1.43,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3945580237697723170",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbBhFJUxisi/",
+   "shortcode": "DbBhFJUxisi",
+   "timestamp": "2026-07-20T17:52:16Z",
+   "epoch": 1784569936,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you are searching for a new PT the difference between good and best comes down to whether they are adjusting your program based on how you are actually doing or just running you through the same routine every visit🤔",
+   "duration": 13.210000038146973,
+   "metrics": {
+    "views": 713,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 25.5,
+    "likes": 32.6,
+    "comments": 14.7
+   },
+   "score": 25.0,
+   "tier": "",
+   "rank": 88,
+   "rank_in_account": 77,
+   "signals": {
+    "engagement_rate": 1.54,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3800030612162819537",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DS8a7VVkzXR/",
+   "shortcode": "DS8a7VVkzXR",
+   "timestamp": "2025-12-31T22:09:31Z",
+   "epoch": 1767218971,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "At 50, I didn’t magically get disciplined.\nI finally got honest.\n\nHonest about:\n• My “easy” runs not being easy\n• My lack of strength work\n• My sleep habits\n• My underfueling\n• My resistance to rest\n• My warm-ups being rushed\n\nOnce I fixed those, something wild happened:\nI got faster, stronger, and more durable.\n\nMy bi…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 39,
+    "comments": 6
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 86.0,
+    "comments": 90.3
+   },
+   "score": 22.0,
+   "tier": "",
+   "rank": 89,
+   "rank_in_account": 78,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3860262780528239417",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DWSaIvdDCM5/",
+   "shortcode": "DWSaIvdDCM5",
+   "timestamp": "2026-03-25T00:40:05Z",
+   "epoch": 1774399205,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "As someone who wants to stay on top of their game as I get older, I highly recommend VO2 testing because it gives you a real, objective look at your heart and lung health and is one of the strongest predictors of longevity we have.",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 30,
+    "comments": 6
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 80.2,
+    "comments": 90.3
+   },
+   "score": 21.3,
+   "tier": "",
+   "rank": 90,
+   "rank_in_account": 79,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3865979615832033796",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWmt_pOkcoE/",
+   "shortcode": "DWmt_pOkcoE",
+   "timestamp": "2026-04-01T21:59:24Z",
+   "epoch": 1775080764,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If your bird dogs aren’t doing anything for your back pain, chances are you’re doing them wrong! \n\nWatch to learn the proper way to do this exercise.",
+   "duration": 24.07699966430664,
+   "metrics": {
+    "views": 624,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 13.9,
+    "likes": 39.5,
+    "comments": 39.5
+   },
+   "score": 20.3,
+   "tier": "",
+   "rank": 91,
+   "rank_in_account": 80,
+   "signals": {
+    "engagement_rate": 2.08,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3810131096675360072",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DTgTgulAR1I/",
+   "shortcode": "DTgTgulAR1I",
+   "timestamp": "2026-01-14T20:37:22Z",
+   "epoch": 1768423042,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "If your back has been feeling tight, stiff, or beat up, this one’s for you.\nWe’re hosting a Pain & Back Mobility Pop Up with @drjerryyoo to help you move better and feel better.\n\nRSVP by messaging (984) 353-2158\n\n#CaryNorthCarolina #CaryNCPersonalTraining #CaryNorthCarolinaPersonalTraining #WakeCounty #WakeCountyPerson…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 22,
+    "comments": 4
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 69.8,
+    "comments": 81.8
+   },
+   "score": 19.0,
+   "tier": "",
+   "rank": 92,
+   "rank_in_account": 81,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3854324761212570038",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DV9T_MBEUm2/",
+   "shortcode": "DV9T_MBEUm2",
+   "timestamp": "2026-03-16T20:03:28Z",
+   "epoch": 1773691408,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "One of the most underrated training rules is the 20/80 where 80% of your workouts should be easy and only 20% should be intense.\n\nI used to go hard 80% of my sessions and felt constantly burnt out.\n\nOnce I started following 20/80 rule, my workouts became way more productive and I actually started seeing better results …",
+   "duration": 30.33300018310547,
+   "metrics": {
+    "views": 547,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 15,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": 6.2,
+    "likes": 51.6,
+    "comments": 60.1
+   },
+   "score": 18.6,
+   "tier": "",
+   "rank": 93,
+   "rank_in_account": 82,
+   "signals": {
+    "engagement_rate": 3.11,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3946288194714522170",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbECDRrRtI6/",
+   "shortcode": "DbECDRrRtI6",
+   "timestamp": "2026-07-21T17:18:21Z",
+   "epoch": 1784654301,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you are just getting into running and have no idea where to start with shoes a neutral shoe with some cushion is the move and here is why🤔\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#Wellness #PainManagement #RunningCommunity #RunnerLife #TrailRunning",
+   "duration": 18.249000549316406,
+   "metrics": {
+    "views": 651,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 7,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 19.7,
+    "likes": 15.5,
+    "comments": 14.7
+   },
+   "score": 18.5,
+   "tier": "",
+   "rank": 94,
+   "rank_in_account": 12,
+   "signals": {
+    "engagement_rate": 1.08,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3920263069401619411",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DZnkn29xBvT/",
+   "shortcode": "DZnkn29xBvT",
+   "timestamp": "2026-06-15T19:31:06Z",
+   "epoch": 1781551866,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you are just getting into running over 40 strength training it is one of the most important things you can do to improve your performance and stay injury free.\n\nJust running alone leaves your muscles and tendons unprepared for the load and that is exactly how injuries happen.",
+   "duration": 12.37399959564209,
+   "metrics": {
+    "views": 588,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 11.1,
+    "likes": 32.6,
+    "comments": 39.5
+   },
+   "score": 17.3,
+   "tier": "",
+   "rank": 95,
+   "rank_in_account": 83,
+   "signals": {
+    "engagement_rate": 2.04,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3941323160694897788",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DayZIhaPTx8/",
+   "shortcode": "DayZIhaPTx8",
+   "timestamp": "2026-07-14T20:54:21Z",
+   "epoch": 1784062461,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "The three things most runners are told about knee pain are not only wrong they are making things worse👇🏻\n\nYou do not need to stop running or wait it out, you need to start building your body back up at the right level and keep going even when the pain is gone.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@…",
+   "duration": 44.904998779296875,
+   "metrics": {
+    "views": 631,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 8,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 15.4,
+    "likes": 19.4,
+    "comments": 14.7
+   },
+   "score": 15.8,
+   "tier": "",
+   "rank": 96,
+   "rank_in_account": 13,
+   "signals": {
+    "engagement_rate": 1.27,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3835574543016068032",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DU6srmiAQPA/",
+   "shortcode": "DU6srmiAQPA",
+   "timestamp": "2026-02-18T23:08:58Z",
+   "epoch": 1771456138,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Most people don’t realize that the foods you eat have an impact on your recovery!🫐\n\nIncluding anti-inflammatory foods like berries, leafy greens, fatty fish, sweet potatoes, and carrots a few times a week can help reduce muscle soreness and support your overall health.\n\nWhen these foods become a regular part of your di…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 5
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 39.5,
+    "comments": 87.2
+   },
+   "score": 15.8,
+   "tier": "",
+   "rank": 97,
+   "rank_in_account": 84,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3963711612334609887",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/p/DcB7rX1S5Xf/",
+   "shortcode": "DcB7rX1S5Xf",
+   "timestamp": "2026-08-14T18:15:38Z",
+   "epoch": 1786731338,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "Please join us in welcoming Dr. Jessica Patz, DPT, CKTP, to the Next Level Physio family! 🎉\n\nJessica brings extensive experience in orthopedic rehabilitation, performing arts and dance medicine, pelvic health, movement biomechanics, and return-to-performance care.\n\nThroughout her career, Jessica has worked with profess…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 19,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 63.2,
+    "comments": 60.1
+   },
+   "score": 15.4,
+   "tier": "",
+   "rank": 98,
+   "rank_in_account": 14,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3904884734446154457",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DYw7_odgjLZ/",
+   "shortcode": "DYw7_odgjLZ",
+   "timestamp": "2026-05-25T14:16:26Z",
+   "epoch": 1779718586,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "Today we remember the men and women who gave everything so we could have the freedom to do what we love. We are forever grateful🇺🇸",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 13,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 44.2,
+    "comments": 74.4
+   },
+   "score": 14.8,
+   "tier": "",
+   "rank": 99,
+   "rank_in_account": 85,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3839228848580085562",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DVHrkvzDEc6/",
+   "shortcode": "DVHrkvzDEc6",
+   "timestamp": "2026-02-24T00:09:25Z",
+   "epoch": 1771891765,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Before you start your run, spending just 5–10 minutes on dynamic warmups can make a big difference🏃🏻\n\nBy including these 4 exercises, you will get your blood flowing, lower your risk of injury, and set yourself up for a stronger run.",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 14,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 47.3,
+    "comments": 60.1
+   },
+   "score": 13.4,
+   "tier": "",
+   "rank": 100,
+   "rank_in_account": 86,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3805222905425657784",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DTO3hJRE3-4/",
+   "shortcode": "DTO3hJRE3-4",
+   "timestamp": "2026-01-08T02:05:40Z",
+   "epoch": 1767837940,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Rest feels safe when your back hurts. I actually recommend active rest in Phase 1 of my back pain program, meaning we keep active people active, just dialed down and intentional.\n\nBut when someone with chronic low back pain comes to see me after being prescribed months of rest and activity avoidance with no other plan,…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 12,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 39.5,
+    "comments": 60.1
+   },
+   "score": 12.5,
+   "tier": "",
+   "rank": 101,
+   "rank_in_account": 87,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3860882820605012157",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWUnHgxkei9/",
+   "shortcode": "DWUnHgxkei9",
+   "timestamp": "2026-03-25T21:13:28Z",
+   "epoch": 1774473208,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "For me, dealing with a hamstring issue is not a reason to stop moving. Even when you’re dealing with something, the goal is to find what you can do and keep putting in the work.",
+   "duration": 30.13800048828125,
+   "metrics": {
+    "views": 546,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 10,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 5.3,
+    "likes": 27.1,
+    "comments": 39.5
+   },
+   "score": 12.3,
+   "tier": "",
+   "rank": 102,
+   "rank_in_account": 88,
+   "signals": {
+    "engagement_rate": 2.01,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3951407022502389102",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbWN8BjPSVu/",
+   "shortcode": "DbWN8BjPSVu",
+   "timestamp": "2026-07-28T18:48:52Z",
+   "epoch": 1785264532,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "What most people need from PT is not just treatment, it is a clear plan and someone telling them exactly where they are and where they are going. When that communication is there the outcomes are almost always better.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalT…",
+   "duration": 33.73699951171875,
+   "metrics": {
+    "views": 594,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 4,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 13.0,
+    "likes": 3.1,
+    "comments": 14.7
+   },
+   "score": 12.0,
+   "tier": "",
+   "rank": 103,
+   "rank_in_account": 89,
+   "signals": {
+    "engagement_rate": 0.67,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3921747593085435882",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DZs2KhYmb_q/",
+   "shortcode": "DZs2KhYmb_q",
+   "timestamp": "2026-06-17T20:39:26Z",
+   "epoch": 1781728766,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "How much fiber are you actually eating? 🥦\n\nIf you’re like most people, it’s barely half of what you need, and no, your protein bar doesn’t count.\n\nIt’s not just about staying regular, fiber steadies your energy, speeds up recovery, and studies even link it to a 30% lower risk of heart disease.\n\nSwipe through for how mu…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 8,
+    "comments": 3
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 19.4,
+    "comments": 74.4
+   },
+   "score": 11.7,
+   "tier": "",
+   "rank": 104,
+   "rank_in_account": 90,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3927490828993258124",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/p/DaBQBmov2KM/",
+   "shortcode": "DaBQBmov2KM",
+   "timestamp": "2026-06-25T18:51:42Z",
+   "epoch": 1782413502,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "If you don’t know why it hurts, you can’t truly fix it. \n\nEvery time you walk through our doors, we dig deeper to find the root cause of your pain so we can get you back to doing what you love, restriction-free.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 2
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 32.6,
+    "comments": 60.1
+   },
+   "score": 11.6,
+   "tier": "",
+   "rank": 105,
+   "rank_in_account": 15,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3889808841613867446",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DX7YIhIkXm2/",
+   "shortcode": "DX7YIhIkXm2",
+   "timestamp": "2026-05-04T19:03:04Z",
+   "epoch": 1777921384,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "Your body in your 60s and 70s is just a reflection of the work you put into it now.\n\nThe people who are still moving well and doing what they love later in life didn’t get lucky, they just didn’t stop showing up.\n\nWhat you do today is either an investment or a debt you’ll have to pay later.",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 25,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 74.4,
+    "comments": 14.7
+   },
+   "score": 11.1,
+   "tier": "",
+   "rank": 106,
+   "rank_in_account": 91,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3937615512057921867",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DalOHIiR8FL/",
+   "shortcode": "DalOHIiR8FL",
+   "timestamp": "2026-07-09T18:08:50Z",
+   "epoch": 1783620530,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If side lying hip abductions are the only hip exercise you are doing you are leaving a lot on the table. \n\nHere is how to actually build the hip strength that carries over to running and everything else👀\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Rehabi…",
+   "duration": 26.4689998626709,
+   "metrics": {
+    "views": 557,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 9,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 8.2,
+    "likes": 23.3,
+    "comments": 14.7
+   },
+   "score": 10.9,
+   "tier": "",
+   "rank": 107,
+   "rank_in_account": 16,
+   "signals": {
+    "engagement_rate": 1.62,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3953540661114161858",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbdzEjWxcrC/",
+   "shortcode": "DbdzEjWxcrC",
+   "timestamp": "2026-07-31T17:27:35Z",
+   "epoch": 1785518855,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "What does your running shoe rotation look like right now?🤔\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Wellness  #PhysicalTherapyExercises #RunnerLife #TrailRunning",
+   "duration": 23.381000518798828,
+   "metrics": {
+    "views": 552,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 10,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 7.2,
+    "likes": 27.1,
+    "comments": 14.7
+   },
+   "score": 10.6,
+   "tier": "",
+   "rank": 108,
+   "rank_in_account": 17,
+   "signals": {
+    "engagement_rate": 1.81,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3938281923373672744",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DanloscB6ko/",
+   "shortcode": "DanloscB6ko",
+   "timestamp": "2026-07-10T16:10:12Z",
+   "epoch": 1783699812,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Every runner pronates but if you overpronate that extra inward roll puts stress on your ankles, knees and hips that adds up overtime🏃🏻‍♀️\n\nA stability shoe can help manage it in the short term but the real fix is building strength in your foot and lower leg so your body stops relying on the shoe to hold everything toge…",
+   "duration": 19.40999984741211,
+   "metrics": {
+    "views": 561,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 4,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 10.1,
+    "likes": 3.1,
+    "comments": 14.7
+   },
+   "score": 9.8,
+   "tier": "",
+   "rank": 109,
+   "rank_in_account": 18,
+   "signals": {
+    "engagement_rate": 0.71,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3866464026033456057",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DWocIvYjQO5/",
+   "shortcode": "DWocIvYjQO5",
+   "timestamp": "2026-04-02T14:01:12Z",
+   "epoch": 1775138472,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Do your knees feel stiff when you run?\n\nWatch this 👀\nThis might be exactly what your body’s been trying to tell you—plus a simple way to start fixing it.\n\nSend this to someone who needs to see this before their next run 🏃‍♂️",
+   "duration": 30.266000747680664,
+   "metrics": {
+    "views": 560,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 9.1,
+    "likes": 7.0,
+    "comments": 14.7
+   },
+   "score": 9.5,
+   "tier": "",
+   "rank": 110,
+   "rank_in_account": 92,
+   "signals": {
+    "engagement_rate": 0.89,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3925352015383201073",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/reel/DZ5ptxPR4Ux/",
+   "shortcode": "DZ5ptxPR4Ux",
+   "timestamp": "2026-06-22T20:01:47Z",
+   "epoch": 1782158507,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "Going slow to go fast sounds counterintuitive but it is the advice every new runner over 40 needs to hear before they end up injured🏃🏻",
+   "duration": 22.545000076293945,
+   "metrics": {
+    "views": 445,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 7,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 3.4,
+    "likes": 15.5,
+    "comments": 39.5
+   },
+   "score": 9.4,
+   "tier": "",
+   "rank": 111,
+   "rank_in_account": 93,
+   "signals": {
+    "engagement_rate": 1.8,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3879679695886300663",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DXXZCDDmTX3/",
+   "shortcode": "DXXZCDDmTX3",
+   "timestamp": "2026-04-20T19:38:01Z",
+   "epoch": 1776713881,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Running only gets you so far before your body starts sending signals that something is missing.\n\nMost running injuries come down to not having enough strength to support the miles you’re putting in.  Adding strength training alongside your runs is what actually lets you run more, not less.\n\nRunners who strength train c…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 11,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 32.6,
+    "comments": 39.5
+   },
+   "score": 9.0,
+   "tier": "",
+   "rank": 112,
+   "rank_in_account": 94,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3962390247816935348",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo",
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/p/Db9PO_Ombe0/",
+   "shortcode": "Db9PO_Ombe0",
+   "timestamp": "2026-08-12T22:29:08Z",
+   "epoch": 1786573748,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Kids aren’t just small adults.\n\nTheir bodies are still growing, so their rehab shouldn’t be a shrunk down version of what an adult gets.\n\nA lot of parents get told to wait it out. Sometimes that’s fine. But missed milestones, pain that keeps coming back, and movement that just looks off usually don’t sort themselves ou…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 9,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 23.3,
+    "comments": 39.5
+   },
+   "score": 7.9,
+   "tier": "",
+   "rank": 113,
+   "rank_in_account": 95,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3957963898665009286",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DbtgzIVv4CG/",
+   "shortcode": "DbtgzIVv4CG",
+   "timestamp": "2026-08-06T19:57:58Z",
+   "epoch": 1786046278,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "When you strain a muscle everything you think you should do is probably wrong. Stretching it makes it worse, ice is not doing what you think, and expecting to recover on the same timeline you did at 25 is how you end up hurt again🤔\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.c…",
+   "duration": 122.04199981689453,
+   "metrics": {
+    "views": 499,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 6,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 4.3,
+    "likes": 11.6,
+    "comments": 14.7
+   },
+   "score": 6.5,
+   "tier": "",
+   "rank": 114,
+   "rank_in_account": 19,
+   "signals": {
+    "engagement_rate": 1.2,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3966571658553743238",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DcMF-hcOleG/",
+   "shortcode": "DcMF-hcOleG",
+   "timestamp": "2026-08-18T16:59:20Z",
+   "epoch": 1787072360,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "We tend to fall more as we age because the fast-reacting muscle fibers that catch us mid-trip start shrinking pretty early on. Lifting heavier and adding explosive movements to your routine helps rebuild that quickness, keeping you steady when you misstep.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlph…",
+   "duration": 163.5330047607422,
+   "metrics": {
+    "views": 327,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": 0.5,
+    "likes": 7.0,
+    "comments": 39.5
+   },
+   "score": 6.2,
+   "tier": "",
+   "rank": 115,
+   "rank_in_account": 20,
+   "signals": {
+    "engagement_rate": 1.83,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3967416218563470064",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo",
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/p/DcPGAfPmWLw/",
+   "shortcode": "DcPGAfPmWLw",
+   "timestamp": "2026-08-19T20:54:50Z",
+   "epoch": 1787172890,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "When a knee or shoulder keeps acting up, rubbing or icing where it hurts usually misses the point. That spot is almost always taking the heat for a weak link higher up or lower down your movement chain.\n\nReal relief happens when you stop babysitting the symptom and actually fix the breakdown!",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 7.0,
+    "comments": 39.5
+   },
+   "score": 5.8,
+   "tier": "",
+   "rank": 116,
+   "rank_in_account": 96,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3876725913413351711",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DXM5a2wjfkf/",
+   "shortcode": "DXM5a2wjfkf",
+   "timestamp": "2026-04-16T17:51:08Z",
+   "epoch": 1776361868,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "Feeling tight or stiff? 👊\n\nJoin us Saturday, April 18 from 11 AM–12 PM for our Mobility Workshop\n\nWe’ll break down why it happens, test your mobility, and take you through a full-body flow you can use in your warm-up 💪\n\nHosted by @drjerryyoo \n\nFree for Alloy members — don’t miss it 👊\n\n#CaryNorthCarolina #CaryNCPersonal…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 10,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 27.1,
+    "comments": 14.7
+   },
+   "score": 5.2,
+   "tier": "",
+   "rank": 117,
+   "rank_in_account": 97,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3933787969462233109",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/p/DaXn1DtgGgV/",
+   "shortcode": "DaXn1DtgGgV",
+   "timestamp": "2026-07-04T13:00:05Z",
+   "epoch": 1783170005,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "250 years of freedom worth celebrating🇺🇸\n\nWishing everyone a happy Fourth of July from our whole team!",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 3,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 1.2,
+    "comments": 39.5
+   },
+   "score": 5.1,
+   "tier": "",
+   "rank": 118,
+   "rank_in_account": 21,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3923142884228812425",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/p/DZxzarhj06J/",
+   "shortcode": "DZxzarhj06J",
+   "timestamp": "2026-06-19T18:51:37Z",
+   "epoch": 1781895097,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Harder isn’t the same as smarter 🧠\n\nThe best athletes aren’t the ones grinding the most reps, they’re the ones who fuel, sleep, and recover like it matters.\n\nSwipe through for the 6 habits that turn effort into lasting performance 👉🏻\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 3,
+    "comments": 1
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 1.2,
+    "comments": 39.5
+   },
+   "score": 5.1,
+   "tier": "",
+   "rank": 119,
+   "rank_in_account": 22,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3968014991441036008",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/DcROJx8RILo/",
+   "shortcode": "DcROJx8RILo",
+   "timestamp": "2026-08-20T16:45:49Z",
+   "epoch": 1787244349,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "If you’ve been in PT for weeks and you’re still using the lightest band in the room, something’s wrong. You know you found the right PT when they actually challenge you and build you up to get back to what you love.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalThe…",
+   "duration": 50.93299865722656,
+   "metrics": {
+    "views": 331,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 7,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 1.4,
+    "likes": 15.5,
+    "comments": 14.7
+   },
+   "score": 4.8,
+   "tier": "",
+   "rank": 120,
+   "rank_in_account": 23,
+   "signals": {
+    "engagement_rate": 2.11,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3824200572757547798",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DUSSijRDxsW/",
+   "shortcode": "DUSSijRDxsW",
+   "timestamp": "2026-02-03T06:30:55Z",
+   "epoch": 1770100255,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Being coachable isn’t about being perfect.\nIt’s about staying open.\n\nOpen to feedback.\nOpen to discomfort.\nOpen to the idea that growth usually starts where ego ends.\n\nThis one stayed with me. Maybe it’s something we can all sit with this week.\n\nWhat’s the last piece of feedback that actually helped you grow?",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 9,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 23.3,
+    "comments": 14.7
+   },
+   "score": 4.8,
+   "tier": "",
+   "rank": 121,
+   "rank_in_account": 98,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3943422307344959304",
+   "account": "nextlevelphysiopt",
+   "accounts": [
+    "nextlevelphysiopt"
+   ],
+   "permalink": "https://www.instagram.com/reel/Da52bIEpcdI/",
+   "shortcode": "Da52bIEpcdI",
+   "timestamp": "2026-07-17T18:24:40Z",
+   "epoch": 1784312680,
+   "media_type": "VIDEO",
+   "product_type": "REELS",
+   "caption": "A proper warmup before a run is not just a few quad stretches and calling it good. The more dynamic you make it the better your body is going to feel.\n-\nRequest Your Total Body Assessment - link in bio!\n📩 info@nlphysio.com\n🌐 www.nlphysio.com\n\n#PhysicalTherapy #Rehabilitation #PainManagement #BackPainRelief #KneePainRel…",
+   "duration": 38.03300094604492,
+   "metrics": {
+    "views": 360,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": 2.4,
+    "likes": 7.0,
+    "comments": 14.7
+   },
+   "score": 4.5,
+   "tier": "",
+   "rank": 122,
+   "rank_in_account": 24,
+   "signals": {
+    "engagement_rate": 1.39,
+    "engagement_basis": "views",
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3804470490296482790",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DTMMcEEk_vm/",
+   "shortcode": "DTMMcEEk_vm",
+   "timestamp": "2026-01-07T01:10:46Z",
+   "epoch": 1767748246,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Flat feet are slowing you down” sounds convincing — until you look at the data.\n\nRecent research shows no meaningful difference in athletic performance between athletes with flat feet and those with so-called “normal” arches. This holds true across running, court sports, and mixed-modal (HYROX/hybrid) athletes.\n\nA 2022…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 8,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 19.4,
+    "comments": 14.7
+   },
+   "score": 4.3,
+   "tier": "",
+   "rank": 123,
+   "rank_in_account": 99,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3942015378239609667",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/Da02hnPGVtD/",
+   "shortcode": "Da02hnPGVtD",
+   "timestamp": "2026-07-15T19:47:54Z",
+   "epoch": 1784144874,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Tweaked your back and wondering if deadlifts are off the table for good? They’re not👇🏻\n\nBacking off while it’s irritated is smart. Backing off forever is fear, not judgment, and a back that never rebuilds strength is the one that gives out on something ordinary, like a bag of mulch.\n\nSwipe for the signs you’re ready to…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 7,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 15.5,
+    "comments": 14.7
+   },
+   "score": 3.8,
+   "tier": "",
+   "rank": 124,
+   "rank_in_account": 100,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3936876156041869787",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DaimAFllLnb/",
+   "shortcode": "DaimAFllLnb",
+   "timestamp": "2026-07-08T17:37:11Z",
+   "epoch": 1783532231,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "If you have been stretching your hamstring for months and it is not getting better it might not be your hamstring at all🤔\n\nA sciatic nerve that cannot glide freely feels exactly like tightness and stretching it just makes things worse. The fix is restoring how the nerve moves, not stretching harder.",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 6,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 11.6,
+    "comments": 14.7
+   },
+   "score": 3.3,
+   "tier": "",
+   "rank": 125,
+   "rank_in_account": 101,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3916601051080590371",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DZaj-eolIQj/",
+   "shortcode": "DZaj-eolIQj",
+   "timestamp": "2026-06-10T18:14:10Z",
+   "epoch": 1781115250,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Wall balls didn’t wreck my back but rep 70 with bad form did.\n\nIt’s not the weight. It’s what falls apart when you’re tired and the brace goes, you start leaning back to hit the target, and suddenly your back is doing your legs job.\n\nSwipe through to learn what I wish someone told me before I lost 3 days to a sore back…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 6,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 11.6,
+    "comments": 14.7
+   },
+   "score": 3.3,
+   "tier": "",
+   "rank": 126,
+   "rank_in_account": 102,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3952217148920237841",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DbZGI6kmQ8R/",
+   "shortcode": "DbZGI6kmQ8R",
+   "timestamp": "2026-07-29T21:37:00Z",
+   "epoch": 1785361020,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Reaching into a cabinet shouldn’t be the hardest part of your day❌\n\nShoulder, arm, and hand pain gets brushed off as something you just deal with. But these joints do a huge amount of work: pressing, pulling, reaching, holding, lifting, carrying. When something in that chain stops working, you feel it in everything.\n\nS…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 7.0,
+    "comments": 14.7
+   },
+   "score": 2.7,
+   "tier": "",
+   "rank": 127,
+   "rank_in_account": 103,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3926837770917055343",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DZ-7iW6GQtv/",
+   "shortcode": "DZ-7iW6GQtv",
+   "timestamp": "2026-06-24T21:12:42Z",
+   "epoch": 1782335562,
+   "media_type": "CAROUSEL_ALBUM",
+   "product_type": "FEED",
+   "caption": "Knee pain that won’t quit usually isn’t a knee problem.\n\nYou’ve rested it, iced it, maybe even had it scoped, and it’s still there. The knee rarely works alone. Weak hips, stiff ankles, or poor core control can force it to take on loads it was never meant to handle.\n\nFix the system, not just the spot.",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 7.0,
+    "comments": 14.7
+   },
+   "score": 2.7,
+   "tier": "",
+   "rank": 128,
+   "rank_in_account": 104,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  },
+  {
+   "id": "3864630527437633523",
+   "account": "drjerryyoo",
+   "accounts": [
+    "drjerryyoo"
+   ],
+   "permalink": "https://www.instagram.com/p/DWh7P0wDPfz/",
+   "shortcode": "DWh7P0wDPfz",
+   "timestamp": "2026-03-31T01:19:09Z",
+   "epoch": 1774919949,
+   "media_type": "IMAGE",
+   "product_type": "FEED",
+   "caption": "This is the one thing most runners are completely missing👇🏻\n\nThe runners who stay healthy and consistent into their 40s and 50s are almost always eating enough protein every single day. It is not a secret weapon, it is just basic research that most people ignore.\n\nAfter 40, muscle repair slows down and your protein nee…",
+   "duration": null,
+   "metrics": {
+    "views": null,
+    "shares": null,
+    "saves": null,
+    "reach": null,
+    "likes": 5,
+    "comments": 0
+   },
+   "extra": {},
+   "pct": {
+    "views": null,
+    "likes": 7.0,
+    "comments": 14.7
+   },
+   "score": 2.7,
+   "tier": "",
+   "rank": 129,
+   "rank_in_account": 105,
+   "signals": {
+    "engagement_rate": null,
+    "engagement_basis": null,
+    "shares_per_1k_views": null,
+    "saves_per_1k_views": null
+   },
+   "delta": null,
+   "delta_since": null,
+   "first_seen": "2026-08-21",
+   "graph_media_id": null,
+   "thumb": null
+  }
+ ]
+}
