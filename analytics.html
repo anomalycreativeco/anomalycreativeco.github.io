@@ -583,7 +583,6 @@ function render(d){
     <div class="ringbox">${ringSVG(pace,92,9)}<div class="ringv">${Math.round(pace*100)}%</div><div class="ringl">On pace</div></div>`;
 
   /* collection level: outstanding sits with the other collection metrics */
-  const tot=d.industries.reduce((a,[,v])=>a+v,0);
   document.getElementById("collRows").innerHTML=`
     <div class="prow"><div class="pt"><span>Outstanding</span><b>${fmtK(s.outstanding)} · ${Math.round((1-rate)*100)}%</b></div>
     <div class="bar"><i style="width:${(1-rate)*100}%"></i></div></div>`;
@@ -732,6 +731,7 @@ function renderRunRate(d){
 }
 
 function renderRest(d){
+  const tot=d.industries.reduce((a,[,v])=>a+v,0);
   /* services (dark card) */
   const smax=Math.max(...d.services.map(x=>x[1]));
   document.getElementById("services").innerHTML=d.services.slice(0,6).map(([n,v])=>`
