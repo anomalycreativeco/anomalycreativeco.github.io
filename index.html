@@ -688,7 +688,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.0.1", APP_BUILD="2026-08-21";
+const APP_VERSION="2.0.2", APP_BUILD="2026-09-11";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -1471,6 +1471,9 @@ const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
 const weekStartSun=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-x.getDay());return x;};
 function slotOpen(abbr,ds,wd,tasks){
   if(!(HUB_SCHEDULE[abbr]||[]).includes(wd)) return false;
+  // pipeline v2.20.0: a client's startDate floors its schedule — nothing before it is a slot
+  const cli=CLIENTS.find(c=>c.abbr===abbr);
+  if(cli&&cli.startDate&&ds<cli.startDate) return false;
   if(HUB_SKIPS.has(abbr+"|"+ds)) return false;
   return !tasks.some(t=>t.clientAbbr===abbr&&t.dueDate===ds&&t.type!=="filming"&&t.type!=="braindump");
 }
