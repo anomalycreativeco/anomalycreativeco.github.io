@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Weekly social stats — Mondays at 06:40.
+
+  Collects last week's per-post views for every client's Instagram, TikTok and
+  YouTube Shorts (scripts/sync_social_stats.py) and writes hub/socialStats for
+  the Studio Hub's "Social · last week" widget.
+
+  NOT installed automatically. Install only after a supervised run:
+
+      cp scripts/com.anomaly.social-stats-weekly.plist ~/Library/LaunchAgents/
+      launchctl load ~/Library/LaunchAgents/com.anomaly.social-stats-weekly.plist
+
+  To check on it:
+      launchctl list | grep anomaly
+      tail -f ~/Library/Logs/anomaly-social.log
+
+  To stop it:
+      launchctl unload ~/Library/LaunchAgents/com.anomaly.social-stats-weekly.plist
+
+  RunAtLoad is deliberately false. /usr/bin/python3 is invoked directly — no
+  shell wrapper — because launchd-spawned zsh lacks Desktop access under TCC
+  (that is why the ad-picks monthly job fails with exit 127).
+
+  06:40 is chosen to sit clear of the other Monday jobs (financials 07:15,
+  Ares 08:47, the scheduled Claude tasks from 09:02) and of the ad-picks run
+  on the 1st at 09:00, which shares Instagram's per-IP budget. The script
+  also detects a recent ad-picks run and skips Instagram for that morning.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.anomaly.social-stats-weekly</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/danielpan/Desktop/Claude/Anomaly-Studio-Hub/scripts/sync_social_stats.py</string>
+        <string>--update-ytdlp</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/danielpan/Desktop/Claude/Anomaly-Studio-Hub</string>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>1</integer>
+        <key>Hour</key><integer>6</integer>
+        <key>Minute</key><integer>40</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/danielpan/Library/Logs/anomaly-social.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/danielpan/Library/Logs/anomaly-social.log</string>
+</dict>
+</plist>

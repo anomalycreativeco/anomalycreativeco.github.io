@@ -208,6 +208,12 @@ body.previewing .shell{padding-top:52px}
 .wbar i{display:block;height:5px;border-radius:3px;background:var(--green);min-width:2px}
 .wbar.red i{background:var(--red)}
 .wbar b{font-family:var(--mono);font-size:10px;font-weight:600;text-align:right}
+.wbar.v{grid-template-columns:64px 1fr 44px}
+.trow.soc{cursor:pointer;align-items:center}
+.trow.soc:hover b{color:var(--green-deep)}
+.sthumb{width:28px;height:28px;border-radius:6px;object-fit:cover;flex:none;background:var(--line)}
+.sthumb.sg{display:grid;place-items:center;font-family:var(--mono);font-size:9px;color:var(--mid)}
+.sglyph{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--faint);flex:none;margin-left:auto}
 .cdcodes{display:flex;flex-wrap:wrap;gap:6px}
 .cdchip{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--line);
   padding:4px 8px;border-radius:7px}
@@ -610,6 +616,11 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
           <div id="jBody"><div class="amsg">Loading tracker…</div></div>
         </div>
 
+        <div class="acard" id="socialCard" data-w="social" style="display:none">
+          <div class="ahead"><span>Social · last week</span><b id="socBadge"></b></div>
+          <div id="socBody"><div class="amsg">Loading social stats…</div></div>
+        </div>
+
         <div class="acard" id="remCard" data-w="rem">
           <div class="rem-head"><span id="remLabel">Reminders</span><b id="remBadge"></b></div>
           <div class="remtab" id="remTabs">
@@ -688,7 +699,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.0.2", APP_BUILD="2026-09-11";
+const APP_VERSION="2.1.0", APP_BUILD="2026-09-11";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -704,7 +715,8 @@ const PLATFORMS={
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
   financials:{name:"Financials (QuickBooks P&L, balance sheet)",cat:null,def:"owners"},
   automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
-  ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"}
+  ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"},
+  social:{name:"Social Stats (weekly views · IG / TikTok / YT)",cat:null,def:"everyone"}
 };
 const ITEMS={
   client:[
@@ -902,7 +914,8 @@ function applyAccess(){
   document.getElementById("footCard").style.display=pipe?"block":"none";
   document.getElementById("edsCard").style.display=pipe?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
-  loadToday(); loadJosh();
+  document.getElementById("socialCard").style.display=canSee("social")?"block":"none";
+  loadToday(); loadJosh(); loadSocial();
 }
 
 /* ── Josh Holyfield RAW tracker card ── */
@@ -959,6 +972,79 @@ function renderJoshBody(){
       <span>${esc(c.name||c.title||"Untitled clip")}</span></div>`).join("");
   }
   body.innerHTML=html;
+}
+
+/* ── Social · last week ──
+   Reads hub/socialStats, written Monday mornings by scripts/sync_social_stats.py.
+   Same contract as the RAW tracker: one doc, JSON string in `data`, loader
+   stashes it, renderer is pure and re-runs on resize. Post rows open the
+   permalink in a new tab — IG/TikTok/YouTube all refuse to be framed. */
+let SOCIAL=null;
+async function loadSocial(){
+  if(!canSee("social")) return;
+  const body=document.getElementById("socBody"); if(!body) return;
+  try{
+    const d=await getDoc(doc(db,"hub","socialStats"));
+    if(!d.exists()){ body.innerHTML='<div class="amsg">No social sync yet — runs Monday mornings.</div>'; return; }
+    let data=(d.data()||{}).data;
+    if(typeof data==="string"){ try{data=JSON.parse(data);}catch(e){data=null;} }
+    if(!data){ body.innerHTML='<div class="amsg">Couldn\'t read the social stats.</div>'; return; }
+    SOCIAL={d:data,at:Number((d.data()||{}).at||0)};
+    renderSocialBody();
+  }catch(e){ body.innerHTML='<div class="amsg">Couldn\'t load social stats.</div>'; }
+}
+function fmtViews(n,exact){
+  if(n==null) return "—";
+  const p=exact===false?"≈":"";
+  if(n>=1e6) return p+(n/1e6).toFixed(n>=1e7?0:1)+"M";
+  if(n>=1e4) return p+Math.round(n/1e3)+"K";
+  if(n>=1e3) return p+(n/1e3).toFixed(1)+"K";
+  return p+String(n);
+}
+function renderSocialBody(){
+  if(!SOCIAL) return;
+  const body=document.getElementById("socBody"), badge=document.getElementById("socBadge"); if(!body) return;
+  const D=SOCIAL.d, T=D.totals||{}, bp=T.byPlatform||{}, size=wSize("social");
+  const warn=(D.warnings||[]).length;
+  const stale=SOCIAL.at&&(Date.now()-SOCIAL.at>8*864e5);
+  badge.textContent=stale?"stale":D.mode==="partial"?"partial":warn?warn+" warn":"";
+  badge.className=(stale||D.mode==="partial"||warn)?"warn":"";
+  const fmtD=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  const range=fmtD(D.weekStart)+" – "+fmtD(D.weekEnd);
+  const synced=SOCIAL.at?new Date(SOCIAL.at).toLocaleString("en-US",{weekday:"short",hour:"numeric",minute:"2-digit"}):"";
+  // "vs last week" only when both weeks are complete with the same working platforms
+  let delta="";
+  const P=D.prev;
+  if(P&&P.mode==="complete"&&D.mode==="complete"&&P.totals&&P.totals.views){
+    const ok=k=>((bp[k]||{}).status==="ok"), pok=k=>((((P.totals||{}).byPlatform||{})[k]||{}).status==="ok");
+    if(["ig","tiktok","yt"].every(k=>ok(k)===pok(k))){
+      const pct=Math.round((T.views-P.totals.views)/P.totals.views*100);
+      delta=` · ${pct>=0?"+":""}${pct}% vs last wk`;
+    }
+  }
+  const cli=a=>{const c=CLIENTS.find(x=>x.abbr===a);return c?c.name:"";};
+  const glyph={ig:"IG",tiktok:"TT",yt:"YT"};
+  let html=`<div class="kpirow">
+    <div class="kpi"><b>${fmtViews(T.views)}</b><span>Total views</span></div>
+    <div class="kpi"><b>${fmtViews((bp.ig||{}).views)}</b><span>IG views · reels</span></div>
+    <div class="kpi"><b>${T.posts||0}</b><span>Posts</span></div></div>`;
+  if(!T.posts) html+=`<div class="amsg">No posts found for ${range}.</div>`;
+  if(size!=="s"&&(D.top||[]).length){
+    html+=`<div class="wsub">Top posts</div>`+D.top.map(p=>`<div class="trow soc" data-url="${esc(p.permalink||"")}" title="${esc((cli(p.abbr)||p.abbr)+" · @"+(p.account||""))}">
+      ${(p.thumb||p.thumbUrl)?`<img class="sthumb" src="${esc(p.thumb||p.thumbUrl)}" alt="" onerror="this.style.display='none'">`:`<span class="sthumb sg">${glyph[p.platform]||"·"}</span>`}
+      <span class="tt">${fmtViews(p.views,p.viewsExact)}</span>
+      <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${esc(p.abbr)}</b> · ${esc(p.title||"(untitled)")}</span>
+      <span class="sglyph">${glyph[p.platform]||""}</span></div>`).join("");
+  }
+  if(size==="l"&&(D.perClient||[]).length){
+    const rows=D.perClient.slice(0,8), max=Math.max(...rows.map(r=>r.views||0),1);
+    html+=`<div class="wsub">By client</div><div class="wbars">`+rows.map(r=>
+      `<div class="wbar v"><span title="${esc(cli(r.abbr))}">${esc(r.abbr)}</span><i style="width:${Math.round((r.views||0)/max*100)}%"></i><b>${fmtViews(r.views)}</b></div>`).join("")+`</div>`;
+    if(warn) html+=`<div class="wsub">Warnings</div>`+D.warnings.slice(0,4).map(w=>`<div class="amsg">${esc(w)}</div>`).join("");
+  }
+  html+=`<div class="tmore">${range}${synced?" · synced "+synced:""}${delta}</div>`;
+  body.innerHTML=html;
+  body.querySelectorAll(".trow.soc[data-url]").forEach(r=>r.onclick=e=>{e.stopPropagation();if(r.dataset.url)window.open(r.dataset.url,"_blank","noopener");});
 }
 
 /* ── Today: personal to-dos + Filming / Meetings calendar ── */
@@ -1163,10 +1249,10 @@ function initReminders(){
    Stored per email in localStorage: a layout is a response to the screen in
    front of you, so it should not follow you from a 27" desktop to a laptop.
    Key is versioned — v2 rebuilt the deck, old saved layouts don't apply. */
-const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","rem"];
+const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","social","rem"];
 const WSIZES=["s","m","l"];
 const WLABEL={s:"S",m:"M",l:"L"};
-const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",rem:"s"};
+const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",social:"m",rem:"s"};
 const wlKey=()=>"hub.widgets2."+((effEmail()||"anon").toLowerCase());
 function wlLoad(){
   try{
@@ -1453,7 +1539,7 @@ let STATS=null;
 const wSize=k=>((WL&&WL.size&&WL.size[k])||"s");
 function renderWidgetBodies(){
   renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody();
-  renderMyClients(); renderRevBody(); renderFootBody(); renderEdsBody(); renderUnplanned();
+  renderMyClients(); renderRevBody(); renderFootBody(); renderEdsBody(); renderUnplanned(); renderSocialBody();
 }
 function taskLine(t,extra){
   return `<div class="trow${extra&&extra.over?" over":""}"><span class="dot"></span>
