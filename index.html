@@ -699,7 +699,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.1.0", APP_BUILD="2026-09-11";
+const APP_VERSION="2.1.1", APP_BUILD="2026-09-14";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -711,6 +711,7 @@ const PLATFORMS={
   brief:{name:"Pre-Production Brief",cat:"pre",def:"everyone"},
   josh:{name:"Josh Holyfield · RAW Tracker",cat:"post",def:"custom"},
   rchplanner:{name:"RCH Content Planner",cat:"pre",def:"everyone"},
+  renewplanner:{name:"Renew Staging Planner",cat:"pre",def:"everyone"},
   ufplanner:{name:"Universal Furniture Planner",cat:"pre",def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
   financials:{name:"Financials (QuickBooks P&L, balance sheet)",cat:null,def:"owners"},
@@ -729,6 +730,7 @@ const ITEMS={
   ],
   pre:[
     {key:"brief",name:"Pre-Production Brief",desc:"Build a shoot brief — concept and deliverables for the client, shot list and logistics for the crew. Type it or speak it.",tag:"Firebase",url:"brief.html",icon:"M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 15.5h7M9 19h4"},
+    {key:"renewplanner",name:"Renew Staging Planner",desc:"Anomaly × Renew Staging & Design — when staging goes in, how long it stays, and Scott's house rank. Shared no-login link.",tag:"Firebase",url:"renew-staging/",icon:"M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M9 21v-6h6v6"},
     {key:"rchplanner",name:"RCH Content Planner",desc:"Anomaly × Raleigh Custom Homes monthly content planner — shared calendar and approvals.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-x-RCH---Content-Planning/",icon:"M3 5.5h18v15H3zM3 10h18M8 3v4M16 3v4M8 14h3M13 14h3M8 17.5h3"},
     {key:"ufplanner",name:"Universal Furniture Planner",desc:"Anomaly × Universal Furniture monthly content planner — seeded with the 2026 wish list.",tag:"Firebase",url:"https://anomalycreativeco.github.io/Anomaly-x-Universal-Furniture-Planner/",icon:"M4 18v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M4 18h16M6 18v2M18 18v2M6 10V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"}
   ]
