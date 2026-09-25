@@ -7,8 +7,8 @@
   },
   "client_name": "Next Level Physio",
   "title": "Anomaly × Next Level Physio Ad Picks",
-  "generated_at": "2026-09-24T14:19:45Z",
-  "run_date": "2026-09-24",
+  "generated_at": "2026-09-25T18:21:30Z",
+  "run_date": "2026-09-25",
   "mode": "public",
   "lookback_days": 365,
   "since": "2026-05-01",
@@ -18,6 +18,8 @@
     "label": "Dr. Jerry Yoo",
     "slot": 1,
     "posts_analyzed": 33,
+    "partial": true,
+    "reason": "Instagram refused https://www.instagram.com/api/v1/feed/user/drjerryyoo/username/ (last status 401)",
     "coverage_from": "2026-05-04",
     "coverage_to": "2026-08-19",
     "covered": true,
@@ -28,8 +30,13 @@
     "label": "Next Level Physio",
     "slot": 2,
     "posts_analyzed": 28,
+    "partial": true,
+    "reason": "Instagram refused https://www.instagram.com/api/v1/feed/user/nextlevelphysiopt/username/ (last status 401)",
     "coverage_from": "2026-06-19",
     "coverage_to": "2026-08-20",
+    "followers": 9349,
+    "media_count": 888,
+    "full_name": "Next Level Physio",
     "covered": false,
     "avatar": null
    }
@@ -64,7 +71,11 @@
    },
    "posts_scored": 57
   },
-  "warnings": [],
+  "warnings": [
+   "@drjerryyoo: collection failed — Instagram refused https://www.instagram.com/api/v1/feed/user/drjerryyoo/username/ (last status 401)",
+   "@nextlevelphysiopt: collection failed — Instagram refused https://www.instagram.com/api/v1/feed/user/nextlevelphysiopt/username/ (last status 401)",
+   "This run collected nothing; showing the previous run's data."
+  ],
   "runs": [
    "2026-08-21"
   ],
