@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caption Writer · Anomaly Studio Hub</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="logomark.png">
+<style>
+/* ═══ Caption Writer — hub v2 design language (same tokens as index.html) ═══ */
+:root{
+  --page:#E9E9E6; --card:#F6F6F4; --card-2:#FFFFFF; --ink:#16181A; --mid:#5D6165;
+  --faint:#93979B; --line:rgba(0,0,0,.07); --line-2:rgba(0,0,0,.12);
+  --feat:#111315; --feat-ink:#FFFFFF; --feat-mid:#9AA0A4; --feat-line:rgba(255,255,255,.12);
+  --green:#8FB3AC; --green-deep:#3C5C55; --red:#C0563C; --amber:#B98A3E;
+  --red-tint:rgba(192,86,60,.12); --amber-tint:rgba(185,138,62,.14); --green-tint:rgba(143,179,172,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --r:22px; --r-sm:14px;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --page:#0C0D0E; --card:#161819; --card-2:#1C1F20; --ink:#F2F3F3; --mid:#9BA1A5;
+  --faint:#6B7175; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+  --feat:#F6F6F4; --feat-ink:#16181A; --feat-mid:#5D6165; --feat-line:rgba(0,0,0,.12);
+  --green:#8FB3AC; --green-deep:#B9D4CE; --red:#E0785C; --amber:#D6A758;
+  --red-tint:rgba(224,120,92,.15); --amber-tint:rgba(214,167,88,.15); --green-tint:rgba(143,179,172,.14);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;font-size:13px;line-height:1.45;min-height:100vh}
+button,input,textarea,select{font:inherit;color:inherit;font-family:var(--sans)}
+.hidden,[hidden]{display:none !important}
+.lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.spacer{flex:1}
+
+/* ── auth gate (dark in both themes, like the hub) ── */
+.gate{position:fixed;inset:0;z-index:200;background:#0C0D0E;display:grid;place-items:center;transition:opacity .4s,visibility .4s}
+.gate.off{opacity:0;visibility:hidden;pointer-events:none}
+.gcard{text-align:center;max-width:340px;padding:30px}
+.gcard img{width:64px;height:64px;object-fit:contain;margin-bottom:18px}
+.gk{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6B7175;margin-bottom:8px}
+.gcard h2{color:#F2F3F3;font-size:26px;font-weight:600;letter-spacing:-.02em;margin-bottom:22px}
+.gbtn{display:inline-flex;align-items:center;gap:10px;background:#F2F3F3;color:#16181A;border:0;
+  border-radius:999px;padding:12px 22px;font-size:13.5px;font-weight:600;cursor:pointer}
+.gbtn:hover{background:#fff}
+.gdot{width:9px;height:9px;border-radius:50%;background:#8FB3AC}
+.gmsg{margin-top:16px;font-size:12px;color:#9BA1A5;min-height:18px}
+.gmsg.err{color:#E0785C}
+
+/* ── shell / topbar ── */
+.shell{max-width:1220px;margin:0 auto;padding:14px 16px 60px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;color:inherit}
+.brand .mk{width:30px;height:30px;flex:none;display:grid;place-items:center}
+.brand .mk img{width:100%;height:100%;object-fit:contain;display:block}
+.brand .mk .dk{display:none}
+[data-theme="dark"] .brand .mk .lt{display:none}
+[data-theme="dark"] .brand .mk .dk{display:block}
+.brand h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.appver{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--faint);
+  border:1px solid var(--line-2);border-radius:999px;padding:1px 7px;white-space:nowrap}
+.tabs{display:flex;background:var(--card);border-radius:999px;padding:3px;box-shadow:var(--shadow-sm)}
+.tabs button{border:0;background:transparent;color:var(--mid);border-radius:999px;padding:7px 15px;
+  font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tabs button.on{background:var(--feat);color:var(--feat-ink)}
+.tabs button b{font-family:var(--mono);font-size:9.5px;font-weight:600;background:var(--line);color:var(--mid);
+  border-radius:999px;padding:1px 6px}
+.tabs button.on b{background:rgba(255,255,255,.14);color:var(--feat-ink)}
+[data-theme="dark"] .tabs button.on b{background:rgba(0,0,0,.1)}
+.tabs button b:empty{display:none}
+.msg{font-size:12px;color:var(--faint);min-height:16px}
+.msg.err{color:var(--red)} .msg.ok{color:var(--green-deep)}
+.tbtn{width:36px;height:36px;border-radius:50%;background:var(--card);box-shadow:var(--shadow-sm);
+  display:grid;place-items:center;cursor:pointer;font-size:14px;color:var(--mid);border:0;flex:none}
+.tbtn:hover{color:var(--ink)}
+.userchip{display:flex;align-items:center;gap:9px;padding:6px 8px 6px 6px;border-radius:999px;background:var(--card);box-shadow:var(--shadow-sm)}
+.userchip .avatar{width:26px;height:26px;border-radius:50%;background:var(--green);color:var(--green-deep);
+  display:grid;place-items:center;font-weight:600;font-size:11px;flex:none}
+[data-theme="dark"] .userchip .avatar{color:#1c2b27}
+.userchip .who{font-size:12px;color:var(--mid);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userchip .out{border:0;background:transparent;color:var(--faint);font-size:11px;cursor:pointer;padding:2px 4px}
+.userchip .out:hover{color:var(--red)}
+
+/* ── cards + controls ── */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;min-width:0}
+.card .lbl{display:block;margin:14px 0 6px}
+.card .lbl:first-child{margin-top:0}
+.inp,select.inp,textarea.inp{width:100%;border:1px solid var(--line-2);background:var(--card-2);border-radius:11px;
+  padding:9px 11px;font-size:12.5px;color:var(--ink);outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--green)}
+.inp::placeholder{color:var(--faint)}
+select.inp{appearance:none;-webkit-appearance:none;padding-right:30px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),linear-gradient(135deg,var(--faint) 50%,transparent 50%);
+  background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+textarea.inp{resize:vertical;min-height:88px;line-height:1.5}
+.ta{position:relative}
+.ta textarea{padding-right:38px}
+.mic{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-2);
+  background:var(--card-2);color:var(--mid);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.mic svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.mic:hover{border-color:var(--green);color:var(--green-deep)}
+.mic.live{background:var(--green);border-color:var(--green);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(143,179,172,.5)}50%{box-shadow:0 0 0 6px rgba(143,179,172,0)}}
+.seg{display:inline-flex;background:var(--line);border-radius:999px;padding:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--card-2);color:var(--ink);box-shadow:var(--shadow-sm)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line-2);background:var(--card-2);color:var(--mid);border-radius:999px;padding:5px 11px;
+  font-size:11.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chips button::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--line-2)}
+.chips button.on{background:var(--feat);color:var(--feat-ink);border-color:var(--feat)}
+.chips button.on::before{background:var(--green)}
+.chips button:hover{border-color:var(--faint)}
+.hint{font-size:11px;color:var(--faint);margin-top:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2 .lbl{margin-top:14px}
+.btn{border:1px solid var(--line-2);background:var(--card-2);color:var(--ink);border-radius:11px;padding:8px 14px;
+  font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--feat);color:var(--feat-ink);border-color:var(--feat)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.sm{padding:5px 10px;font-size:11.5px;border-radius:9px}
+.btn.xs{padding:3px 8px;font-size:10.5px;border-radius:7px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--mid)}
+.btn.ghost:hover{background:var(--line);color:var(--ink)}
+.btn.danger:hover{border-color:var(--red);color:var(--red)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn .spin{width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.actions{display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;padding:3px 8px;border-radius:999px;background:var(--line);color:var(--mid);white-space:nowrap}
+.pill.ok{background:var(--green-tint);color:var(--green-deep)}
+.pill.warn{background:var(--amber-tint);color:var(--amber)}
+.pill.hot{background:var(--red-tint);color:var(--red)}
+.empty{color:var(--faint);font-size:12.5px;padding:26px 10px;text-align:center;line-height:1.6}
+.note{font-size:12px;color:var(--mid);line-height:1.55;background:var(--card-2);border-radius:var(--r-sm);padding:11px 13px;border:1px solid var(--line)}
+.note.warn{background:var(--amber-tint);border-color:transparent;color:var(--ink)}
+.note b{font-weight:600}
+.note code{font-family:var(--mono);font-size:11px;background:var(--line);padding:1px 5px;border-radius:5px}
+
+/* ── compose ── */
+.compose{display:grid;grid-template-columns:400px minmax(0,1fr);gap:14px;align-items:start}
+.compose > .card{position:sticky;top:14px}
+.vp{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:var(--mid);flex-wrap:wrap}
+.vp a{color:var(--green-deep);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.reshead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 4px 10px}
+.reshead .lbl{margin:0}
+.opt{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px}
+.opt .oh{display:flex;align-items:baseline;gap:9px;margin-bottom:10px;flex-wrap:wrap}
+.opt .oh .n{width:24px;height:24px;border-radius:50%;background:var(--feat);color:var(--feat-ink);display:grid;place-items:center;
+  font-family:var(--mono);font-size:10px;font-weight:600;flex:none;align-self:center}
+.opt .oh .tone{font-size:13px;font-weight:600}
+.opt .oh .angle{font-size:11.5px;color:var(--faint);flex:1 1 200px;min-width:0}
+.len{margin-top:10px}
+.len .lh{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.len .lh .lbl{margin:0}
+.len .lh .cnt{font-family:var(--mono);font-size:9.5px;color:var(--faint)}
+.len .lh .acts{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap}
+.len .lh .acts .saved{font-size:10.5px;color:var(--green-deep);align-self:center}
+.opt textarea{width:100%;border:1px solid transparent;background:var(--card-2);border-radius:var(--r-sm);padding:11px 13px;
+  font-size:13.5px;line-height:1.55;resize:none;outline:none;color:var(--ink);min-height:44px;overflow:hidden}
+.opt textarea:focus{border-color:var(--green)}
+.opt .tags{margin-top:10px;display:flex;align-items:center;gap:8px}
+.opt .tags .lbl{margin:0;flex:none}
+.opt .tags input{flex:1;border:1px solid transparent;background:var(--card-2);border-radius:10px;padding:7px 11px;
+  font-family:var(--mono);font-size:11px;color:var(--green-deep);outline:none;min-width:0}
+.opt .tags input:focus{border-color:var(--green)}
+.refine{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.refine input{flex:1 1 240px}
+.skel{height:14px;border-radius:7px;background:var(--line);margin:8px 0;animation:sh 1.2s ease-in-out infinite}
+.skel.w60{width:60%} .skel.w85{width:85%}
+@keyframes sh{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* ── library ── */
+.lhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.lhead .inp{width:auto;flex:1 1 200px;max-width:320px}
+.lhead select.inp{flex:0 1 200px}
+.lhead .n{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap}
+.lrow{display:grid;grid-template-columns:1fr auto;gap:12px;padding:13px 4px;border-top:1px solid var(--line);align-items:start}
+.lrow:first-child{border-top:0}
+.lrow .meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}
+.lrow .ab{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--line);padding:3px 7px;border-radius:7px}
+.lrow .who{font-family:var(--mono);font-size:9.5px;color:var(--faint)}
+.lrow .cap{font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.lrow .ht{font-family:var(--mono);font-size:10.5px;color:var(--green-deep);margin-top:5px;word-break:break-word}
+.lrow .acts{display:flex;gap:6px;flex-direction:column;align-items:stretch}
+
+/* ── presets ── */
+.presets{display:grid;grid-template-columns:320px minmax(0,1fr);gap:14px;align-items:start}
+.prow{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:11px;cursor:pointer;min-width:0}
+.prow:hover{background:var(--line)}
+.prow.on{background:var(--feat);color:var(--feat-ink)}
+.prow .ab{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--line);padding:3px 7px;border-radius:7px;min-width:44px;text-align:center;flex:none}
+.prow.on .ab{background:rgba(255,255,255,.14)}
+[data-theme="dark"] .prow.on .ab{background:rgba(0,0,0,.1)}
+.prow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+.prow .dot{width:7px;height:7px;border-radius:50%;background:var(--line-2);flex:none}
+.prow .dot.t{background:var(--green)} .prow .dot.p{background:var(--amber)}
+.psec{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);padding:12px 8px 5px}
+.pedit .head{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.pedit .head h2{font-size:18px;font-weight:600;letter-spacing:-.02em}
+.pedit .head .sub{font-size:12px;color:var(--faint);margin-top:2px}
+.pedit .flags{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12.5px}
+.pedit .flags label{display:flex;align-items:center;gap:7px;cursor:pointer}
+.pedit .flags input{accent-color:var(--green-deep);width:14px;height:14px}
+.pedit .src{font-family:var(--mono);font-size:10.5px}
+.prov{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+
+/* ── responsive ── */
+@media(max-width:900px){ .compose,.presets{grid-template-columns:1fr} .compose > .card{position:static} }
+@media(max-width:640px){
+  .shell{padding:12px 12px 50px}
+  .top{gap:8px}
+  .brand h1{font-size:17px}
+  .tabs{order:10;width:100%;justify-content:space-between}
+  .tabs button{flex:1;justify-content:center;padding:9px 8px}
+  .userchip .who{display:none}
+  .grid2{grid-template-columns:1fr}
+  .lrow{grid-template-columns:1fr}
+  .lrow .acts{flex-direction:row}
+  .len .lh{flex-wrap:wrap}
+  .len .lh .acts{margin-left:0;width:100%}
+  /* 16px keeps iOS from zooming the page when a field takes focus */
+  .inp,.opt textarea,.opt .tags input{font-size:16px}
+}
+@media(hover:none){ .btn{min-height:42px} .btn.xs{min-height:34px} .mic{min-width:40px;min-height:40px;top:6px;right:6px} .seg button,.chips button{min-height:36px} .tbtn{width:42px;height:42px} }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gcard">
+    <img src="logomark-white.png" alt="">
+    <div class="gk">Anomaly · Studio Hub</div>
+    <h2>Caption Writer</h2>
+    <button class="gbtn" id="signin"><span class="gdot"></span>Sign in with Google</button>
+    <div class="gmsg" id="gateMsg">Anomaly accounts only.</div>
+  </div>
+</div>
+
+<div class="shell hidden" id="app">
+  <header class="top">
+    <a class="brand" href="./" title="Back to the hub">
+      <span class="mk"><img class="lt" src="logomark.png" alt=""><img class="dk" src="logomark-white.png" alt=""></span>
+      <h1>Caption Writer</h1>
+    </a>
+    <span class="appver" id="ver"></span>
+    <nav class="tabs" id="tabs">
+      <button data-tab="compose" class="on">Compose</button>
+      <button data-tab="library">Library <b id="libN"></b></button>
+      <button data-tab="presets">Voice profiles <b id="preN"></b></button>
+    </nav>
+    <span class="spacer"></span>
+    <span class="msg" id="msg"></span>
+    <button class="tbtn" id="themeBtn" title="Light / dark">◐</button>
+    <div class="userchip" id="userChip"><span class="avatar" id="uAv">?</span><span class="who" id="uWho"></span><button class="out" id="signout" title="Sign out">✕</button></div>
+  </header>
+
+  <!-- ═══ Compose ═══ -->
+  <section class="view" id="v-compose">
+    <div class="compose">
+      <div class="card">
+        <span class="lbl">Client</span>
+        <select class="inp" id="cClient"></select>
+        <div class="vp" id="vpChip"></div>
+
+        <span class="lbl">Platform</span>
+        <div class="seg" id="cPlat">
+          <button data-v="reel" class="on">IG Reel</button><button data-v="tiktok">TikTok</button>
+          <button data-v="short">YT Short</button><button data-v="carousel">IG Carousel</button>
+        </div>
+
+        <span class="lbl">What's the video?</span>
+        <div class="ta"><textarea class="inp" id="cDesc" placeholder="Who's on camera, what happens, what the viewer should take away. Type it or tap the mic."></textarea></div>
+
+        <div class="grid2">
+          <div><span class="lbl">On-screen title (optional)</span><input class="inp" id="cTitle" placeholder="From the project's On-screen Text Title"></div>
+          <div><span class="lbl">CTA override (optional)</span><input class="inp" id="cCta" placeholder="Leave blank to use the client's default"></div>
+        </div>
+
+        <span class="lbl">Must include / notes (optional)</span>
+        <div class="ta"><textarea class="inp" id="cMust" style="min-height:64px" placeholder="Names to credit, a date that's confirmed, a phrase the client asked for…"></textarea></div>
+
+        <span class="lbl">Tones — one option each, short + long</span>
+        <div class="chips" id="cTones"></div>
+        <div class="hint" id="toneHint"></div>
+
+        <div class="actions">
+          <button class="btn primary" id="genBtn">Write captions</button>
+          <span class="msg" id="genMsg"></span>
+        </div>
+        <div class="note warn" id="setupNote" hidden style="margin-top:14px"></div>
+      </div>
+
+      <div id="results">
+        <div class="card empty" id="resEmpty">Pick a client, describe the video, choose your tones, and you'll get one option per tone here — each in a short and a long version, editable, with hashtags, ready to copy or save to the library.</div>
+        <div class="reshead hidden" id="resHead"><span class="lbl" id="resLabel"></span><span class="spacer"></span><span class="pill" id="resPlat"></span></div>
+        <div id="optList"></div>
+        <div class="card refine" id="refine" hidden>
+          <input class="inp" id="refText" placeholder="Adjust all of them: punchier, less salesy, lead with the free visit, mention Josie…">
+          <button class="btn" id="refBtn">Refine</button>
+          <button class="btn ghost" id="againBtn">Regenerate</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Library ═══ -->
+  <section class="view hidden" id="v-library">
+    <div class="card">
+      <div class="lhead">
+        <input class="inp" id="libQ" placeholder="Search captions…">
+        <select class="inp" id="libClient"><option value="">All clients</option></select>
+        <span class="n" id="libCount"></span>
+      </div>
+      <div id="libList"></div>
+    </div>
+  </section>
+
+  <!-- ═══ Voice profiles ═══ -->
+  <section class="view hidden" id="v-presets">
+    <div class="presets">
+      <div class="card">
+        <div class="lhead" style="margin-bottom:6px">
+          <span class="lbl" style="margin:0">Voice profiles</span><span class="spacer"></span>
+          <button class="btn sm" id="preImport" title="Load profiles from the voice-profiles.json file">Import profiles…</button>
+          <input type="file" id="preFile" accept="application/json,.json" hidden>
+        </div>
+        <div class="note" style="margin:8px 0 10px">Each profile is built from the client's <b>onboarding-call transcript</b> (authoritative) plus web research (supplementary). Where they disagree, the call wins. Profiles without a call are marked <span class="pill warn">provisional</span>.</div>
+        <div id="preList"></div>
+      </div>
+      <div class="card pedit" id="preEdit"><div class="empty">Pick a client on the left to view or edit its voice profile.</div></div>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,getDocs,collection} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* Bump on every deploy — GitHub Pages caches at the edge for ~10 minutes. */
+const APP_VERSION="1.0.0", APP_BUILD="2026-09-28";
+
+/* DEMO: localhost only, ?demo=1 — no sign-in, no Firestore, canned AI reply.
+   Exists so the page can be exercised end to end before the bridge is live. */
+const DEMO=(location.hostname==="localhost"||location.hostname==="127.0.0.1")&&new URLSearchParams(location.search).has("demo");
+
+const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
+const auth=getAuth(app), db=getFirestore(app);
+const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
+
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const fmtDate=ms=>{ const d=new Date(ms); return d.toLocaleDateString("en-US",{month:"short",day:"numeric"})+" · "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}); };
+const shortWho=e=>String(e||"").split("@")[0];
+
+let MYEMAIL="", CLIENTS=[], PRESETS=[], LIB=[], ENDPOINT="", OPTS=[], LAST_REQ=null, BUSY=false;
+let LIB_ERR="", PRE_ERR="", CUR_PRE=null;
+let PLAT="reel";
+const DELETED=new Set();
+
+/* ───────── theme (shared key with the hub so both match) ───────── */
+const root=document.documentElement;
+function setTheme(t){ if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme"); try{localStorage.setItem("hub-theme",t);}catch(e){} }
+let th="light"; try{ th=localStorage.getItem("hub-theme")||"light"; }catch(e){}
+setTheme(th);
+$("#themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+$("#ver").textContent="v"+APP_VERSION; $("#ver").title="Caption Writer v"+APP_VERSION+" — built "+APP_BUILD;
+
+/* ───────── messages ───────── */
+let noteT=null;
+function note(t,cls){ const m=$("#msg"); m.textContent=t||""; m.className="msg"+(cls?" "+cls:"");
+  clearTimeout(noteT); if(cls==="ok") noteT=setTimeout(()=>{m.textContent="";},2800); }
+
+/* ───────── what the model is told ─────────
+   Daniel's format (2026-09-28): one option per TONE, each in two lengths. */
+const PLATFORMS={
+  reel:{name:"IG Reel",rules:"Instagram Reel. The first line is the hook — it is all that shows before '…more', so it must earn the tap. Line breaks between thoughts. 4–8 hashtags. The CTA may say 'link in bio'."},
+  tiktok:{name:"TikTok",rules:"TikTok. Conversational and shorter than Instagram; first person feels native. 3–5 hashtags mixing niche and broad. 'Link in bio' is fine; never paste a URL."},
+  short:{name:"YT Short",rules:"YouTube Short. The first line doubles as the title: under 100 characters, searchable, no clickbait. 3–5 hashtags and include #Shorts. Say 'link in the description', never 'link in bio'."},
+  carousel:{name:"IG Carousel",rules:"Instagram Carousel. Slides cannot be clicked, so no buttons, no 'tap here', no quiz/form/'answer a few questions' asks — the action lives at the link in bio. Open with a reason to swipe. Carousels tolerate longer captions. 5–10 hashtags."}
+};
+const TONES=[
+  {k:"educational",name:"Educational",on:true, rule:"Teach one thing. Lead with the insight, or with the exact question a viewer would ask, then answer it plainly."},
+  {k:"emotional",name:"Emotional",on:true, rule:"Lead with feeling — relief, pride, belonging, the before-and-after. Human first, product second."},
+  {k:"story",name:"Story",on:true, rule:"Narrative. A moment, a person, a turning point. Show it happening; let the takeaway land on its own."},
+  {k:"direct",name:"Direct",on:true, rule:"Offer- and CTA-first. Say what it is and what to do, no warm-up, no cleverness."},
+  {k:"playful",name:"Playful",on:true, rule:"Light and witty, self-aware. Humor only in the register the profile allows — if the profile reads serious, keep it dry rather than jokey."},
+  {k:"community",name:"Community",on:false,rule:"Local and insider. Name the place, the people, the shared identity; the viewer should feel spoken to as a neighbor or regular."},
+  {k:"bts",name:"Behind the scenes",on:false,rule:"Process and craft — how it actually gets made or done, what people don't see."},
+  {k:"contrarian",name:"Contrarian",on:false,rule:"Challenge a common belief. Hook on the myth, then correct it — confident, never snide."}
+];
+const LENGTH_RULES=`Each option comes in two lengths of the SAME idea and tone:
+- "short": the punchy version — 1–2 lines, under about 120 characters before hashtags.
+- "long": the developed version — roughly 250–500 characters before hashtags (TikTok: 150–300; YouTube Short: 150–300 after the title line). It adds the detail, not a different idea.`;
+const HOUSE_RULES=`You write social captions for the clients of Anomaly Creative & Co., a video production studio. Rules that override everything else:
+- Never invent facts. No prices, dates, offers, discounts, credentials, awards, statistics, testimonials or quotes that are not in the voice profile or the editor's description. If a detail is missing, write around it.
+- Cite only what the profile marks as safe to cite.
+- Never mention AI. Never sound like an agency template ("Elevate your…", "Unleash…", "Look no further", "Ready to…?").
+- Hashtags go in the separate array, never inside sentences. No emojis unless the profile allows them.
+- Respect every item in the profile's Avoid list, and every platform rule below.
+- American English. Line breaks inside a caption are written as \\n.
+- One option per requested tone, in the order given. Each tone must read genuinely different — not the same caption re-flavored.`;
+const outputRules=tones=>`Reply with ONLY minified JSON, no markdown fences, no commentary:
+{"options":[{"tone":"<tone name exactly as requested>","angle":"<one short line: the take this option makes>","hashtags":["#tag","#tag"],"short":"<short caption>","long":"<long caption>"}, ...]}
+Exactly ${tones.length} options, one per tone, in this order: ${tones.map(t=>t.name).join(", ")}.`;
+
+const lines=a=>Array.isArray(a)?a.filter(Boolean):(a?String(a).split(/\n+/).filter(Boolean):[]);
+function profileBlock(p){
+  if(!p) return `CLIENT VOICE PROFILE: none on file for this client. Write in Anomaly's neutral house voice — clear, warm, confident, specific, no hype — and lean entirely on the editor's description for facts.`;
+  const L=[`CLIENT VOICE PROFILE — ${p.client||p.abbr} (${p.abbr})`];
+  L.push("Provenance: "+(p.transcriptWeighted
+    ?"built from the client's onboarding-call transcript (authoritative) plus web research (supplementary). Where they conflict, the transcript governs."
+    :"PROVISIONAL — research only, no call transcript yet. Stay conservative: use only the offers and proof points listed here."));
+  if(p.voice) L.push("Voice: "+p.voice);
+  if(p.audience) L.push("Audience: "+p.audience);
+  if(lines(p.offers).length) L.push("Offers / services: "+lines(p.offers).join("; "));
+  if(lines(p.proofPoints).length) L.push("Proof points safe to cite: "+lines(p.proofPoints).join("; "));
+  if(lines(p.alwaysUse).length) L.push("Always use (words, phrases, frames): "+lines(p.alwaysUse).join("; "));
+  if(lines(p.avoid).length) L.push("AVOID (hard rules): "+lines(p.avoid).join("; "));
+  if(p.cta) L.push("Default CTA (use unless the editor overrides it): "+p.cta);
+  if(lines(p.hashtags).length) L.push("Standing hashtags (pick from these, add 2–4 topical ones): "+lines(p.hashtags).join(" "));
+  if(lines(p.quotes).length) L.push("The client's own words (mirror the cadence; do not reuse verbatim unless the editor asks):\n"+lines(p.quotes).map(q=>"- "+q).join("\n"));
+  if(p.captionNotes) L.push("Caption notes: "+p.captionNotes);
+  return L.join("\n");
+}
+const selectedTones=()=>TONES.filter(t=>t.on);
+function buildSystem(p,tones){
+  return [HOUSE_RULES,"PLATFORM — "+PLATFORMS[PLAT].rules,LENGTH_RULES,"TONES:\n"+tones.map(t=>`- ${t.name}: ${t.rule}`).join("\n"),profileBlock(p),outputRules(tones)].join("\n\n");
+}
+function buildUser(req){
+  const L=[`PLATFORM: ${PLATFORMS[req.plat].name}`,`TONES: ${req.tones.map(k=>TONES.find(t=>t.k===k).name).join(", ")}`,`VIDEO: ${req.desc}`];
+  if(req.title) L.push(`ON-SCREEN TITLE: ${req.title}`);
+  if(req.cta) L.push(`CTA (editor override — use this): ${req.cta}`);
+  if(req.must) L.push(`MUST INCLUDE / NOTES: ${req.must}`);
+  if(req.refine){ L.push(`PREVIOUS OPTIONS: ${JSON.stringify(req.prev)}`); L.push(`REVISION NOTE: ${req.refine}\nRevise every option accordingly — both lengths. Keep the same tones, order and JSON shape.`); }
+  return L.join("\n");
+}
+
+/* ───────── the bridge ─────────
+   Anomaly AI Bridge (Cloudflare Worker): POST <endpoint>/ai with a Firebase ID
+   token; the worker checks the @anomalycreativestudio.com domain, holds the
+   Anthropic key, and returns the raw Messages response. Same endpoint the
+   pipeline's Jarvis uses (Firestore config/jarvis, list[0]). */
+async function callBridge(system,user){
+  if(DEMO) return demoReply();
+  if(!ENDPOINT) throw new Error("no-endpoint");
+  const idToken=await auth.currentUser.getIdToken();
+  const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),45000);
+  let resp;
+  try{
+    resp=await fetch(ENDPOINT.replace(/\/+$/,"")+"/ai",{method:"POST",signal:ctrl.signal,
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+idToken},
+      body:JSON.stringify({model:"claude-sonnet-5",max_tokens:3500,temperature:0.8,system,messages:[{role:"user",content:user}]})});
+  }catch(e){ clearTimeout(to); throw new Error(e.name==="AbortError"?"The AI took longer than 45 seconds — try again.":"Couldn't reach the AI bridge ("+e.message+")."); }
+  clearTimeout(to);
+  if(!resp.ok){
+    let detail=""; try{ const j=await resp.json(); detail=j.error||JSON.stringify(j); }catch(e){ try{ detail=await resp.text(); }catch(e2){} }
+    throw new Error(`Bridge returned ${resp.status}${detail?" — "+String(detail).slice(0,160):""}`);
+  }
+  const data=await resp.json();
+  const txt=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim();
+  if(!txt) throw new Error("The AI returned an empty reply.");
+  return txt;
+}
+function parseOptions(txt,tones){
+  let t=String(txt).trim().replace(/^```(?:json)?/i,"").replace(/```$/,"").trim();
+  const a=t.indexOf("{"), b=t.lastIndexOf("}");
+  if(a<0||b<0) throw new Error("The AI reply wasn't JSON.");
+  let j; try{ j=JSON.parse(t.slice(a,b+1)); }catch(e){ throw new Error("The AI reply couldn't be parsed — try again."); }
+  const opts=Array.isArray(j.options)?j.options:[];
+  if(!opts.length) throw new Error("The AI returned no options — try again.");
+  return opts.slice(0,tones.length).map((o,i)=>({
+    tone:String(o.tone||tones[i]?.name||"Option "+(i+1)).trim(),
+    angle:String(o.angle||"").trim(),
+    hashtags:normTags(o.hashtags),
+    short:String(o.short||o.caption||"").trim(),
+    long:String(o.long||o.caption||"").trim(),
+    saved:{short:false,long:false}
+  }));
+}
+function normTags(v){
+  const raw=Array.isArray(v)?v:String(v||"").split(/[\s,]+/);
+  const out=[]; raw.forEach(t=>{ t=String(t||"").trim().replace(/^#+/,""); if(!t) return; t="#"+t.replace(/[^\w]/g,""); if(t.length>1&&!out.includes(t)) out.push(t); });
+  return out;
+}
+function demoReply(){
+  const tags=["#RaleighPT","#PhysicalTherapy","#MoriartyPT","#CaryNC","#ManualTherapy"];
+  const mk=(tone,angle,s,l)=>({tone,angle,hashtags:tags,short:s,long:l});
+  const j={options:[
+    mk("Educational","Why the knee still hurts after surgery","Your new knee isn't the problem. The six weeks after it are.","Your new knee isn't the problem. The six weeks after it are.\n\nSwelling, a quad that forgot how to fire, and a brain that's still protecting a joint that doesn't need protecting. That's what we work on — by hand first, then with the exercises that keep it working.\n\nBook a free 15-minute Exploration Visit — link in bio."),
+    mk("Emotional","The first stair","Six weeks ago this knee wouldn't take a stair. Today it took a pickleball court.","Six weeks ago this knee wouldn't take a stair.\nToday it took a pickleball court.\n\nNobody claps for rehab. It's slow, it's boring, and then one morning it isn't. We get to be there for that morning.\n\nYour goals are our goals. Book a free 15-minute Exploration Visit — link in bio."),
+    mk("Story","John's Tuesday patient","She came in for her knee. She stayed for the argument about the Canes.","She came in for her knee. She stayed for the argument about the Canes.\n\nThat's most Tuesdays here — an hour, one patient, one therapist, and enough time to actually talk about what the knee has to do next week. We're not a mill.\n\nBook a free 15-minute Exploration Visit — link in bio."),
+    mk("Direct","One patient, one hour","One patient. One therapist. The whole hour. We take your insurance.","One patient. One therapist. The whole hour.\n\nManual therapy to reset the joint, then the exercise that keeps it there. Raleigh and Cary, and yes — we take your insurance.\n\nBook a free 15-minute Exploration Visit — link in bio."),
+    mk("Playful","Josie supervises","Rehab is 40% exercise, 40% manual therapy, 20% Josie supervising.","Rehab is 40% exercise, 40% manual therapy, 20% Josie supervising from the corner.\n\nShe's a team member. She's also the reason your heart rate stays down during the hard part.\n\nBook a free 15-minute Exploration Visit — link in bio.")
+  ]};
+  return new Promise(res=>setTimeout(()=>res("```json\n"+JSON.stringify(j)+"\n```"),700));
+}
+
+/* ───────── data ───────── */
+const clientByAbbr=a=>CLIENTS.find(c=>c.abbr===a)||null;
+const presetFor=a=>PRESETS.find(p=>p.abbr===a)||null;
+const DEMO_PRESET={abbr:"MPT",client:"Moriarty Physical Therapy",voice:"Lighthearted, warm, patient-focused; John Quinn first person, 'we' for the practice. Approachable authority, never grandstanding.",audience:"Post-surgical patients, active 60–75 pickleball crowd, active 20s–40s, Raleigh and Cary.",offers:["Outpatient orthopedic PT","Manual therapy","Dry needling (NC)"],proofPoints:["Family-owned, 50 years","Takes insurance — 'we're not a mill'"],alwaysUse:["Your goals are our goals","We're not a mill","Exploration Visit"],avoid:["'cure'","'Exploratory'","profanity"],cta:"Book a free 15-minute Exploration Visit",hashtags:["#MoriartyPT","#RaleighPT","#CaryNC"],quotes:["John Quinn: 'if it doesn't tell a story, no one cares.'"],captionNotes:"Story first. One CTA per caption.",sources:{transcript:"demo",research:[]},transcriptWeighted:true,provisional:false,builtAt:"2026-09-28"};
+async function loadClients(){
+  if(DEMO){ CLIENTS=[{abbr:"MPT",name:"Moriarty Physical Therapy"},{abbr:"CDF",name:"Capital Discount Furniture"},{abbr:"COAL",name:"Coalition Kitchen"},{abbr:"EXBC",name:"Exeter Building Company"},{abbr:"ZZZ",name:"Zed Client (no profile)"}]; return; }
+  try{ const s=await getDocs(collection(db,"clients")); CLIENTS=s.docs.map(d=>d.data()).filter(c=>c&&c.abbr); }
+  catch(e){ CLIENTS=[]; note("Couldn't load the client list ("+(e.code||e.message)+").","err"); }
+  CLIENTS.sort((a,b)=>String(a.name||a.abbr).localeCompare(String(b.name||b.abbr)));
+}
+async function loadEndpoint(){
+  if(DEMO){ ENDPOINT="demo"; return; }
+  try{ const d=await getDoc(doc(db,"config","jarvis")); const l=d.exists()?(d.data()||{}).list:null; ENDPOINT=(Array.isArray(l)&&l[0])?String(l[0]).trim():""; }
+  catch(e){ ENDPOINT=""; }
+}
+async function loadJsonDoc(name){
+  const d=await getDoc(doc(db,"hub",name));
+  if(!d.exists()) return [];
+  const raw=(d.data()||{}).list; if(!raw) return [];
+  const v=typeof raw==="string"?JSON.parse(raw):raw; return Array.isArray(v)?v:[];
+}
+async function loadPresets(){
+  PRE_ERR="";
+  if(DEMO){ PRESETS=[JSON.parse(JSON.stringify(DEMO_PRESET))]; return; }
+  try{ PRESETS=await loadJsonDoc("captionPresets"); }catch(e){ PRESETS=[]; PRE_ERR=e.code||e.message; }
+}
+async function loadLib(){
+  LIB_ERR="";
+  if(DEMO){ LIB=[{id:"demo1",abbr:"MPT",client:"Moriarty Physical Therapy",platform:"reel",tone:"Direct",length:"short",caption:"Demo caption saved earlier.",hashtags:["#RaleighPT"],savedBy:"demo@anomalycreativestudio.com",at:Date.now()-86400000}]; return; }
+  try{ LIB=await loadJsonDoc("captions"); }catch(e){ LIB=[]; LIB_ERR=e.code||e.message; }
+}
+async function saveJsonDoc(name,list){
+  const payload=JSON.stringify(list);
+  if(payload.length>800000) throw new Error("near the 1MB document cap — archive old entries");
+  if(DEMO) return;
+  await setDoc(doc(db,"hub",name),{list:payload,updatedBy:MYEMAIL,at:Date.now()});
+}
+/* Re-read before writing so two people saving in the same minute don't erase
+   each other's entries; merge by id. */
+async function saveLib(){
+  try{
+    if(!DEMO){ let remote=[]; try{ remote=await loadJsonDoc("captions"); }catch(e){}
+      const ids=new Set(LIB.map(x=>x.id)); remote.forEach(r=>{ if(!ids.has(r.id)&&!DELETED.has(r.id)) LIB.push(r); }); }
+    LIB.sort((a,b)=>(b.at||0)-(a.at||0)); if(LIB.length>300) LIB=LIB.slice(0,300);
+    await saveJsonDoc("captions",LIB); LIB_ERR=""; return true;
+  }catch(e){ LIB_ERR=e.code||e.message; note("Couldn't save to the library ("+LIB_ERR+").","err"); return false; }
+}
+async function savePresets(){
+  try{ await saveJsonDoc("captionPresets",PRESETS); PRE_ERR=""; note("Voice profiles saved.","ok"); return true; }
+  catch(e){ PRE_ERR=e.code||e.message; note("Couldn't save the profiles ("+PRE_ERR+").","err"); return false; }
+}
+
+/* ───────── tabs ───────── */
+function showTab(t){
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  ["compose","library","presets"].forEach(k=>$("#v-"+k).classList.toggle("hidden",k!==t));
+  if(t==="library") renderLib(); if(t==="presets") renderPreList();
+  try{ history.replaceState(null,"",t==="compose"?location.pathname+location.search:"#"+t); }catch(e){}
+}
+$("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button[data-tab]"); if(b) showTab(b.dataset.tab); });
+
+/* ───────── compose ───────── */
+function renderClientSelect(){
+  const sel=$("#cClient"); const cur=sel.value;
+  sel.innerHTML=`<option value="">Choose a client…</option>`+CLIENTS.map(c=>`<option value="${esc(c.abbr)}">${esc(c.name||c.abbr)} · ${esc(c.abbr)}</option>`).join("");
+  if(cur&&CLIENTS.some(c=>c.abbr===cur)) sel.value=cur;
+  const lc=$("#libClient"); const lcur=lc.value;
+  const abbrs=[...new Set([...CLIENTS.map(c=>c.abbr),...LIB.map(x=>x.abbr)].filter(Boolean))];
+  lc.innerHTML=`<option value="">All clients</option>`+abbrs.map(a=>{ const c=clientByAbbr(a); return `<option value="${esc(a)}">${esc(c?c.name:a)}</option>`; }).join("");
+  if(lcur) lc.value=lcur;
+  renderVpChip();
+}
+function renderVpChip(){
+  const a=$("#cClient").value, el=$("#vpChip");
+  if(!a){ el.innerHTML=""; return; }
+  const p=presetFor(a);
+  if(!p) el.innerHTML=`<span class="pill">no voice profile</span><span>Captions will use Anomaly's neutral house voice.</span> <a data-go="presets">Build one →</a>`;
+  else if(p.transcriptWeighted) el.innerHTML=`<span class="pill ok">transcript-backed</span><span>Voice profile from the onboarding call${p.builtAt?" · built "+esc(p.builtAt):""}.</span> <a data-go="presets">View</a>`;
+  else el.innerHTML=`<span class="pill warn">provisional</span><span>Research-only profile — no call transcript yet.</span> <a data-go="presets">View</a>`;
+}
+$("#vpChip").addEventListener("click",e=>{ const a=e.target.closest("[data-go]"); if(!a) return; const ab=$("#cClient").value; showTab("presets"); openPreset(ab); });
+$("#cClient").onchange=renderVpChip;
+$("#cPlat").addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b) return;
+  $("#cPlat").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); PLAT=b.dataset.v; });
+function renderTones(){
+  $("#cTones").innerHTML=TONES.map(t=>`<button type="button" data-k="${t.k}" class="${t.on?"on":""}" title="${esc(t.rule)}">${esc(t.name)}</button>`).join("");
+  const n=selectedTones().length;
+  $("#toneHint").textContent=n?`${n} option${n===1?"":"s"} × 2 lengths = ${n*2} captions. Tap to add or remove tones (up to 6).`:"Pick at least one tone.";
+}
+$("#cTones").addEventListener("click",e=>{ const b=e.target.closest("button[data-k]"); if(!b) return;
+  const t=TONES.find(x=>x.k===b.dataset.k); if(!t) return;
+  if(!t.on&&selectedTones().length>=6){ $("#toneHint").textContent="Six tones is the ceiling — drop one to add another."; return; }
+  t.on=!t.on; renderTones(); });
+renderTones();
+
+function setupState(){
+  const n=$("#setupNote"), b=$("#genBtn");
+  if(ENDPOINT){ n.hidden=true; b.disabled=false; return; }
+  b.disabled=true; n.hidden=false;
+  n.innerHTML=`<b>AI isn't set up yet.</b> The Anomaly AI Bridge hasn't been deployed, so this page can't write captions. Once Daniel pastes the bridge URL into the Editing Pipeline → Settings → <code>Jarvis AI endpoint</code>, reload and this button comes alive. Voice profiles and the library work now.`;
+}
+function readReq(){
+  return { abbr:$("#cClient").value, plat:PLAT, tones:selectedTones().map(t=>t.k), desc:$("#cDesc").value.trim(), title:$("#cTitle").value.trim(), cta:$("#cCta").value.trim(), must:$("#cMust").value.trim() };
+}
+async function generate(refine){
+  if(BUSY) return;
+  const req=refine?Object.assign({},LAST_REQ,{refine,prev:OPTS.map(o=>({tone:o.tone,angle:o.angle,hashtags:o.hashtags,short:o.short,long:o.long}))}):readReq();
+  const gm=$("#genMsg");
+  if(!req.abbr){ gm.textContent="Pick a client first."; gm.className="msg err"; return; }
+  if(!req.desc){ gm.textContent="Describe the video first."; gm.className="msg err"; $("#cDesc").focus(); return; }
+  if(!req.tones.length){ gm.textContent="Pick at least one tone."; gm.className="msg err"; return; }
+  const tones=req.tones.map(k=>TONES.find(t=>t.k===k)).filter(Boolean);
+  const p=presetFor(req.abbr);
+  BUSY=true; const btn=$("#genBtn"); const old=btn.innerHTML; btn.innerHTML=`<span class="spin"></span>${refine?"Refining…":"Writing…"}`; btn.disabled=true; $("#refBtn").disabled=true; $("#againBtn").disabled=true;
+  gm.textContent=""; gm.className="msg";
+  $("#resEmpty").classList.add("hidden");
+  if(!refine) $("#optList").innerHTML=tones.map(()=>`<div class="opt"><div class="skel w60"></div><div class="skel"></div><div class="skel w85"></div></div>`).join("");
+  try{
+    const txt=await callBridge(buildSystem(p,tones),buildUser(req));
+    OPTS=parseOptions(txt,tones);
+    LAST_REQ=Object.assign({},req,{refine:undefined,prev:undefined});
+    renderOptions(); $("#refine").hidden=false; $("#refText").value="";
+  }catch(e){
+    const m=e.message==="no-endpoint"?"AI isn't set up yet — see the note under the button.":e.message;
+    gm.textContent=m; gm.className="msg err";
+    if(!OPTS.length){ $("#optList").innerHTML=""; $("#resHead").classList.add("hidden"); $("#resEmpty").classList.remove("hidden"); } else renderOptions();
+  }finally{
+    BUSY=false; btn.innerHTML=old; btn.disabled=!ENDPOINT&&!DEMO; $("#refBtn").disabled=false; $("#againBtn").disabled=false;
+  }
+}
+$("#genBtn").onclick=()=>generate();
+$("#againBtn").onclick=()=>{ if(LAST_REQ){ const keep=readReq(); if(keep.desc) LAST_REQ=keep; } generate(); };
+$("#refBtn").onclick=()=>{ const t=$("#refText").value.trim(); if(!t){ $("#refText").focus(); return; } generate(t); };
+$("#refText").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#refBtn").click(); } });
+
+function autoGrow(ta){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight+2)+"px"; }
+const LEN_LABEL={short:"Short",long:"Long"};
+function lenHTML(o,i,len){
+  const saved=o.saved&&o.saved[len];
+  return `<div class="len" data-len="${len}">
+    <div class="lh"><span class="lbl">${LEN_LABEL[len]}</span><span class="cnt">${(o[len]||"").length} chars</span>
+      <span class="acts">
+        <button class="btn xs" data-act="copy">Copy</button>
+        <button class="btn xs" data-act="copyall">Copy + #</button>
+        <button class="btn xs ${saved?"ghost":""}" data-act="save" ${saved?"disabled":""}>${saved?"Saved":"Save"}</button>
+      </span></div>
+    <textarea data-f="${len}" spellcheck="true">${esc(o[len]||"")}</textarea></div>`;
+}
+function renderOptions(){
+  const c=LAST_REQ?clientByAbbr(LAST_REQ.abbr):null;
+  $("#resHead").classList.remove("hidden");
+  $("#resLabel").textContent=(c?c.name:LAST_REQ?LAST_REQ.abbr:"")+" · "+OPTS.length+" option"+(OPTS.length===1?"":"s")+" × 2 lengths";
+  $("#resPlat").textContent=LAST_REQ?PLATFORMS[LAST_REQ.plat].name:"";
+  $("#optList").innerHTML=OPTS.map((o,i)=>`<div class="opt" data-i="${i}">
+    <div class="oh"><span class="n">${i+1}</span><span class="tone">${esc(o.tone)}</span><span class="angle">${esc(o.angle)}</span></div>
+    ${lenHTML(o,i,"short")}${lenHTML(o,i,"long")}
+    <div class="tags"><span class="lbl">Tags</span><input data-f="tags" value="${esc(o.hashtags.join(" "))}" placeholder="#hashtags"></div>
+  </div>`).join("");
+  $("#optList").querySelectorAll("textarea").forEach(autoGrow);
+}
+$("#optList").addEventListener("input",e=>{
+  const card=e.target.closest(".opt"); if(!card) return; const o=OPTS[+card.dataset.i]; if(!o) return;
+  const f=e.target.dataset.f;
+  if(f==="short"||f==="long"){
+    o[f]=e.target.value; autoGrow(e.target);
+    const L=e.target.closest(".len"); L.querySelector(".cnt").textContent=o[f].length+" chars";
+    if(o.saved[f]){ o.saved[f]=false; const b=L.querySelector('[data-act="save"]'); b.disabled=false; b.classList.remove("ghost"); b.textContent="Save"; }
+  }
+  if(f==="tags"){ o.hashtags=normTags(e.target.value); }
+});
+$("#optList").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-act]"); if(!b) return;
+  const card=b.closest(".opt"); const o=OPTS[+card.dataset.i]; if(!o) return;
+  const len=b.closest(".len").dataset.len; const text=o[len]||"";
+  if(b.dataset.act==="copy"){ await copyText(text,b); return; }
+  if(b.dataset.act==="copyall"){ await copyText(text+(o.hashtags.length?"\n\n"+o.hashtags.join(" "):""),b); return; }
+  if(b.dataset.act==="save"){
+    const c=clientByAbbr(LAST_REQ.abbr);
+    const entry={id:uid(),abbr:LAST_REQ.abbr,client:c?c.name:LAST_REQ.abbr,platform:LAST_REQ.plat,tone:o.tone,length:len,title:LAST_REQ.title||"",
+      caption:text,hashtags:o.hashtags,savedBy:MYEMAIL,at:Date.now()};
+    LIB.unshift(entry);
+    b.disabled=true; b.textContent="Saving…";
+    const ok=await saveLib();
+    if(ok){ o.saved[len]=true; b.textContent="Saved"; b.classList.add("ghost"); note("Saved to the library.","ok"); $("#libN").textContent=LIB.length; }
+    else { LIB=LIB.filter(x=>x.id!==entry.id); b.disabled=false; b.textContent="Save"; }
+  }
+});
+async function copyText(t,btn){
+  let ok=false;
+  try{ await navigator.clipboard.writeText(t); ok=true; }
+  catch(e){ try{ const ta=document.createElement("textarea"); ta.value=t; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); ok=document.execCommand("copy"); ta.remove(); }catch(e2){} }
+  if(btn){ const old=btn.textContent; btn.textContent=ok?"Copied ✓":"Failed"; setTimeout(()=>{btn.textContent=old;},1400); }
+  if(!ok) note("Couldn't reach the clipboard — select the text and copy it by hand.","err");
+}
+
+/* ───────── dictation (from brief.html — appends, never replaces) ───────── */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let REC=null;
+function micHTML(){ return `<button class="mic" data-mic title="Dictate" type="button"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>`; }
+if(SR) document.querySelectorAll(".ta").forEach(w=>w.insertAdjacentHTML("beforeend",micHTML()));
+function dictate(btn){
+  if(REC){ REC.stop(); return; }
+  const ta=btn.parentElement.querySelector("textarea"); if(!ta) return;
+  REC=new SR(); REC.continuous=false; REC.interimResults=true; REC.lang="en-US";
+  btn.classList.add("live");
+  const base=ta.value, pad=base&&!/\s$/.test(base)?" ":"";
+  REC.onresult=ev=>{ let fin="",int=""; for(let i=ev.resultIndex;i<ev.results.length;i++){ const r=ev.results[i]; if(r.isFinal) fin+=r[0].transcript; else int+=r[0].transcript; } ta.value=base+pad+(fin||int); };
+  REC.onerror=()=>{ note("Dictation stopped — check the mic permission.","err"); };
+  REC.onend=()=>{ btn.classList.remove("live"); REC=null; };
+  try{ REC.start(); }catch(err){ btn.classList.remove("live"); REC=null; }
+}
+document.addEventListener("click",e=>{ const m=e.target.closest("[data-mic]"); if(m) dictate(m); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&REC) REC.stop(); });
+
+/* ───────── library ───────── */
+function renderLib(){
+  $("#libN").textContent=LIB.length||"";
+  const q=$("#libQ").value.trim().toLowerCase(), fc=$("#libClient").value;
+  const rows=LIB.filter(x=>(!fc||x.abbr===fc)&&(!q||((x.caption||"")+" "+(x.hashtags||[]).join(" ")+" "+(x.client||"")+" "+(x.title||"")+" "+(x.tone||"")).toLowerCase().includes(q)))
+    .sort((a,b)=>(b.at||0)-(a.at||0));
+  $("#libCount").textContent=LIB.length?`${rows.length} of ${LIB.length}`:"";
+  const el=$("#libList");
+  if(LIB_ERR){ el.innerHTML=`<div class="note warn"><b>Library isn't reachable</b> (${esc(LIB_ERR)}). If this says permission-denied, the Firestore rule for <code>hub/captions</code> hasn't been published yet — Daniel has the paste block.</div>`; return; }
+  if(!rows.length){ el.innerHTML=`<div class="empty">${LIB.length?"Nothing matches.":"Nothing saved yet — write captions and hit <b>Save</b> on the ones worth keeping."}</div>`; return; }
+  const canDel=x=>OWNERS.includes(MYEMAIL)||x.savedBy===MYEMAIL;
+  el.innerHTML=rows.map(x=>`<div class="lrow" data-id="${esc(x.id)}">
+    <div>
+      <div class="meta"><span class="ab">${esc(x.abbr)}</span><span class="pill">${esc((PLATFORMS[x.platform]||{}).name||x.platform||"")}</span>${x.tone?`<span class="pill">${esc(x.tone)}${x.length?" · "+esc(LEN_LABEL[x.length]||x.length):""}</span>`:""}<span class="who">${esc(shortWho(x.savedBy))} · ${esc(fmtDate(x.at||0))}</span></div>
+      <div class="cap">${esc(x.caption)}</div>
+      ${(x.hashtags||[]).length?`<div class="ht">${esc((x.hashtags||[]).join(" "))}</div>`:""}
+    </div>
+    <div class="acts">
+      <button class="btn sm" data-act="copyall">Copy</button>
+      <button class="btn sm ghost" data-act="reuse" title="Load into Compose">Reuse</button>
+      ${canDel(x)?`<button class="btn sm ghost danger" data-act="del">Delete</button>`:""}
+    </div></div>`).join("");
+}
+$("#libQ").addEventListener("input",renderLib); $("#libClient").onchange=renderLib;
+$("#libList").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-act]"); if(!b) return;
+  const id=b.closest(".lrow").dataset.id; const x=LIB.find(y=>y.id===id); if(!x) return;
+  if(b.dataset.act==="copyall"){ await copyText(x.caption+((x.hashtags||[]).length?"\n\n"+x.hashtags.join(" "):""),b); return; }
+  if(b.dataset.act==="reuse"){
+    if(clientByAbbr(x.abbr)) $("#cClient").value=x.abbr; renderVpChip();
+    if(PLATFORMS[x.platform]){ PLAT=x.platform; $("#cPlat").querySelectorAll("button").forEach(z=>z.classList.toggle("on",z.dataset.v===PLAT)); }
+    OPTS=[{tone:x.tone||"From library",angle:"Saved "+fmtDate(x.at||0),hashtags:x.hashtags||[],short:x.length==="long"?"":x.caption,long:x.length==="long"?x.caption:"",saved:{short:x.length!=="long",long:x.length==="long"}}];
+    LAST_REQ={abbr:x.abbr,plat:x.platform||PLAT,tones:selectedTones().map(t=>t.k),desc:$("#cDesc").value.trim()||"(reused from the library)",title:x.title||"",cta:"",must:""};
+    $("#resEmpty").classList.add("hidden"); renderOptions(); $("#refine").hidden=false; showTab("compose"); return;
+  }
+  if(b.dataset.act==="del"){
+    if(!confirm("Delete this saved caption? This can't be undone.")) return;
+    LIB=LIB.filter(y=>y.id!==id); DELETED.add(id); renderLib(); await saveLib(); $("#libN").textContent=LIB.length||"";
+  }
+});
+
+/* ───────── voice profiles ───────── */
+const PFIELDS=[
+  {k:"voice",l:"Voice — how they talk and want to be perceived",t:"ta",ph:"Tone, formality, humor, energy, first vs third person, what they said they hate…"},
+  {k:"audience",l:"Audience",t:"ta",ph:"Who they serve, in their words where possible"},
+  {k:"offers",l:"Offers / services (one per line)",t:"lines"},
+  {k:"proofPoints",l:"Proof points safe to cite (one per line)",t:"lines",ph:"Years in business, locations, credentials — only what the call or a cited page confirms"},
+  {k:"alwaysUse",l:"Always use (one per line)",t:"lines"},
+  {k:"avoid",l:"Avoid (one per line)",t:"lines",ph:"Words, claims, topics — hard rules"},
+  {k:"cta",l:"Default call-to-action",t:"in"},
+  {k:"hashtags",l:"Standing hashtags",t:"tags",ph:"#brand #city #category"},
+  {k:"quotes",l:"Client quotes — verbatim from the call (one per line)",t:"lines",ph:"Speaker: 'exact words'"},
+  {k:"captionNotes",l:"Caption notes",t:"ta",ph:"Length, emoji policy, hook style, content pillars, platform specifics"},
+  {k:"buildNotes",l:"Build notes — open questions, things to confirm with the client",t:"ta"}
+];
+function blankPreset(abbr){ const c=clientByAbbr(abbr); return {abbr,client:c?c.name:abbr,voice:"",audience:"",offers:[],proofPoints:[],alwaysUse:[],avoid:[],cta:"",hashtags:[],quotes:[],captionNotes:"",buildNotes:"",
+  sources:{transcript:"",research:[]},transcriptWeighted:false,provisional:true,builtAt:new Date().toISOString().slice(0,10)}; }
+function renderPreList(){
+  $("#preN").textContent=PRESETS.length||"";
+  const el=$("#preList");
+  if(PRE_ERR){ el.innerHTML=`<div class="note warn"><b>Profiles aren't reachable</b> (${esc(PRE_ERR)}). If this says permission-denied, the Firestore rule for <code>hub/captionPresets</code> hasn't been published yet.</div>`; return; }
+  const withP=CLIENTS.filter(c=>presetFor(c.abbr)), without=CLIENTS.filter(c=>!presetFor(c.abbr));
+  const orphans=PRESETS.filter(p=>!clientByAbbr(p.abbr));
+  const row=(abbr,name,p)=>`<div class="prow ${CUR_PRE===abbr?"on":""}" data-abbr="${esc(abbr)}"><span class="ab">${esc(abbr)}</span><span class="nm">${esc(name)}</span><span class="dot ${p?(p.transcriptWeighted?"t":"p"):""}" title="${p?(p.transcriptWeighted?"Transcript-backed":"Provisional — research only"):"No profile yet"}"></span></div>`;
+  let h="";
+  if(withP.length) h+=`<div class="psec">Has a profile</div>`+withP.map(c=>row(c.abbr,c.name||c.abbr,presetFor(c.abbr))).join("");
+  if(orphans.length) h+=`<div class="psec">Profile · no matching pipeline client — open to re-key</div>`+orphans.map(p=>row(p.abbr,p.client||p.abbr,p)).join("");
+  if(without.length) h+=`<div class="psec">No profile yet</div>`+without.map(c=>row(c.abbr,c.name||c.abbr,null)).join("");
+  if(!h) h=`<div class="empty">No clients loaded.</div>`;
+  el.innerHTML=h;
+}
+$("#preList").addEventListener("click",e=>{ const r=e.target.closest(".prow"); if(r) openPreset(r.dataset.abbr); });
+function openPreset(abbr){
+  CUR_PRE=abbr; renderPreList();
+  const p=presetFor(abbr), c=clientByAbbr(abbr), el=$("#preEdit");
+  if(!p){
+    el.innerHTML=`<div class="head"><div><h2>${esc(c?c.name:abbr)}</h2><div class="sub">${esc(abbr)} · no voice profile yet</div></div></div>
+      <div class="note" style="margin-top:12px">Profiles are built from the client's onboarding-call transcript plus research — a Claude session job (<code>caption-voice-profile</code> skill), not something to type by hand. Ask Daniel to run it for this client, or start a blank one below and fill in what you know (it will be flagged provisional).</div>
+      <div class="actions"><button class="btn" id="preStart">Start a blank profile</button></div>`;
+    $("#preStart").onclick=()=>{ PRESETS.push(blankPreset(abbr)); openPreset(abbr); };
+    return;
+  }
+  const val=(k)=>{ const f=PFIELDS.find(x=>x.k===k); const v=p[k]; if(f.t==="lines") return lines(v).join("\n"); if(f.t==="tags") return lines(v).join(" "); return v||""; };
+  el.innerHTML=`<div class="head"><div><h2>${esc(p.client||(c?c.name:abbr))}</h2><div class="sub">${esc(abbr)}${c?"":" · <b style='color:var(--amber)'>no pipeline client with this code</b>"}</div></div>
+      <span class="spacer"></span>
+      <div class="prov">${p.transcriptWeighted?`<span class="pill ok">transcript-backed</span>`:`<span class="pill warn">provisional · research only</span>`}${p.builtAt?`<span class="pill">built ${esc(p.builtAt)}</span>`:""}${p.edited?`<span class="pill">edited</span>`:""}</div></div>
+    ${c?"":`<span class="lbl">Pipeline client code</span><select class="inp" data-pk="abbr"><option value="${esc(abbr)}">${esc(abbr)} (keep as is)</option>${CLIENTS.map(x=>`<option value="${esc(x.abbr)}">${esc(x.name)} · ${esc(x.abbr)}</option>`).join("")}</select>`}
+    ${PFIELDS.map(f=>`<span class="lbl">${esc(f.l)}</span>`+(f.t==="in"||f.t==="tags"?`<input class="inp" data-pk="${f.k}" value="${esc(val(f.k))}" placeholder="${esc(f.ph||"")}">`
+      :`<textarea class="inp" data-pk="${f.k}" style="min-height:${f.t==="lines"?96:80}px" placeholder="${esc(f.ph||"")}">${esc(val(f.k))}</textarea>`)).join("")}
+    <span class="lbl">Sources — transcript</span><input class="inp src" data-pk="src.transcript" value="${esc((p.sources||{}).transcript||"")}" placeholder="Where the call transcript lives · date">
+    <span class="lbl">Sources — research (one URL per line)</span><textarea class="inp src" data-pk="src.research" style="min-height:64px">${esc(lines((p.sources||{}).research).join("\n"))}</textarea>
+    <div class="flags">
+      <label><input type="checkbox" data-pk="transcriptWeighted" ${p.transcriptWeighted?"checked":""}> Built from the onboarding-call transcript (transcript outranks research)</label>
+      <label><input type="checkbox" data-pk="provisional" ${p.provisional?"checked":""}> Provisional — no call yet</label>
+    </div>
+    <div class="actions"><button class="btn primary" id="preSave">Save profile</button><button class="btn ghost danger" id="preDel">Delete profile</button></div>`;
+  $("#preSave").onclick=async()=>{
+    const get=k=>{ const n=el.querySelector(`[data-pk="${k}"]`); return n?(n.type==="checkbox"?n.checked:n.value):undefined; };
+    PFIELDS.forEach(f=>{ const v=get(f.k); if(v===undefined) return; if(f.t==="lines") p[f.k]=String(v).split(/\n+/).map(s=>s.trim()).filter(Boolean); else if(f.t==="tags") p[f.k]=normTags(v); else p[f.k]=String(v).trim(); });
+    p.sources=p.sources||{}; p.sources.transcript=String(get("src.transcript")||"").trim(); p.sources.research=String(get("src.research")||"").split(/\n+/).map(s=>s.trim()).filter(Boolean);
+    p.transcriptWeighted=!!get("transcriptWeighted"); p.provisional=!!get("provisional");
+    const na=get("abbr"); if(na&&na!==p.abbr){ if(presetFor(na)&&!confirm(`${na} already has a profile — replace it?`)) return; PRESETS=PRESETS.filter(x=>x!==p&&x.abbr!==na); p.abbr=na; const cc=clientByAbbr(na); if(cc) p.client=cc.name; PRESETS.push(p); CUR_PRE=na; }
+    p.edited=true; p.editedBy=MYEMAIL; p.editedAt=Date.now();
+    if(await savePresets()){ openPreset(p.abbr); renderVpChip(); }
+  };
+  $("#preDel").onclick=async()=>{ if(!confirm(`Delete the voice profile for ${p.client||abbr}? Captions for this client fall back to the house voice.`)) return;
+    PRESETS=PRESETS.filter(x=>x!==p); if(await savePresets()){ CUR_PRE=null; renderPreList(); $("#preEdit").innerHTML=`<div class="empty">Profile deleted.</div>`; renderVpChip(); } };
+}
+/* Profiles are imported from a local JSON file (the master list lives in
+   Anomaly Creative/Caption Writer/voice-profiles.json — NOT in this repo,
+   which is a public Pages site). Import adds missing codes and refreshes
+   un-edited ones with a newer builtAt; anything someone edited in here is
+   left alone. Codes that aren't a pipeline client are matched by name, else
+   kept and listed for re-keying. */
+function matchSeedAbbr(s){
+  if(clientByAbbr(s.abbr)) return s.abbr;
+  const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+  const sn=norm(String(s.client||"").split(/[(·—]/)[0]); if(!sn) return s.abbr;
+  const hit=CLIENTS.find(c=>{ const cn=norm(c.name); return cn&&(cn===sn||cn.includes(sn)||sn.includes(cn)); });
+  if(hit) return hit.abbr;
+  const toks=sn.split(" ").filter(t=>t.length>3&&!["the","and","company","group","llc","inc"].includes(t));
+  const hit2=toks.length?CLIENTS.find(c=>{ const cn=norm(c.name); return toks.every(t=>cn.includes(t)); }):null;
+  return hit2?hit2.abbr:s.abbr;
+}
+async function importProfiles(seed){
+  if(!Array.isArray(seed)||!seed.length){ note("That file has no profiles in it.","err"); return; }
+  let added=0,updated=0,kept=0,rekeyed=[];
+  seed.forEach(s=>{ if(!s||!s.abbr) return; s=JSON.parse(JSON.stringify(s)); delete s.folder;
+    const na=matchSeedAbbr(s); if(na!==s.abbr){ rekeyed.push(s.abbr+"→"+na); s.abbr=na; }
+    const c=clientByAbbr(s.abbr); if(c) s.client=c.name;
+    const ex=presetFor(s.abbr);
+    if(!ex){ PRESETS.push(s); added++; }
+    else if(!ex.edited&&String(s.builtAt||"")>String(ex.builtAt||"")){ Object.assign(ex,s); updated++; }
+    else kept++; });
+  if(!(added||updated)){ note(`Nothing to import — ${kept} profile${kept===1?"":"s"} already up to date.`,"ok"); return; }
+  if(await savePresets()){ note(`Imported: ${added} added, ${updated} updated, ${kept} kept${rekeyed.length?" · re-keyed "+rekeyed.join(", "):""}.`,"ok"); renderPreList(); renderVpChip(); if(CUR_PRE) openPreset(CUR_PRE); }
+}
+$("#preImport").onclick=()=>{ $("#preFile").value=""; $("#preFile").click(); };
+$("#preFile").onchange=async e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  let seed; try{ seed=JSON.parse(await f.text()); }catch(err){ note("That isn't a valid JSON file ("+err.message+").","err"); return; }
+  await importProfiles(seed);
+};
+
+/* ───────── auth + boot ───────── */
+async function boot(){
+  $("#libN").textContent=""; $("#preN").textContent="";
+  await Promise.all([loadClients(),loadEndpoint(),loadPresets(),loadLib()]);
+  renderClientSelect(); setupState(); if(DEMO) $("#genBtn").disabled=false;
+  $("#libN").textContent=LIB.length||""; $("#preN").textContent=PRESETS.length||"";
+  const h=(location.hash||"").replace("#",""); showTab(["library","presets"].includes(h)?h:"compose");
+  if(LIB_ERR||PRE_ERR) note("Some data couldn't load — see the Library / Voice profiles tabs.","err");
+}
+function showApp(u){
+  MYEMAIL=(u.email||"").toLowerCase();
+  $("#uWho").textContent=MYEMAIL; $("#uAv").textContent=(u.displayName||MYEMAIL||"?").trim().slice(0,1).toUpperCase();
+  $("#gate").classList.add("off"); $("#app").classList.remove("hidden");
+  boot();
+}
+$("#signin").onclick=async()=>{
+  $("#gateMsg").textContent="Opening Google…"; $("#gateMsg").className="gmsg";
+  try{ await signInWithPopup(auth,new GoogleAuthProvider()); }
+  catch(e){ $("#gateMsg").textContent="Sign-in failed ("+(e.code||e.message)+")."; $("#gateMsg").className="gmsg err"; }
+};
+$("#signout").onclick=async()=>{ if(DEMO){ location.search=""; return; } try{ await signOut(auth); }catch(e){} };
+if(DEMO){ showApp({email:"demo@anomalycreativestudio.com",displayName:"Demo"}); }
+else onAuthStateChanged(auth,u=>{
+  if(!u){ $("#gate").classList.remove("off"); $("#app").classList.add("hidden"); $("#gateMsg").textContent="Anomaly accounts only."; $("#gateMsg").className="gmsg"; return; }
+  if(!String(u.email||"").toLowerCase().endsWith("@anomalycreativestudio.com")){
+    $("#gateMsg").textContent="That account isn't on the Anomaly domain."; $("#gateMsg").className="gmsg err"; signOut(auth).catch(()=>{}); return; }
+  showApp(u);
+});
+</script>
+</body>
+</html>
