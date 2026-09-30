@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Instagram Analytics sync — Mondays at 07:40.
+
+  Collects every client Instagram post from the last five weeks
+  (scripts/sync_ig_analytics.py) and writes hub/igAnalytics + hub/igPosts_YYYY-MM
+  for the Studio Hub's Instagram Analytics page.
+
+  NOT installed automatically. Install only after a supervised run:
+
+      cp scripts/com.anomaly.ig-analytics-weekly.plist ~/Library/LaunchAgents/
+      launchctl load ~/Library/LaunchAgents/com.anomaly.ig-analytics-weekly.plist
+
+  To check on it:
+      launchctl list | grep anomaly
+      tail -f ~/Library/Logs/anomaly-ig-analytics.log
+
+  To stop it:
+      launchctl unload ~/Library/LaunchAgents/com.anomaly.ig-analytics-weekly.plist
+
+  /usr/bin/python3 is invoked directly — no shell wrapper — because a
+  launchd-spawned zsh has no Desktop access (that is why the ad-picks monthly
+  job never runs). 07:40 sits clear of the other Monday jobs: social stats
+  06:40, financials 07:15, Ares 08:47, the scheduled Claude tasks from 09:02.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.anomaly.ig-analytics-weekly</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/danielpan/Desktop/Claude/Anomaly-Studio-Hub/scripts/sync_ig_analytics.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/danielpan/Desktop/Claude/Anomaly-Studio-Hub</string>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>1</integer>
+        <key>Hour</key><integer>7</integer>
+        <key>Minute</key><integer>40</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/danielpan/Library/Logs/anomaly-ig-analytics.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/danielpan/Library/Logs/anomaly-ig-analytics.log</string>
+</dict>
+</plist>

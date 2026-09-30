@@ -526,6 +526,7 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
       <a id="pillAutomations" href="automations.html" target="_blank" rel="noopener" style="display:none"><span class="ic">✳</span>Client Automations</a>
       <a id="pillAnalytics" href="analytics.html" target="_blank" rel="noopener" style="display:none"><span class="ic">◱</span>Analytics Dashboard</a>
       <a id="pillFinancials" href="financials.html" target="_blank" rel="noopener" style="display:none"><span class="ic">$</span>Financials</a>
+      <a id="pillIg" href="instagram-analytics.html" target="_blank" rel="noopener" style="display:none"><span class="ic">◎</span>Instagram Analytics</a>
     </nav>
     <div class="foot">
       <a class="ares-switch" id="aresSwitch" href="ares.html" title="Switch to Ares Digital">
@@ -699,7 +700,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.2.0", APP_BUILD="2026-09-28";
+const APP_VERSION="2.3.0", APP_BUILD="2026-09-30";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -716,6 +717,7 @@ const PLATFORMS={
   ufplanner:{name:"Universal Furniture Planner",cat:"pre",def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
   financials:{name:"Financials (QuickBooks P&L, balance sheet)",cat:null,def:"owners"},
+  iganalytics:{name:"Instagram Analytics (client post views, likes, shares)",cat:null,def:"owners"},
   automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
   ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"},
   social:{name:"Social Stats (weekly views · IG / TikTok / YT)",cat:null,def:"everyone"}
@@ -907,6 +909,7 @@ function applyAccess(){
   });
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
   document.getElementById("pillFinancials").style.display=canSee("financials")?"flex":"none";
+  document.getElementById("pillIg").style.display=canSee("iganalytics")?"flex":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
   document.getElementById("deck").hidden=false;
@@ -1389,6 +1392,7 @@ function renderTodayTasks(tasks){
     if(canSee("automations"))list.push({name:"Client Automations",url:"automations.html",tag:"Quick"});
     if(canSee("analytics"))list.push({name:"Analytics Dashboard",url:"analytics.html",tag:"Quick"});
     if(canSee("financials"))list.push({name:"Financials",url:"financials.html",tag:"Quick"});
+    if(canSee("iganalytics"))list.push({name:"Instagram Analytics",url:"instagram-analytics.html",tag:"Quick"});
     return list;
   };
   function show(){
@@ -1449,7 +1453,7 @@ function openApp(name,url,skipHash){
 }
 function closeApp(){viewer.classList.remove("open");if(location.hash)history.replaceState(null,"",location.pathname+location.search);}
 document.getElementById("vClose").onclick=closeApp;
-["pillAnalytics","pillAutomations","pillFinancials"].forEach(id=>{
+["pillAnalytics","pillAutomations","pillFinancials","pillIg"].forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener("click",e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey) return;

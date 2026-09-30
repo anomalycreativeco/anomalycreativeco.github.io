@@ -11,3 +11,7 @@ extra.json
 contractors.csv
 
 .DS_Store
+
+# python bytecode
+__pycache__/
+*.pyc
