@@ -55,10 +55,11 @@ IG_DELAY = (6.0, 10.0)
 IG_MAX_PAGES = 4
 
 GRAPH_DEFAULT_HOST = "https://graph.facebook.com"
-GRAPH_DEFAULT_VERSION = "v23.0"
+GRAPH_DEFAULT_VERSION = "v26.0"
 GRAPH_RATE_CODES = {4, 17, 32, 613, 80001, 80002}
 GRAPH_METRICS = ["views", "reach", "saved", "shares", "likes", "comments", "total_interactions"]
 GRAPH_MEDIA_FIELDS = "id,caption,media_type,media_product_type,permalink,timestamp,like_count,comments_count"
+GRAPH_MEDIA_EXTRA = ",shares_count,saved_count"   # plain fields on the Facebook-Login route only
 GRAPH_INSIGHT_DELAY = 0.2
 
 KEEP_MONTHS = 13
@@ -188,6 +189,14 @@ def as_int(v):
         return None
 
 
+def first_int(*vals):
+    for v in vals:
+        n = as_int(v)
+        if n is not None:
+            return n
+    return None
+
+
 # ---- source 1: Meta's official API ----------------------------------------------
 class Graph:
     def __init__(self, host, version, token):
@@ -279,9 +288,16 @@ class Graph:
         return out
 
     def posts(self, ig_id, acc, since_epoch, now_ms):
-        posts, url, params, stop = [], f"{ig_id}/media", {"fields": GRAPH_MEDIA_FIELDS, "limit": 50}, False
+        fields = GRAPH_MEDIA_FIELDS + ("" if self.ig_login else GRAPH_MEDIA_EXTRA)
+        posts, url, params, stop = [], f"{ig_id}/media", {"fields": fields, "limit": 50}, False
         while url and not stop:
-            d = self.get(url, params)
+            try:
+                d = self.get(url, params)
+            except GraphError:
+                if params and params.get("fields") != GRAPH_MEDIA_FIELDS:
+                    params = {"fields": GRAPH_MEDIA_FIELDS, "limit": 50}     # the extra fields were refused; go without
+                    continue
+                raise
             params = None
             for m in d.get("data", []):
                 try:
@@ -305,7 +321,8 @@ class Graph:
                     url=m.get("permalink") or "", cap=first_line(m.get("caption")), ts=ts * 1000,
                     v=as_int(ins.get("views")), l=likes if likes is not None else as_int(m.get("like_count")),
                     c=comments if comments is not None else as_int(m.get("comments_count")),
-                    s=as_int(ins.get("shares")), sv=as_int(ins.get("saved")), rc=as_int(ins.get("reach")),
+                    s=first_int(ins.get("shares"), m.get("shares_count")),
+                    sv=first_int(ins.get("saved"), m.get("saved_count")), rc=as_int(ins.get("reach")),
                     src="g", at=now_ms))
             url = (d.get("paging") or {}).get("next")
         return posts
