@@ -34,7 +34,7 @@ for --days days after it goes up, then its numbers freeze.
 Never writes to clients/* and never prints a token or the sync key.
 Stdlib only, so launchd can run it with /usr/bin/python3 directly.
 """
-import argparse, json, os, random, re, sys, time
+import argparse, hashlib, json, os, random, re, sys, time
 import urllib.error, urllib.parse, urllib.request
 from datetime import datetime
 
@@ -249,18 +249,29 @@ class Graph:
             return None
 
     def insights(self, media_id):
-        metrics, out = list(GRAPH_METRICS), {}
-        for attempt in range(3):
+        # Not every post type takes every metric. When Meta names the ones it
+        # allows, ask again for exactly those; when it doesn't, step down
+        # through smaller sets so one refused metric can't blank the rest.
+        ladder = [list(GRAPH_METRICS), ["views", "reach", "saved", "shares", "likes", "comments"],
+                  ["views", "reach", "saved", "shares"], ["reach", "saved", "shares"], ["reach"]]
+        metrics, step, out = ladder[0], 0, {}
+        for _ in range(6):
             try:
                 d = self.get(f"{media_id}/insights", {"metric": ",".join(metrics)})
             except GraphError as e:
-                # the API names the metrics this media type allows; ask again for just those
                 m = re.search(r"must be one of the following values:\s*(.+)", str(e))
                 allowed = [x.strip().strip(".") for x in m.group(1).split(",")] if m else []
-                metrics = [x for x in metrics if x in allowed]
-                if metrics and attempt < 2:
+                narrowed = [x for x in metrics if x in allowed]
+                if narrowed and narrowed != metrics:
+                    metrics = narrowed
                     continue
-                return {}
+                step += 1
+                while step < len(ladder) and ladder[step] == metrics:
+                    step += 1
+                if step >= len(ladder):
+                    return {}
+                metrics = ladder[step]
+                continue
             for row in d.get("data", []):
                 vals = row.get("values") or []
                 out[row.get("name")] = vals[0].get("value") if vals else (row.get("total_value") or {}).get("value")
@@ -482,7 +493,7 @@ def build_docs(history, accounts_report, warnings, now_ms, days):
     return docs, months
 
 
-def write(docs, args, key, touched_months):
+def write(docs, args, key, history):
     if args.out:
         os.makedirs(args.out, exist_ok=True)
         for name, data in docs.items():
@@ -495,19 +506,27 @@ def write(docs, args, key, touched_months):
         print("No sync key (expected ~/Library/Application Support/anomaly-social/synckey). Nothing written.")
         return False
     at = str(int(time.time() * 1000))
-    # month docs first, index last: the page only lists months the index names
-    names = [n for n in docs if n != "igAnalytics" and (args.all_months or n[len("igPosts_"):] in touched_months)]
+    # A month document is uploaded when its content differs from what was last
+    # confirmed uploaded — so a run that was refused half-way is simply retried
+    # next time instead of leaving a hole. Month docs first, index last: the
+    # page only fetches months the index names.
+    synced = history.setdefault("synced", {})
+    digest = {n: hashlib.sha1(d.encode()).hexdigest() for n, d in docs.items()}
+    names = [n for n in sorted(docs) if n != "igAnalytics" and (args.all_months or synced.get(n) != digest[n])]
     for name in names + ["igAnalytics"]:
         body = {"fields": {"syncKey": {"stringValue": key}, "at": {"integerValue": at},
                            "data": {"stringValue": docs[name]}}}
         try:
             http_json(f"{FIRESTORE}/hub/{name}", method="PATCH", body=body)
         except urllib.error.HTTPError as e:
+            history_save(history)
             if e.code == 403:
                 print(f"Firestore write refused (403) for hub/{name} — the Instagram Analytics rule "
-                      f"isn't published yet. Stopping quietly; the local history is kept.")
+                      f"isn't published yet. Stopping quietly; the local history is kept and will upload next run.")
                 return False
             raise
+        synced[name] = digest[name]
+    history_save(history)
     print(f"Synced hub/igAnalytics + {len(names)} month document(s).")
     return True
 
@@ -521,7 +540,7 @@ def main():
     ap.add_argument("--only", help="comma-separated client codes")
     ap.add_argument("--no-public", action="store_true", help="skip the public page route")
     ap.add_argument("--import-adpicks", action="store_true", help="seed history from the ad-picks engine's store")
-    ap.add_argument("--all-months", action="store_true", help="rewrite every month document, not just the ones touched")
+    ap.add_argument("--all-months", action="store_true", help="re-upload every month document, changed or not")
     ap.add_argument("--check", action="store_true", help="report what is reachable, fetch no posts")
     args = ap.parse_args()
 
@@ -605,9 +624,7 @@ def main():
     history = history_load()
     imported = import_adpicks(history, accounts, now_ms) if args.import_adpicks else 0
     n_new, n_upd = merge(history, fresh)
-    touched = {month_of(p["ts"]) for p in fresh}
     if imported:
-        touched = {month_of(p["ts"]) for p in history["posts"].values()}
         print(f"Imported {imported} post(s) from the ad-picks store.")
     have_abbrs = {p["abbr"] for p in history["posts"].values()}
     for r in report.values():
@@ -620,7 +637,7 @@ def main():
     docs, months = build_docs(history, sorted(report.values(), key=lambda r: r["abbr"]), warnings, now_ms, args.days)
     if not args.out:
         history_save(history)
-    write(docs, args, key, touched)
+    write(docs, args, key, history)
     return 0
 
 
