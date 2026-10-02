@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.8"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.9"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -77,7 +77,12 @@ DEFAULT_CONFIG = {
     "mls_folder_name": "MLS",
     "slack_notify": True,             # post to Slack after a Frame.io delivery
     "slack_channel": "#general",      # used with a bot token; a webhook already targets its channel
+    "hub_sync": True,                 # report job progress to the Studio Hub home page (needs the hub key)
+    "editor_name": "",                # how this Mac's jobs are labelled on the hub; blank = Frame.io name
 }
+HUB_FIRESTORE = "https://firestore.googleapis.com/v1/projects/anomaly-post-pipeline/databases/(default)/documents/hub/mlsJobs"
+HUB_HEARTBEAT = 60                    # seconds between pushes while a job is running
+HUB_STEP_WEIGHTS = {"create": 1, "upload": 3, "commit": 1, "process": 10, "reedit": 4, "download": 3, "resize": 2, "frameio": 3, "notify": 1, "done": 0}
 
 _lock = threading.RLock()
 
@@ -620,6 +625,7 @@ def public_config():
         "frameio_connected": bool(kc_get("frameio_refresh_token")),
         "slack_webhook_url": bool(kc_get("slack_webhook_url")),
         "slack_bot_token": bool(kc_get("slack_bot_token")),
+        "hub_sync_key": bool(kc_get("hub_sync_key")),
     }
     cfg["dry_run"] = DRY_RUN
     cfg["version"] = APP_VERSION
@@ -675,6 +681,7 @@ def jlog(job, msg):
         job["updated"] = time.time()
     log("[%s] %s" % (job["name"], msg))
     persist_jobs()
+    hub_touch()
 
 
 def jset(job, **kw):
@@ -682,6 +689,125 @@ def jset(job, **kw):
         job.update(kw)
         job["updated"] = time.time()
     persist_jobs()
+    hub_touch()
+
+
+# ---------------------------------------------------- Studio Hub reporter --
+# The hub home page shows every editor's MLS jobs. Each copy of MLS Studio
+# reports its own jobs into one Firestore document (hub/mlsJobs), one field
+# per editor, so copies never overwrite each other. Writes carry the shared
+# hub key from Settings; nothing here ever blocks or fails a job.
+_hub = {"dirty": False, "last_push": 0.0, "last_err": 0.0, "thread": None, "identity": None}
+
+
+def hub_slug(name):
+    slug = re.sub(r"[^a-z0-9]", "", (name or "").lower())[:24]
+    if not slug or not slug[0].isalpha():
+        slug = "e" + slug
+    return slug
+
+
+def hub_identity(cfg):
+    """{name, slug} for this Mac: the editor-name setting, else the Frame.io sign-in, else the Mac user."""
+    if _hub["identity"] and _hub["identity"]["src"] == (cfg.get("editor_name") or ""):
+        return _hub["identity"]
+    name = (cfg.get("editor_name") or "").strip()
+    if not name and kc_get("frameio_refresh_token"):
+        try:
+            me = frameio_client().me() or {}
+            name = (me.get("name") or me.get("email") or "").strip()
+        except Exception:  # noqa
+            name = ""
+    if not name:
+        name = os.environ.get("USER") or "editor"
+    _hub["identity"] = {"name": name, "slug": hub_slug(name), "src": cfg.get("editor_name") or ""}
+    return _hub["identity"]
+
+
+def hub_job_view(j):
+    """The slice of a job the hub needs — no log, no file lists, no local paths."""
+    o, r, dest = j.get("options") or {}, j.get("results") or {}, j.get("frameio") or {}
+    client = dest.get("project_name") or ((dest.get("trail") or [{}])[0].get("name")) or ""
+    steps = j.get("steps") or []
+    looks = [n for n in (o.get("indoor_model_name"), o.get("outdoor_model_name")) if n]
+    return {
+        "id": j["id"], "name": j.get("name") or "", "client": client, "status": j.get("status"),
+        "step": j.get("step"), "step_index": j.get("step_index", 0), "steps": steps,
+        "progress": j.get("progress") or {}, "created": j.get("created"), "updated": j.get("updated"),
+        "finished": j.get("finished"), "photos": len(j.get("files") or []), "error": j.get("error"),
+        "looks": looks, "highres": len(r.get("highres_files") or []), "mls": len(r.get("mls_files") or []),
+        "share_url": r.get("share_url"), "shoot_url": r.get("frameio_shoot_url"),
+    }
+
+
+def hub_payload(cfg):
+    ident = hub_identity(cfg)
+    with _lock:
+        jobs = sorted(JOBS.values(), key=lambda j: j.get("updated") or 0, reverse=True)
+    cutoff = time.time() - 7 * 86400
+    view = [hub_job_view(j) for j in jobs if (j.get("updated") or 0) >= cutoff or j.get("status") in ("running", "queued", "interrupted")][:30]
+    return ident, {"name": ident["name"], "at": int(time.time() * 1000), "version": APP_VERSION, "jobs": view}
+
+
+def hub_push(reason="change"):
+    """One write to hub/mlsJobs for this editor's field. Returns (ok, message)."""
+    cfg = get_config()
+    key = kc_get("hub_sync_key")
+    if not key:
+        return False, "No Studio Hub key saved in Settings."
+    ident, payload = hub_payload(cfg)
+    field = "editors." + ident["slug"]
+    body = {"fields": {"syncKey": {"stringValue": key}, "at": {"integerValue": str(payload["at"])},
+                       "editors": {"mapValue": {"fields": {ident["slug"]: {"stringValue": json.dumps(payload)}}}}}}
+    url = HUB_FIRESTORE + "?" + urllib.parse.urlencode([("updateMask.fieldPaths", "syncKey"), ("updateMask.fieldPaths", "at"), ("updateMask.fieldPaths", field)])
+    req = urllib.request.Request(url, method="PATCH", data=json.dumps(body).encode(),
+                                 headers={"Content-Type": "application/json", "User-Agent": USER_AGENT})
+    try:
+        with urllib.request.urlopen(req, timeout=20):
+            pass
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            return False, "The hub refused the key (403). Check the Studio Hub key in Settings, or the hub's rule isn't published yet."
+        return False, "Hub write failed: HTTP %d" % e.code
+    except Exception as e:  # noqa
+        return False, "Hub unreachable: %s" % e
+    _hub["last_push"] = time.time()
+    return True, "Reported %d job(s) to the Studio Hub as %s." % (len(payload["jobs"]), ident["name"])
+
+
+def hub_touch():
+    """Mark the hub view dirty; the background thread coalesces pushes."""
+    _hub["dirty"] = True
+
+
+def hub_worker():
+    while True:
+        time.sleep(2)
+        try:
+            cfg = get_config()
+            if not cfg.get("hub_sync", True) or not kc_get("hub_sync_key"):
+                _hub["dirty"] = False
+                continue
+            with _lock:
+                running = any(j.get("status") == "running" for j in JOBS.values())
+            due = _hub["dirty"] or (running and time.time() - _hub["last_push"] >= HUB_HEARTBEAT)
+            if not due:
+                continue
+            _hub["dirty"] = False
+            ok, msg = hub_push()
+            if not ok and time.time() - _hub["last_err"] > 600:
+                _hub["last_err"] = time.time()
+                log("Studio Hub report skipped: " + msg)
+        except Exception as e:  # noqa
+            if time.time() - _hub["last_err"] > 600:
+                _hub["last_err"] = time.time()
+                log("Studio Hub report error: %s" % e)
+
+
+def start_hub_worker():
+    if _hub["thread"] is None:
+        _hub["thread"] = threading.Thread(target=hub_worker, daemon=True)
+        _hub["thread"].start()
 
 
 def plan_steps(job):
@@ -1304,6 +1430,11 @@ class Handler(BaseHTTPRequestHandler):
                 cfg["last_source"] = info["path"]
                 save_json(CONFIG_PATH, cfg)
             return self.send_json(info)
+        if path == "/api/hub/test":
+            ok, msg = hub_push("test")
+            if not ok:
+                raise ApiError(msg)
+            return self.send_json({"ok": True, "message": msg})
         if path == "/api/slack/test":
             via = slack_post("MLS Studio is connected. Delivery notes will land here once a shoot is uploaded to Frame.io.",
                              [{"type": "section", "text": {"type": "mrkdwn", "text": ":white_check_mark: *MLS Studio is connected.* Delivery notes will land here once a shoot is uploaded to Frame.io."}}])
@@ -1341,13 +1472,17 @@ class Handler(BaseHTTPRequestHandler):
             cfg = get_config()
             for k in ("autohdr_client_id", "frameio_mode", "frameio_client_id", "frameio_account_id", "mls_limit_kb",
                       "default_indoor_model_id", "default_outdoor_model_id", "frameio_last_folder",
-                      "highres_folder_name", "mls_folder_name", "slack_notify", "slack_channel"):
+                      "highres_folder_name", "mls_folder_name", "slack_notify", "slack_channel", "hub_sync", "editor_name"):
                 if k in body:
                     cfg[k] = body[k]
             save_json(CONFIG_PATH, cfg)
-        for k in ("autohdr_client_secret", "frameio_client_secret", "slack_webhook_url", "slack_bot_token"):
+        for k in ("autohdr_client_secret", "frameio_client_secret", "slack_webhook_url", "slack_bot_token", "hub_sync_key"):
             if body.get(k):
                 kc_set(k, body[k].strip())
+        if body.get("hub_clear"):
+            kc_delete("hub_sync_key")
+        if "editor_name" in body:
+            _hub["identity"] = None
         if body.get("slack_clear"):
             kc_delete("slack_webhook_url")
             kc_delete("slack_bot_token")
@@ -1416,6 +1551,8 @@ def main():
             j["log"].append("%s  Server restarted while this job was running. Press Resume." % datetime.now().strftime("%H:%M:%S"))
         JOBS[j["id"]] = j
     persist_jobs()
+    start_hub_worker()
+    hub_touch()
     start_callback_server()
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     srv.daemon_threads = True

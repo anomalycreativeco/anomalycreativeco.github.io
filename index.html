@@ -239,6 +239,22 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
 .cgrp .clab i{width:5px;height:5px;border-radius:50%;background:var(--green)}
 .cgrp.meet .clab i{background:var(--amber)}
 
+/* MLS Studio jobs */
+.mrow{padding:9px 0;border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0}
+.mrow .mt{display:flex;align-items:baseline;gap:8px;min-width:0;font-size:12.5px}
+.mrow .mt b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.mrow .mt .cl{color:var(--mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.mrow .mt .pct{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;flex:none}
+.mrow .bar{height:5px;border-radius:3px;background:var(--line-2);margin:6px 0 4px;overflow:hidden}
+.mrow .bar i{display:block;height:100%;border-radius:3px;background:var(--green);transition:width .4s}
+.mrow.done .bar i{background:var(--green-deep)}
+.mrow.warn .bar i{background:var(--amber)} .mrow.bad .bar i{background:var(--red)}
+.mrow .ms{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--faint);display:flex;gap:6px;flex-wrap:wrap;min-width:0}
+.mrow .ms span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow.warn .ms .st{color:var(--amber)} .mrow.bad .ms .st{color:var(--red)} .mrow.done .ms .st{color:var(--green-deep)}
+.mrow a{color:var(--green-deep);text-decoration:none} .mrow a:hover{text-decoration:underline}
+
 /* reminders */
 .rem-head{display:flex;align-items:center;gap:9px;margin-bottom:11px;padding-right:52px}
 .rem-head span{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);flex:1}
@@ -617,6 +633,11 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
           <div id="jBody"><div class="amsg">Loading tracker…</div></div>
         </div>
 
+        <div class="acard" id="mlsCard" data-w="mlsjobs" style="display:none">
+          <div class="ahead"><span>MLS Studio · in progress</span><b id="mlsBadge"></b></div>
+          <div id="mlsBody"><div class="amsg">Loading MLS jobs…</div></div>
+        </div>
+
         <div class="acard" id="socialCard" data-w="social" style="display:none">
           <div class="ahead"><span>Social · last week</span><b id="socBadge"></b></div>
           <div id="socBody"><div class="amsg">Loading social stats…</div></div>
@@ -692,7 +713,7 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
 /* ───────── firebase ───────── */
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,getDocs,collection} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,getDocs,collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
 const auth=getAuth(app), db=getFirestore(app);
@@ -700,7 +721,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.3.0", APP_BUILD="2026-09-30";
+const APP_VERSION="2.4.0", APP_BUILD="2026-10-02";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -912,6 +933,7 @@ function applyAccess(){
   document.getElementById("pillAnalytics").style.display=canSee("analytics")?"flex":"none";
   document.getElementById("pillFinancials").style.display=canSee("financials")?"flex":"none";
   document.getElementById("pillIg").style.display=canSee("iganalytics")?"flex":"none";
+  document.getElementById("mlsCard").style.display=canSee("mls")?"":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
   document.getElementById("deck").hidden=false;
@@ -924,7 +946,7 @@ function applyAccess(){
   document.getElementById("edsCard").style.display=pipe?"block":"none";
   document.getElementById("joshCard").style.display=canSee("josh")?"block":"none";
   document.getElementById("socialCard").style.display=canSee("social")?"block":"none";
-  loadToday(); loadJosh(); loadSocial();
+  loadToday(); loadJosh(); loadSocial(); loadMls();
 }
 
 /* ── Josh Holyfield RAW tracker card ── */
@@ -949,6 +971,85 @@ async function loadJosh(){
     JOSH={un,inedit,oldest};
     renderJoshBody();
   }catch(e){ body.innerHTML='<div class="amsg">Couldn\'t load tracker.</div>'; }
+}
+/* ---- MLS Studio jobs ----
+   Each editor's copy of MLS Studio reports its jobs into hub/mlsJobs (one
+   field per editor), so the card can show every Mac's work. If MLS Studio is
+   also running on THIS Mac, its jobs are read straight off localhost as well,
+   which keeps the bar moving even before a report lands. */
+let MLS={jobs:[],hasDoc:false,err:""}, MLS_LOCAL=[], mlsLocalTimer=null;
+const MLS_W={create:1,upload:3,commit:1,process:10,reedit:4,download:3,resize:2,frameio:3,notify:1,done:0};
+function mlsPct(j){
+  const steps=j.steps||[]; if(!steps.length) return j.status==="done"?1:0;
+  if(j.status==="done") return 1;
+  const tot=steps.reduce((a,s)=>a+(MLS_W[s]||1),0)||1; let acc=0;
+  for(let i=0;i<Math.min(j.step_index||0,steps.length);i++) acc+=MLS_W[steps[i]]||1;
+  const cur=steps[j.step_index||0], p=j.progress||{};
+  if(cur&&p.total>0) acc+=(MLS_W[cur]||1)*Math.min(1,p.current/p.total);
+  else if(cur==="process"&&(j.photos||0)>0&&p.current>0) acc+=(MLS_W.process)*Math.min(.9,p.current/j.photos);
+  return Math.max(0,Math.min(1,acc/tot));
+}
+const MLS_STEP={create:"Starting the AutoHDR shoot",upload:"Uploading to AutoHDR",commit:"Submitting to AutoHDR",process:"AutoHDR processing",reedit:"Re-edits running",download:"Downloading the finished set",resize:"Resizing for MLS",frameio:"Uploading to Frame.io",notify:"Posting to Slack",done:"Done"};
+function mlsAge(ms){ const m=Math.max(0,Math.round((Date.now()-ms)/6e4)); return m<1?"just now":m<60?m+" min":m<1440?Math.round(m/60)+" h":Math.round(m/1440)+" d"; }
+function mlsRows(){
+  const by={}; MLS.jobs.forEach(j=>{ by[j.id]=j; });
+  MLS_LOCAL.forEach(j=>{ const r=by[j.id]; if(!r||(j.updated||0)>=(r.updated||0)) by[j.id]=Object.assign({},r||{},j,{local:true,editor:(r&&r.editor)||"this Mac"}); });
+  const now=Date.now(), dayAgo=now-864e5;
+  const rank={running:0,queued:1,interrupted:2,failed:3,done:4,cancelled:5};
+  return Object.values(by).filter(j=>["running","queued","interrupted"].includes(j.status)||(["done","failed"].includes(j.status)&&((j.finished||j.updated||0)*1000)>dayAgo))
+    .sort((a,b)=>(rank[a.status]??9)-(rank[b.status]??9)||(b.updated||0)-(a.updated||0));
+}
+function renderMlsBody(){
+  const card=document.getElementById("mlsCard"); if(!card||card.style.display==="none") return;
+  const body=document.getElementById("mlsBody"), badge=document.getElementById("mlsBadge");
+  const rows=mlsRows(), running=rows.filter(j=>j.status==="running").length;
+  badge.textContent=running?running+" running":""; badge.className=running?"hot":"";
+  if(MLS.err){ body.innerHTML='<div class="amsg">Couldn\'t load MLS jobs ('+esc(MLS.err)+').</div>'; return; }
+  if(!rows.length){
+    body.innerHTML='<div class="amsg">'+(MLS.hasDoc||MLS_LOCAL.length?"No MLS jobs right now.":"No MLS jobs reported yet — editors turn on hub reporting in MLS Studio → Settings → Studio Hub.")+'</div>'; return;
+  }
+  const n=wSize("mlsjobs")==="s"?3:wSize("mlsjobs")==="m"?6:12;
+  body.innerHTML=rows.slice(0,n).map(j=>{
+    const pct=mlsPct(j), upd=(j.updated||0)*1000, stale=j.status==="running"&&Date.now()-upd>5*6e4&&!j.local;
+    const cls=j.status==="done"?"done":(j.status==="failed"?"bad":(j.status==="interrupted"||stale||j.status==="cancelled")?"warn":"");
+    const p=j.progress||{}; let st;
+    if(j.status==="done") st="Delivered · "+(j.highres||j.photos||0)+" High Res"+(j.mls?" + "+j.mls+" MLS":"")+" · "+mlsAge((j.finished||j.updated||0)*1000)+" ago";
+    else if(j.status==="failed") st="Failed · "+(j.error||"see MLS Studio");
+    else if(j.status==="interrupted") st="Interrupted — press Resume on that Mac";
+    else if(j.status==="cancelled") st="Cancelled";
+    else if(j.status==="queued") st="Queued";
+    else st=(p.label||MLS_STEP[j.step]||"Working")+(p.total>0?" · "+p.current+"/"+p.total:"")+(stale?" · no update for "+mlsAge(upd):"");
+    const desc=[(j.photos||0)+" photos",(j.looks||[]).join(" / "),j.client?"→ "+j.client:""].filter(Boolean).join(" · ");
+    const link=j.share_url||j.shoot_url;
+    return `<div class="mrow ${cls}" title="${esc(desc)}">
+      <div class="mt"><b>${esc(j.name||"Shoot")}</b>${j.client?`<span class="cl">· ${esc(j.client)}</span>`:""}<span class="pct">${Math.round(pct*100)}%</span></div>
+      <div class="bar"><i style="width:${Math.round(pct*100)}%"></i></div>
+      <div class="ms"><span>${esc(j.editor||"")}</span><span class="st">${esc(st)}</span>${desc?`<span>${esc(desc)}</span>`:""}${link&&j.status==="done"?`<a href="${esc(link)}" target="_blank" rel="noopener">Open ↗</a>`:""}</div>
+    </div>`; }).join("")+(rows.length>n?`<div class="tmore">+${rows.length-n} more in MLS Studio</div>`:"");
+}
+async function loadMls(){
+  if(!canSee("mls")) return;
+  const card=document.getElementById("mlsCard");
+  card.style.cursor="pointer";
+  card.onclick=e=>{ if(e.target.closest(".wtools")||e.target.closest("a")) return; openApp("MLS Studio","mls-studio.html"); };
+  try{
+    onSnapshot(doc(db,"hub","mlsJobs"),d=>{
+      MLS.hasDoc=d.exists(); MLS.err=""; const eds=(d.exists()&&(d.data()||{}).editors)||{}; const jobs=[];
+      Object.keys(eds).forEach(k=>{ let e=eds[k]; if(typeof e==="string"){ try{e=JSON.parse(e);}catch(x){e=null;} } if(!e||!Array.isArray(e.jobs)) return;
+        e.jobs.forEach(j=>jobs.push(Object.assign({},j,{editor:e.name||k}))); });
+      MLS.jobs=jobs; renderMlsBody();
+    },err=>{ MLS.err=err.code||err.message; renderMlsBody(); });
+  }catch(e){ MLS.err=e.code||e.message; renderMlsBody(); }
+  const local=async()=>{
+    try{ const r=await fetch("http://localhost:8765/api/jobs",{mode:"cors",cache:"no-store"}); if(!r.ok) throw 0;
+      const d=await r.json(); MLS_LOCAL=(d.jobs||[]).map(j=>{ const o=j.options||{}, dest=j.frameio||{}, res=j.results||{};
+        return {id:j.id,name:j.name,client:dest.project_name||((dest.trail||[])[0]||{}).name||"",status:j.status,step:j.step,step_index:j.step_index||0,steps:j.steps||[],
+          progress:j.progress||{},created:j.created,updated:j.updated,finished:j.finished,photos:(j.files||[]).length,error:j.error,
+          looks:[o.indoor_model_name,o.outdoor_model_name].filter(Boolean),highres:(res.highres_files||[]).length,mls:(res.mls_files||[]).length,share_url:res.share_url,shoot_url:res.frameio_shoot_url}; });
+    }catch(e){ MLS_LOCAL=[]; }
+    renderMlsBody();
+  };
+  local(); clearInterval(mlsLocalTimer); mlsLocalTimer=setInterval(local,15000);
 }
 let JOSH=null;
 function renderJoshBody(){
@@ -1258,10 +1359,10 @@ function initReminders(){
    Stored per email in localStorage: a layout is a response to the screen in
    front of you, so it should not follow you from a 27" desktop to a laptop.
    Key is versioned — v2 rebuilt the deck, old saved layouts don't apply. */
-const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","social","rem"];
+const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","mlsjobs","social","rem"];
 const WSIZES=["s","m","l"];
 const WLABEL={s:"S",m:"M",l:"L"};
-const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",social:"m",rem:"s"};
+const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",mlsjobs:"m",social:"m",rem:"s"};
 const wlKey=()=>"hub.widgets2."+((effEmail()||"anon").toLowerCase());
 function wlLoad(){
   try{
@@ -1548,7 +1649,7 @@ function drawStats(tasks){
 let STATS=null;
 const wSize=k=>((WL&&WL.size&&WL.size[k])||"s");
 function renderWidgetBodies(){
-  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody();
+  renderKpiBody(); renderChartBody(); renderClientsBody(); renderJoshBody(); renderMlsBody();
   renderMyClients(); renderRevBody(); renderFootBody(); renderEdsBody(); renderUnplanned(); renderSocialBody();
 }
 function taskLine(t,extra){

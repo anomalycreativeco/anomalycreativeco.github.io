@@ -47,9 +47,10 @@ vals = {
     "FRAMEIO_CLIENT_ID": cfg.get("frameio_client_id", "") if want else "",
     "FRAMEIO_CLIENT_SECRET": kc("frameio_client_secret") if want else "",
     "SLACK_WEBHOOK_URL": kc("slack_webhook_url") if want else "",
+    "HUB_SYNC_KEY": (kc("hub_sync_key") or open(os.path.expanduser("~/Library/Application Support/anomaly-social/mlskey")).read().strip() if os.path.exists(os.path.expanduser("~/Library/Application Support/anomaly-social/mlskey")) else kc("hub_sync_key")) if want else "",
 }
 classes = {"AH_ID_CLASS": "AUTOHDR_CLIENT_ID", "AH_SECRET_CLASS": "AUTOHDR_CLIENT_SECRET", "FIO_ID_CLASS": "FRAMEIO_CLIENT_ID",
-           "FIO_SECRET_CLASS": "FRAMEIO_CLIENT_SECRET", "SLACK_CLASS": "SLACK_WEBHOOK_URL"}
+           "FIO_SECRET_CLASS": "FRAMEIO_CLIENT_SECRET", "SLACK_CLASS": "SLACK_WEBHOOK_URL", "HUB_CLASS": "HUB_SYNC_KEY"}
 esc = lambda v: v.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 for k, v in vals.items():
     s = s.replace("{{%s}}" % k, esc(v) if v else blank)

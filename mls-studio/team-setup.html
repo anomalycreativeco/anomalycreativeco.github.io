@@ -168,6 +168,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9pt; b
         <div class="sub">Slack, then Save <span class="tag">1 min</span></div>
         <ol>
           <li>Settings → <em>Slack</em>. Paste the <strong>webhook URL</strong> from the last page. Press <strong>Send a test message</strong>; a line appears in #general.</li>
+          <li>Settings → <em>Studio Hub</em>. Paste the <strong>Studio Hub key</strong> from the last page and press <strong>Test hub</strong>. From then on your jobs show on the hub's home page as they run.</li>
           <li>Press <strong>Save</strong>.</li>
         </ol>
       </div>
@@ -263,6 +264,12 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9pt; b
     <div class="kv">
       <div class="k">Webhook URL</div><div class="v {{SLACK_CLASS}}">{{SLACK_WEBHOOK_URL}}</div>
     </div>
+
+    <div class="sub" style="margin-top:14pt">Settings → Studio Hub</div>
+    <div class="kv">
+      <div class="k">Studio Hub key</div><div class="v {{HUB_CLASS}}">{{HUB_SYNC_KEY}}</div>
+    </div>
+    <p class="note">Lets this Mac report its jobs to the hub's "MLS Studio · in progress" card. Same key for everyone.</p>
 
     <p class="note" style="margin-top:16pt">Generated {{GENERATED}} on {{HOST}}. MLS Studio lives in the Studio Hub repo; the current install line is always on the hub's MLS Studio page.</p>
   </div>

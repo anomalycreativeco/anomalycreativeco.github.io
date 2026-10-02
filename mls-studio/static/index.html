@@ -381,6 +381,21 @@ footer{border-top:1px solid var(--line);padding-top:14px;font-size:11.5px;color:
     </div>
 
     <div class="sect">
+      <h4>Studio Hub</h4>
+      <p class="small">Shows this Mac's jobs on the Studio Hub home page (the <b>MLS Studio · in progress</b> card) so the whole team can see what is running. Daniel shares the hub key with the other setup values.</p>
+      <div class="grid2">
+        <label class="f">Studio Hub key <input type="password" id="s-hub-key" autocomplete="off" placeholder="from Daniel"></label>
+        <label class="f">Your name on the hub <input type="text" id="s-editor-name" autocomplete="off" placeholder="blank = your Frame.io name"></label>
+      </div>
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="s-hub-sync" checked> <span>Report job progress to the hub</span></label>
+        <button class="btn" id="s-hub-test">Test hub</button>
+        <button class="btn sm danger" id="s-hub-clear">Remove key</button>
+        <span class="small" id="s-hub-result"></span>
+      </div>
+    </div>
+
+    <div class="sect">
       <h4>Defaults</h4>
       <div class="grid2">
         <label class="f">MLS size ceiling (KB) <input type="number" id="s-limit" min="200"></label>

@@ -320,6 +320,8 @@
     $("s-slack-token").value = ""; $("s-slack-token").placeholder = c.secrets.slack_bot_token ? "•••••••• (saved in Keychain)" : "xoxb-… with chat:write";
     $("s-slack-channel").value = c.slack_channel || "#general"; $("s-slack-notify").checked = c.slack_notify !== false; $("s-slack-result").textContent = "";
     $("s-fio-result").textContent = c.secrets.frameio_connected ? "Connected as a Frame.io user." : "";
+    $("s-hub-key").value = ""; $("s-hub-key").placeholder = c.secrets.hub_sync_key ? "•••••••• (saved in Keychain)" : "from Daniel";
+    $("s-editor-name").value = c.editor_name || ""; $("s-hub-sync").checked = c.hub_sync !== false; $("s-hub-result").textContent = "";
     $("settings-msg").innerHTML = ""; $("s-ah-result").textContent = "";
     $("settings").showModal();
   }
@@ -329,9 +331,10 @@
       frameio_mode: document.querySelector("input[name=fio-mode]:checked").value, frameio_client_id: $("s-fio-id").value.trim(), frameio_client_secret: $("s-fio-secret").value.trim(),
       mls_limit_kb: +$("s-limit").value || 3999, highres_folder_name: $("s-hr-name").value.trim() || "High Res", mls_folder_name: $("s-mls-name").value.trim() || "MLS",
       slack_webhook_url: $("s-slack-webhook").value.trim(), slack_bot_token: $("s-slack-token").value.trim(), slack_channel: $("s-slack-channel").value.trim() || "#general", slack_notify: $("s-slack-notify").checked,
+      hub_sync_key: $("s-hub-key").value.trim(), editor_name: $("s-editor-name").value.trim(), hub_sync: $("s-hub-sync").checked,
     };
     state.cfg = await api("POST", "/api/config", body);
-    $("s-ah-secret").value = ""; $("s-fio-secret").value = ""; $("s-slack-webhook").value = ""; $("s-slack-token").value = "";
+    $("s-ah-secret").value = ""; $("s-fio-secret").value = ""; $("s-slack-webhook").value = ""; $("s-slack-token").value = ""; $("s-hub-key").value = "";
     if (!silent) { $("settings").close(); await loadConfig(); }
   }
   $("btn-settings").onclick = openSettings;
@@ -341,6 +344,8 @@
   $("s-fio-test").onclick = async () => { $("s-fio-result").textContent = "Testing…"; try { await saveSettings(true); const d = await api("GET", "/api/frameio/me"); $("s-fio-result").innerHTML = `<span class="ok">✓ ${esc(d.me.name || d.me.email || "signed in")} · ${d.accounts.length} account${d.accounts.length === 1 ? "" : "s"}</span>`; } catch (e) { $("s-fio-result").innerHTML = `<span style="color:var(--bad)">${esc(e.message)}</span>`; } };
   $("s-fio-connect").onclick = async () => { try { await saveSettings(true); if (document.querySelector("input[name=fio-mode]:checked").value !== "user") { $("s-fio-result").textContent = "Connect is for the OAuth Web App mode. Server-to-Server needs no sign-in — press Test."; return; } window.location.href = "/api/frameio/connect"; } catch (e) { $("s-fio-result").textContent = e.message; } };
   $("s-slack-test").onclick = async () => { $("s-slack-result").textContent = "Sending…"; try { await saveSettings(true); const d = await api("POST", "/api/slack/test"); $("s-slack-result").innerHTML = `<span class="ok">✓ posted via ${esc(d.via)} — check #general</span>`; } catch (e) { $("s-slack-result").innerHTML = `<span style="color:var(--bad)">${esc(e.message)}</span>`; } };
+  $("s-hub-test").onclick = async () => { $("s-hub-result").textContent = "Reporting…"; try { await saveSettings(true); const d = await api("POST", "/api/hub/test"); $("s-hub-result").innerHTML = `<span class="ok">✓ ${esc(d.message)}</span>`; } catch (e) { $("s-hub-result").innerHTML = `<span class="err">${esc(e.message)}</span>`; } };
+  $("s-hub-clear").onclick = async () => { await api("POST", "/api/config", { hub_clear: true }); state.cfg = await api("GET", "/api/config"); openSettings(); $("s-hub-result").textContent = "Removed."; };
   $("s-slack-clear").onclick = async () => { await api("POST", "/api/config", { slack_clear: true }); state.cfg = await api("GET", "/api/config"); openSettings(); $("s-slack-result").textContent = "Removed."; };
   $("s-fio-disconnect").onclick = async () => { await api("POST", "/api/config", { frameio_disconnect: true }); $("s-fio-result").textContent = "Disconnected."; state.cfg = await api("GET", "/api/config"); };
 
