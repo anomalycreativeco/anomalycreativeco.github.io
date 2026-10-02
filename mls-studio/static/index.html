@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MLS Studio · Anomaly Studio Hub</title>
+<link rel="icon" href="/static/logomark.png">
+<style>
+/* ═══ MLS Studio — Studio Hub v2 design language (same tokens as the hub's index.html) ═══ */
+:root{
+  --page:#E9E9E6; --card:#F6F6F4; --card-2:#FFFFFF; --ink:#16181A; --mid:#5D6165;
+  --faint:#93979B; --line:rgba(0,0,0,.07); --line-2:rgba(0,0,0,.12);
+  --feat:#111315; --feat-ink:#FFFFFF; --feat-mid:#9AA0A4; --feat-line:rgba(255,255,255,.12);
+  --green:#8FB3AC; --green-deep:#3C5C55; --red:#C0563C; --amber:#B98A3E;
+  --red-tint:rgba(192,86,60,.12); --amber-tint:rgba(185,138,62,.14); --green-tint:rgba(143,179,172,.16);
+  --amber-glow:rgba(185,138,62,.45); --amber-2:#D6A758;
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --r:22px; --r-sm:14px;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+  color-scheme:light;
+}
+[data-theme="dark"]{
+  --page:#0C0D0E; --card:#161819; --card-2:#1C1F20; --ink:#F2F3F3; --mid:#9BA1A5;
+  --faint:#6B7175; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+  --feat:#F6F6F4; --feat-ink:#16181A; --feat-mid:#5D6165; --feat-line:rgba(0,0,0,.12);
+  --green:#8FB3AC; --green-deep:#B9D4CE; --red:#E0785C; --amber:#D6A758;
+  --red-tint:rgba(224,120,92,.15); --amber-tint:rgba(214,167,88,.15); --green-tint:rgba(143,179,172,.14);
+  --amber-glow:rgba(214,167,88,.5); --amber-2:#F0C66E;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --page:#0C0D0E; --card:#161819; --card-2:#1C1F20; --ink:#F2F3F3; --mid:#9BA1A5;
+    --faint:#6B7175; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+    --feat:#F6F6F4; --feat-ink:#16181A; --feat-mid:#5D6165; --feat-line:rgba(0,0,0,.12);
+    --green:#8FB3AC; --green-deep:#B9D4CE; --red:#E0785C; --amber:#D6A758;
+    --red-tint:rgba(224,120,92,.15); --amber-tint:rgba(214,167,88,.15); --green-tint:rgba(143,179,172,.14);
+    --amber-glow:rgba(214,167,88,.5); --amber-2:#F0C66E;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .mk .lt{display:none}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand .mk .dk{display:block}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:13px;line-height:1.45;min-height:100vh}
+button,input,textarea,select{font:inherit;color:inherit;font-family:var(--sans)}
+[hidden]{display:none !important}
+.lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.spacer{flex:1}
+a{color:var(--green-deep)}
+code{font-family:var(--mono);font-size:.92em;background:var(--line);border-radius:6px;padding:1px 5px;color:var(--ink);word-break:break-all}
+
+/* ── shell / topbar ── */
+.shell{max-width:1040px;margin:0 auto;padding:14px 16px 60px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand .mk{width:30px;height:30px;flex:none;display:grid;place-items:center}
+.brand .mk img{width:100%;height:100%;object-fit:contain;display:block}
+.brand .mk .dk{display:none}
+[data-theme="dark"] .brand .mk .lt{display:none}
+[data-theme="dark"] .brand .mk .dk{display:block}
+.brand h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.appver{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--faint);border:1px solid var(--line-2);border-radius:999px;padding:1px 7px;white-space:nowrap}
+body.embedded .brand{display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);background:var(--card);box-shadow:var(--shadow-sm);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.dot.ok{background:var(--green)} .dot.bad{background:var(--red)}
+.tbtn{width:36px;height:36px;border-radius:50%;background:var(--card);box-shadow:var(--shadow-sm);display:grid;place-items:center;cursor:pointer;font-size:14px;color:var(--mid);border:0;flex:none}
+.tbtn:hover{color:var(--ink)}
+body.embedded #btn-theme{display:none}
+
+/* ── intro ── */
+.intro{display:flex;flex-direction:column;gap:4px;padding:4px 4px 0}
+.intro h2{font-size:22px;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+.intro p{color:var(--mid);font-size:13px;max-width:62ch}
+
+/* ── cards (hub .acard) ── */
+.step{background:var(--card);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow);display:grid;grid-template-columns:28px 1fr;gap:0 14px;align-items:start;min-width:0;position:relative}
+.num{font-family:var(--mono);font-size:10px;color:var(--green-deep);background:var(--green-tint);border-radius:50%;width:26px;height:26px;display:grid;place-items:center;margin-top:1px}
+.step h3{grid-column:2;margin:2px 0 0;font-size:15.5px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.step .content{grid-column:2;min-width:0;margin-top:12px;display:flex;flex-direction:column;gap:13px}
+.step.off .content{opacity:.4;pointer-events:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;min-width:0}
+.row>input[type=text]{flex:1;width:auto;min-width:220px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+label.f{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+label.f input,label.f select,label.f textarea{font-family:var(--sans);font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink)}
+input[type=text],input[type=password],input[type=number],select,textarea{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;width:100%;color:var(--ink);box-shadow:var(--shadow-sm)}
+textarea{min-height:60px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--green);outline-offset:1px}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+.btn{font-size:12.5px;font-weight:600;background:var(--card-2);color:var(--ink);border:0;box-shadow:var(--shadow-sm);border-radius:999px;padding:8px 15px;cursor:pointer;white-space:nowrap}
+.btn:hover{box-shadow:var(--shadow)}
+.btn.primary{background:var(--feat);color:var(--feat-ink)}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn.danger{color:var(--red)}
+.btn.sm{padding:5px 11px;font-size:11.5px}
+.btn.big{padding:11px 24px;font-size:14px}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mid);font-weight:500;cursor:pointer}
+.switch input{width:34px;height:20px;appearance:none;background:var(--line-2);border-radius:20px;position:relative;cursor:pointer;margin:0;transition:background .15s}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--card-2);box-shadow:var(--shadow-sm);transition:left .15s}
+.switch input:checked{background:var(--green-deep)}
+.switch input:checked::after{left:16px}
+.check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink)}
+.check input{accent-color:var(--green-deep);width:15px;height:15px;margin:0}
+.note{font-size:12px;color:var(--mid);border-left:2px solid var(--green);padding-left:11px}
+.flag{background:var(--amber-tint);border-left:3px solid var(--amber);padding:10px 13px;border-radius:0 12px 12px 0;font-size:12.5px;color:var(--ink)}
+.flag b{color:var(--amber)}
+.err{background:var(--red-tint);border-left:3px solid var(--red);padding:10px 13px;border-radius:0 12px 12px 0;font-size:12.5px;color:var(--red)}
+.picked{background:var(--green-tint);border-radius:12px;padding:9px 12px;font-size:12.5px;color:var(--ink)}
+.pathbox{font-family:var(--mono);font-size:11.5px;color:var(--ink);background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;flex:1;min-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chipset{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:var(--mono);font-size:10px;color:var(--mid);background:var(--line);border-radius:6px;padding:2px 7px}
+.stat{font-size:13px;color:var(--ink)} .stat b{color:var(--green-deep)}
+.small{font-size:11.5px;color:var(--faint)} .ok{color:var(--green-deep);font-size:12px}
+
+/* ── Frame.io-style browser ── */
+.fbrowser{display:grid;grid-template-columns:190px minmax(0,1fr);grid-template-rows:minmax(0,1fr);border-radius:var(--r-sm);overflow:hidden;background:var(--card-2);box-shadow:var(--shadow-sm);height:340px}
+.fside{border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--card);min-width:0;min-height:0}
+.fside .items{overflow-y:auto;flex:1;min-height:0}
+.fmain{display:flex;flex-direction:column;min-width:0;min-height:0}
+.fbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line);min-width:0}
+.crumbs{display:flex;flex-wrap:wrap;gap:4px 6px;font-size:12.5px;color:var(--mid);min-width:0;align-items:center}
+.crumbs a{color:var(--green-deep);cursor:pointer;text-decoration:none}
+.crumbs a:hover{text-decoration:underline;text-underline-offset:2px}
+.crumbs b{color:var(--ink);font-weight:600}
+.seg{display:flex;background:var(--card);border-radius:999px;padding:2px;flex:none;box-shadow:var(--shadow-sm)}
+.seg button{font-size:11.5px;padding:4px 11px;background:transparent;color:var(--mid);border:0;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--feat);color:var(--feat-ink)}
+#fio-body{flex:1;overflow:auto;min-height:0}
+.colhead{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);padding:9px 11px 7px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item{padding:7px 11px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line)}
+.item span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .chev{color:var(--faint);flex:none}
+.item:hover{background:var(--green-tint)}
+.item.sel{background:var(--feat);color:var(--feat-ink)} .item.sel .chev{color:var(--feat-mid)}
+.item.empty{color:var(--faint);cursor:default;font-size:11.5px} .item.empty:hover{background:transparent}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;padding:12px}
+.tile{display:flex;flex-direction:column;gap:6px;cursor:pointer;border-radius:12px;padding:6px;min-width:0}
+.tile:hover{background:var(--green-tint)}
+.tile .thumb{aspect-ratio:4/3;max-width:100%;border-radius:10px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--green-deep)}
+.tile .thumb svg{width:42px;height:42px}
+.tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tile .name{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile.file{cursor:default} .tile.file:hover{background:transparent} .tile.file .name{color:var(--mid)} .tile.file .thumb{color:var(--faint)}
+.fempty{padding:28px 16px;color:var(--faint);font-size:12.5px;text-align:center}
+.cols{display:flex;overflow-x:auto;background:var(--card);height:100%;scroll-behavior:smooth}
+.col{flex:0 0 220px;min-width:0;min-height:0;border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--card-2)}
+.col:last-child{border-right:0}
+.col .items{flex:1;min-height:0;overflow-y:auto}
+.colfoot{font-size:11px;color:var(--faint);padding:5px 10px;border-top:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fside .items::-webkit-scrollbar,#fio-body::-webkit-scrollbar,.col .items::-webkit-scrollbar,.log::-webkit-scrollbar{width:9px;height:9px}
+.fside .items::-webkit-scrollbar-thumb,#fio-body::-webkit-scrollbar-thumb,.col .items::-webkit-scrollbar-thumb,.log::-webkit-scrollbar-thumb{background:var(--faint);border-radius:9px;border:2px solid transparent;background-clip:padding-box}
+.fside .items::-webkit-scrollbar-track,#fio-body::-webkit-scrollbar-track,.col .items::-webkit-scrollbar-track,.log::-webkit-scrollbar-track{background:transparent}
+@media (prefers-reduced-motion:reduce){.cols{scroll-behavior:auto}}
+@media (max-width:640px){.fbrowser{grid-template-columns:1fr;height:auto}.fside{border-right:0;border-bottom:1px solid var(--line);max-height:120px}#fio-body{height:260px}}
+
+/* ── run bar + jobs ── */
+.runbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between;background:var(--feat);color:var(--feat-ink);border-radius:var(--r);padding:16px 22px;box-shadow:var(--shadow)}
+.runbar .est{font-size:12.5px;color:var(--feat-mid)} .runbar .est b{color:var(--feat-ink)}
+.runbar .btn.primary{background:var(--green);color:#16181A}
+.runbar .btn.primary:disabled{background:var(--feat-line);color:var(--feat-mid)}
+.lane{display:flex;align-items:center;gap:10px;margin:6px 4px 0}
+.lane::after{content:"";flex:1;height:1px;background:var(--line-2)}
+.job{background:var(--card);border-radius:var(--r);padding:18px 22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;border:1px solid transparent}
+.job.running{border-color:var(--amber-glow)}
+.job .head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.job .title{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.job .sub{font-size:11px;color:var(--faint);font-family:var(--mono)}
+.pill{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:3px 9px;background:var(--line);color:var(--mid)}
+.pill.running{background:var(--amber-tint);color:var(--amber)}
+.pill.done{background:var(--green-tint);color:var(--green-deep)}
+.pill.failed,.pill.interrupted{background:var(--red-tint);color:var(--red)}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--amber-2));box-shadow:0 0 10px var(--amber-glow);transition:width .3s}
+.bar.indet i{width:30%;animation:slide 1.4s ease-in-out infinite alternate}
+@keyframes slide{from{margin-left:0}to{margin-left:70%}}
+@media (prefers-reduced-motion:reduce){.bar.indet i{animation:none;width:100%}}
+.job .label{font-size:12px;color:var(--mid)}
+.log{font-family:var(--mono);font-size:11px;color:var(--mid);background:var(--card-2);border-radius:12px;padding:9px 12px;max-height:160px;overflow:auto;white-space:pre-wrap;margin:0}
+details summary{cursor:pointer;font-size:12px;color:var(--green-deep);list-style:none}
+details summary::before{content:"› ";} details[open] summary::before{content:"⌄ ";}
+.links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.links a{font-size:12.5px;color:var(--green-deep);text-decoration:underline;text-underline-offset:2px}
+
+/* ── settings dialog ── */
+dialog{border:0;border-radius:var(--r);padding:0;background:var(--card);color:var(--ink);width:min(640px,94vw);box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog .inner{padding:22px 24px;display:flex;flex-direction:column;gap:16px;max-height:88vh;overflow:auto}
+dialog h2{font-size:18px;font-weight:600;letter-spacing:-.015em}
+dialog h4{margin:0 0 6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.sect{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+footer{border-top:1px solid var(--line);padding-top:14px;font-size:11.5px;color:var(--faint)}
+@media (max-width:560px){.shell{padding:12px 12px 60px}.step{padding:16px;grid-template-columns:24px 1fr;gap:0 10px}.num{width:22px;height:22px;font-size:9px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <a class="brand" href="https://anomalycreativeco.github.io/" target="_blank" rel="noopener" title="Open the Studio Hub">
+      <span class="mk"><img class="lt" src="/static/logomark.png" alt=""><img class="dk" src="/static/logomark-white.png" alt=""></span>
+      <h1>MLS Studio</h1>
+      <span class="appver" id="appver"></span>
+    </a>
+    <span class="spacer"></span>
+    <div class="chips">
+      <span class="tag" id="status-autohdr"><i class="dot"></i>AutoHDR</span>
+      <span class="tag" id="status-frameio"><i class="dot"></i>Frame.io</span>
+      <span class="tag" id="status-slack"><i class="dot"></i>Slack</span>
+    </div>
+    <button class="tbtn" id="btn-theme" title="Light / dark / system">◐</button>
+    <button class="btn" id="btn-settings">Settings</button>
+  </div>
+
+  <div class="intro">
+    <span class="lbl">SEC·03 — Post-Production</span>
+    <h2>MLS photo delivery, one sitting</h2>
+    <p>Pick the shoot folder, choose the AutoHDR look, point it at a Frame.io folder. It edits, downloads the high-res set, resizes an MLS set under 4&nbsp;MB, uploads both and posts to Slack.</p>
+  </div>
+
+  <div id="banner"></div>
+
+  <article class="step" id="step-source">
+    <span class="num">1</span>
+    <h3>Shoot folder on this Mac</h3>
+    <div class="content">
+      <div class="row">
+        <button class="btn primary" id="btn-pick">Choose folder…</button>
+        <div class="pathbox" id="src-path">No folder chosen</div>
+      </div>
+      <div class="row">
+        <input type="text" id="src-manual" placeholder="…or paste a folder path and press Scan">
+        <button class="btn" id="btn-scan">Scan</button>
+      </div>
+      <div id="src-info"></div>
+      <label class="f">Shoot name (becomes the AutoHDR address and the Frame.io folder name)
+        <input type="text" id="shoot-name" placeholder="e.g. 214 Hawthorne Ln">
+      </label>
+    </div>
+  </article>
+
+  <article class="step" id="step-edit">
+    <span class="num">2</span>
+    <h3>Edit with AutoHDR <label class="switch"><input type="checkbox" id="do-autohdr" checked> <span>on</span></label></h3>
+    <div class="content">
+      <div class="row">
+        <label class="check"><input type="radio" name="kind" value="raw" checked> Brackets / camera files — full HDR pipeline</label>
+        <label class="check"><input type="radio" name="kind" value="display"> Finished photos — skip HDR, just enhance</label>
+      </div>
+      <div class="grid2">
+        <label class="f">Interior look <select id="indoor-model"><option value="">Account default</option></select></label>
+        <label class="f">Exterior look <select id="outdoor-model"><option value="">Account default</option></select></label>
+      </div>
+      <div class="row" id="enhancements">
+        <label class="check"><input type="checkbox" id="enh-grass"> Green grass</label>
+        <label class="check"><input type="checkbox" id="enh-declutter"> Declutter</label>
+        <label class="check"><input type="checkbox" id="enh-fireplace"> Lit fireplace</label>
+        <label class="check"><input type="checkbox" id="enh-tv"> TV screens:</label>
+        <select id="enh-tv-mode" style="width:auto"><option value="blackout">blackout</option><option value="beach">beach</option><option value="mountain">mountain</option><option value="city">city</option><option value="custom">custom (account image)</option></select>
+      </div>
+      <label class="f">Re-edit prompt for every photo (optional · 1 credit per photo · runs after HDR)
+        <textarea id="reedit" placeholder="e.g. remove the trash cans and hide the cables"></textarea>
+      </label>
+      <p class="note" id="est-note">Credits: house looks are free to process and cost 1 credit per photo when downloaded. Creator looks (Aura, Fuse, Brut, Kasl, Editorial) bill their own per-photo price when processing finishes, download or not.</p>
+    </div>
+  </article>
+
+  <article class="step" id="step-deliver">
+    <span class="num">3</span>
+    <h3>Deliver</h3>
+    <div class="content">
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="do-resize" checked> <span>Make the MLS set</span></label>
+        <label class="f" style="flex-direction:row;align-items:center;gap:8px">under <input type="number" id="mls-limit" value="3999" min="200" step="1" style="width:92px"> KB</label>
+      </div>
+      <p class="note">Everything is also kept locally in <code>_MLS Studio/High Res</code> and <code>_MLS Studio/MLS</code> inside the shoot folder.</p>
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="do-frameio" checked> <span>Upload to Frame.io</span></label>
+        <label class="check"><input type="checkbox" id="fio-shootfolder" checked> create a folder named after the shoot, with <code>High Res</code> and <code>MLS</code> inside</label>
+      </div>
+      <div id="fio-area">
+        <div class="row">
+          <input type="text" id="fio-link" placeholder="Paste a next.frame.io project or folder link and press Return">
+          <button class="btn" id="fio-link-go">Use link</button>
+        </div>
+        <div class="grid2" style="margin-top:12px">
+          <label class="f">Account <select id="fio-account"></select></label>
+          <label class="f">Workspace <select id="fio-workspace"></select></label>
+        </div>
+        <div class="fbrowser" style="margin-top:12px">
+          <aside class="fside"><div class="colhead">Projects</div><div class="items" id="fio-projects"><div class="item empty">Loading…</div></div></aside>
+          <section class="fmain">
+            <div class="fbar">
+              <div class="crumbs" id="fio-crumbs"><span class="small">Choose a project</span></div>
+              <div class="seg" id="fio-view"><button type="button" data-view="grid" class="on">Grid</button><button type="button" data-view="columns">Columns</button></div>
+            </div>
+            <div id="fio-body"></div>
+          </section>
+        </div>
+        <span class="small" id="fio-hint">Click a project, then open folders. The folder you are in is where the shoot is delivered.</span>
+        <div class="picked" id="fio-picked" hidden></div>
+      </div>
+    </div>
+  </article>
+
+  <div class="runbar">
+    <div class="est" id="est">Choose a folder to begin.</div>
+    <button class="btn primary big" id="btn-run" disabled>Run</button>
+  </div>
+
+  <div class="lane"><span class="lbl">Jobs</span></div>
+  <div id="jobs" style="display:flex;flex-direction:column;gap:12px"></div>
+
+  <footer>Runs entirely on this Mac. AutoHDR, Frame.io and Slack keys live in the macOS Keychain; nothing is sent anywhere except to those three services.</footer>
+</div>
+
+<dialog id="settings">
+  <div class="inner">
+    <h2>Settings</h2>
+    <div id="settings-msg"></div>
+
+    <div class="sect">
+      <h4>AutoHDR API app</h4>
+      <p class="small">Create an API app at <a href="https://new.autohdr.com/api" target="_blank" rel="noopener">new.autohdr.com/api</a> and paste its client ID and secret. The app talks to the same AutoHDR API that the AutoHDR MCP server uses, under the studio account's credits.</p>
+      <div class="grid2">
+        <label class="f">Client ID <input type="text" id="s-ah-id" autocomplete="off"></label>
+        <label class="f">Client secret <input type="password" id="s-ah-secret" autocomplete="new-password"></label>
+      </div>
+      <div class="row"><button class="btn" id="s-ah-test">Test AutoHDR</button><span class="small" id="s-ah-result"></span></div>
+    </div>
+
+    <div class="sect">
+      <h4>Frame.io (Adobe Developer Console)</h4>
+      <p class="small">In <a href="https://developer.adobe.com/console" target="_blank" rel="noopener">developer.adobe.com/console</a> create a project, add the <b>Frame.io API</b>, then pick a credential:</p>
+      <div class="row">
+        <label class="check"><input type="radio" name="fio-mode" value="user"> OAuth Web App — sign in once as yourself (Pro and Team plans). Default redirect URI: <code id="s-redirect"></code></label>
+      </div>
+      <div class="row">
+        <label class="check"><input type="radio" name="fio-mode" value="s2s"> Server-to-Server — Enterprise plans only (no sign-in)</label>
+      </div>
+      <p class="small">The sign-in lands on a local HTTPS page with a self-signed certificate; Safari or Chrome will warn once. Choose “visit anyway” — it is this app on your own Mac.</p>
+      <div class="grid2">
+        <label class="f">Client ID <input type="text" id="s-fio-id" autocomplete="off"></label>
+        <label class="f">Client secret <input type="password" id="s-fio-secret" autocomplete="new-password"></label>
+      </div>
+      <div class="row">
+        <button class="btn" id="s-fio-connect">Connect Frame.io</button>
+        <button class="btn" id="s-fio-test">Test Frame.io</button>
+        <button class="btn sm danger" id="s-fio-disconnect">Disconnect</button>
+        <span class="small" id="s-fio-result"></span>
+      </div>
+    </div>
+
+    <div class="sect">
+      <h4>Slack</h4>
+      <p class="small">Posts a delivery note to <b>#general</b> after every Frame.io upload. In <a href="https://api.slack.com/apps" target="_blank" rel="noopener">api.slack.com/apps</a>: Create New App → From scratch → name it <b>Studio Hub</b> → <b>Incoming Webhooks</b> → activate → <b>Add New Webhook to Workspace</b> → pick <b>#general</b> → copy the URL.</p>
+      <div class="grid2">
+        <label class="f">Incoming webhook URL <input type="password" id="s-slack-webhook" autocomplete="off" placeholder="https://hooks.slack.com/services/…"></label>
+        <label class="f">Bot token (alternative) <input type="password" id="s-slack-token" autocomplete="off" placeholder="xoxb-… with chat:write"></label>
+        <label class="f">Channel (bot token only) <input type="text" id="s-slack-channel" placeholder="#general"></label>
+      </div>
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="s-slack-notify" checked> <span>Post after each delivery</span></label>
+        <button class="btn" id="s-slack-test">Send a test message</button>
+        <button class="btn sm danger" id="s-slack-clear">Remove</button>
+        <span class="small" id="s-slack-result"></span>
+      </div>
+    </div>
+
+    <div class="sect">
+      <h4>Defaults</h4>
+      <div class="grid2">
+        <label class="f">MLS size ceiling (KB) <input type="number" id="s-limit" min="200"></label>
+        <label class="f">High-res folder name <input type="text" id="s-hr-name"></label>
+        <label class="f">MLS folder name <input type="text" id="s-mls-name"></label>
+      </div>
+    </div>
+
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" id="s-close">Close</button>
+      <button class="btn primary" id="s-save">Save</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

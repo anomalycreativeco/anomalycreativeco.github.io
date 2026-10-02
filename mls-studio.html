@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLS Studio · Anomaly Studio Hub</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="logomark.png">
+<style>
+/* ═══ MLS Studio launcher — hub v2 design language (same tokens as index.html) ═══
+   MLS Studio itself runs on the editor's own Mac (it needs the local shoot folder), so this page
+   embeds http://localhost:8765 when it is running and explains how to start it when it is not. */
+:root{
+  --page:#E9E9E6; --card:#F6F6F4; --card-2:#FFFFFF; --ink:#16181A; --mid:#5D6165;
+  --faint:#93979B; --line:rgba(0,0,0,.07); --line-2:rgba(0,0,0,.12);
+  --feat:#111315; --feat-ink:#FFFFFF; --feat-mid:#9AA0A4; --feat-line:rgba(255,255,255,.12);
+  --green:#8FB3AC; --green-deep:#3C5C55; --red:#C0563C; --amber:#B98A3E;
+  --red-tint:rgba(192,86,60,.12); --amber-tint:rgba(185,138,62,.14); --green-tint:rgba(143,179,172,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --r:22px; --r-sm:14px;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --page:#0C0D0E; --card:#161819; --card-2:#1C1F20; --ink:#F2F3F3; --mid:#9BA1A5;
+  --faint:#6B7175; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+  --feat:#F6F6F4; --feat-ink:#16181A; --feat-mid:#5D6165; --feat-line:rgba(0,0,0,.12);
+  --green:#8FB3AC; --green-deep:#B9D4CE; --red:#E0785C; --amber:#D6A758;
+  --red-tint:rgba(224,120,92,.15); --amber-tint:rgba(214,167,88,.15); --green-tint:rgba(143,179,172,.14);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:13px;line-height:1.45}
+button,input{font:inherit;color:inherit}
+.lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+/* running: the app fills the page edge to edge */
+#app{position:fixed;inset:0;border:0;width:100%;height:100%;display:none;background:var(--page)}
+body.live #app{display:block}
+body.live .shell{display:none}
+/* not running: a hub card with the start command */
+.shell{max-width:760px;margin:0 auto;padding:14px 16px 60px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand .mk{width:30px;height:30px;flex:none;display:grid;place-items:center}
+.brand .mk img{width:100%;height:100%;object-fit:contain;display:block}
+.brand .mk .dk{display:none}
+[data-theme="dark"] .brand .mk .lt{display:none}
+[data-theme="dark"] .brand .mk .dk{display:block}
+.brand h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.spacer{flex:1}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);background:var(--card);box-shadow:var(--shadow-sm);border-radius:999px;padding:5px 10px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint)} .dot.wait{background:var(--amber)} .dot.bad{background:var(--red)}
+.acard{background:var(--card);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.acard h2{font-size:18px;font-weight:600;letter-spacing:-.015em}
+.acard p{color:var(--mid);max-width:62ch}
+.steps{display:flex;flex-direction:column;gap:10px;counter-reset:s}
+.st{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start}
+.st::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-size:10px;color:var(--green-deep);background:var(--green-tint);border-radius:50%;width:26px;height:26px;display:grid;place-items:center}
+.st b{display:block;font-weight:600;margin-bottom:2px}
+.cmd{display:flex;align-items:center;gap:8px;background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink);box-shadow:var(--shadow-sm);min-width:0}
+.cmd code{flex:1;overflow-x:auto;white-space:nowrap;min-width:0}
+.btn{font-size:12.5px;font-weight:600;background:var(--card-2);color:var(--ink);border:0;box-shadow:var(--shadow-sm);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--feat);color:var(--feat-ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.small{font-size:11.5px;color:var(--faint)}
+a{color:var(--green-deep)}
+</style>
+</head>
+<body>
+<iframe id="app" title="MLS Studio" allow="clipboard-write; clipboard-read"></iframe>
+
+<div class="shell">
+  <div class="top">
+    <a class="brand" href="index.html"><span class="mk"><img class="lt" src="logomark.png" alt=""><img class="dk" src="logomark-white.png" alt=""></span><h1>MLS Studio</h1></a>
+    <span class="spacer"></span>
+    <span class="tag" id="state"><i class="dot wait"></i>Looking for MLS Studio on this Mac…</span>
+  </div>
+
+  <div class="acard" id="offline" hidden>
+    <span class="lbl">SEC·03 — Post-Production</span>
+    <h2>MLS Studio isn't running on this Mac</h2>
+    <p>MLS Studio runs locally because it reads the shoot folder straight off your drive, then sends it to AutoHDR, resizes the MLS set and delivers to Frame.io. Start it and this page turns into the app.</p>
+    <div class="steps">
+      <div class="st"><div><b>Already installed? Start it.</b><span class="small">Paste in Terminal (⌘-Space, type Terminal). Leave the window open while you work.</span>
+        <div class="cmd" style="margin-top:8px"><code id="cmdStart">python3 ~/Applications/MLS\ Studio/server.py --open</code><button class="btn" data-copy="cmdStart">Copy</button></div></div></div>
+      <div class="st"><div><b>First time on this Mac? Install it.</b><span class="small">One line; it downloads MLS Studio into ~/Applications/MLS Studio and starts it. Run the same line again any time to update.</span>
+        <div class="cmd" style="margin-top:8px"><code id="cmdInstall">curl -fsSL https://anomalycreativeco.github.io/mls-studio/install.sh | zsh</code><button class="btn" data-copy="cmdInstall">Copy</button></div></div></div>
+      <div class="st"><div><b>Then come back here.</b><span class="small">This page checks every few seconds and switches to the app as soon as it answers. Or open it directly at <a href="http://localhost:8765" target="_blank" rel="noopener">localhost:8765</a>.</span></div></div>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="retry">Check again</button>
+      <span class="small">Setup for a new Mac (AutoHDR app, Adobe sign-in for Frame.io, Slack) is inside the app under Settings; the studio's step-by-step page is <a href="https://claude.ai/artifact/7Vghn539atfcdZo2jbs1h8" target="_blank" rel="noopener">Connecting Frame.io &amp; AutoHDR</a>.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const root=document.documentElement;
+  const q=new URLSearchParams(location.search);
+  const theme=localStorage.getItem("hub-theme")||"light";
+  if(theme==="dark") root.setAttribute("data-theme","dark");
+  const port=q.get("port")||"8765";
+  const base="http://localhost:"+port;
+  const app=document.getElementById("app"), state=document.getElementById("state"), offline=document.getElementById("offline");
+  let timer=null, live=false;
+  async function check(){
+    try{
+      const r=await fetch(base+"/api/config",{mode:"cors",cache:"no-store"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const c=await r.json();
+      if(!live){ live=true; app.src=base+"/?embedded=1&theme="+encodeURIComponent(theme); document.body.classList.add("live"); }
+      state.innerHTML='<i class="dot" style="background:var(--green)"></i>MLS Studio v'+(c.version||"")+' running';
+      clearInterval(timer); timer=null;
+    }catch(e){
+      live=false; document.body.classList.remove("live"); app.src="about:blank";
+      state.innerHTML='<i class="dot bad"></i>Not running on this Mac';
+      offline.hidden=false;
+      if(!timer) timer=setInterval(check,5000);
+    }
+  }
+  document.getElementById("retry").onclick=check;
+  document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{const t=document.getElementById(b.dataset.copy).textContent;try{await navigator.clipboard.writeText(t);b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1400);}catch(e){const s=window.getSelection(),rg=document.createRange();rg.selectNodeContents(document.getElementById(b.dataset.copy));s.removeAllRanges();s.addRange(rg);}});
+  // keep the embedded app in step with the hub's theme toggle (same localStorage key, same origin)
+  window.addEventListener("storage",e=>{ if(e.key==="hub-theme"&&live) app.contentWindow.postMessage({theme:e.newValue||"light"},base); });
+  check();
+})();
+</script>
+</body>
+</html>
