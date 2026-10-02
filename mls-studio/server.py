@@ -1152,6 +1152,7 @@ class Handler(BaseHTTPRequestHandler):
         origin = self.headers.get("Origin") or ""
         if origin in HUB_ORIGINS:
             self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Access-Control-Allow-Private-Network", "true")  # https hub page -> http://localhost
             self.send_header("Vary", "Origin")
 
     def do_OPTIONS(self):
