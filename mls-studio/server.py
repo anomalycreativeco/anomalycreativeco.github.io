@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.7"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.8"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -464,6 +464,12 @@ class FrameIO:
     def create_folder(self, account_id, parent_id, name):
         return self.unwrap(self.call("POST", "/accounts/%s/folders/%s/folders" % (account_id, parent_id), {"data": {"name": name}}))
 
+    def create_share(self, account_id, project_id, name, asset_ids, downloads=True, comments=True):
+        """Client-facing f.io link for the given folders/files. Public = anyone with the link."""
+        body = {"data": {"type": "asset", "name": name[:120], "access": "public", "asset_ids": list(asset_ids), "layout": "grid",
+                         "downloading_enabled": bool(downloads), "commenting_enabled": bool(comments), "enabled": True}}
+        return self.unwrap(self.call("POST", "/accounts/%s/projects/%s/shares" % (account_id, project_id), body))
+
     def find_or_create_folder(self, account_id, parent_id, name):
         for c in self.children(account_id, parent_id):
             if c.get("type") == "folder" and c.get("name") == name:
@@ -527,6 +533,9 @@ class DryFrameIO:
 
     def find_or_create_folder(self, a, p, name):
         return {"id": "dry-" + re.sub(r"\W+", "-", name).lower(), "name": name, "view_url": "https://next.frame.io/"}, True
+
+    def create_share(self, a, project_id, name, asset_ids, downloads=True, comments=True):
+        return {"id": "share-dry", "short_url": "https://f.io/dryrun00", "name": name}
 
     def upload_file(self, a, folder_id, path, existing_names=None):
         time.sleep(0.1)
@@ -944,8 +953,10 @@ def step_frameio(job, cfg):
     total = sum(len(s[1]) for s in sets)
     done = 0
     links = {}
+    folder_ids_for_share = []
     for name, files in sets:
         folder, created = fio.find_or_create_folder(acct, parent, name)
+        folder_ids_for_share.append(folder)
         links[name] = folder.get("view_url")
         existing = {c.get("name") for c in fio.children(acct, folder["id"]) if c.get("type") == "file"}
         uploaded = skipped = 0
@@ -962,6 +973,20 @@ def step_frameio(job, cfg):
         jlog(job, "%s: %d uploaded%s." % (name, uploaded, ", %d already there (skipped)" % skipped if skipped else ""))
     job["results"]["frameio_links"] = links
     jset(job)
+    if dest.get("share", True):
+        try:
+            client = dest.get("project_name") or ((dest.get("trail") or [{}])[0].get("name")) or ""
+            share_name = ("%s · %s" % (client, job["name"])) if client else job["name"]
+            asset_ids = [parent] if dest.get("create_shoot_folder", True) else [f["id"] for f in folder_ids_for_share]
+            share = fio.create_share(acct, dest["project_id"], share_name, asset_ids, downloads=dest.get("share_downloads", True), comments=True)
+            job["results"]["share_url"] = share.get("short_url")
+            job["results"]["share_id"] = share.get("id")
+            jset(job)
+            jlog(job, "Client share link: %s" % (share.get("short_url") or "(Frame.io returned no short link)"))
+        except ApiError as e:
+            job["results"]["share_error"] = str(e)
+            jset(job)
+            jlog(job, "WARNING: could not create the client share link (delivery itself is fine): %s" % e)
 
 
 def slack_configured():
@@ -1009,6 +1034,8 @@ def slack_delivery_message(job, cfg):
     if mls:
         parts.append("MLS set under %s KB" % (o.get("mls_limit_kb") or cfg.get("mls_limit_kb") or 3999))
     link_bits = []
+    if r.get("share_url"):
+        link_bits.append("<%s|Share link (client)>" % r["share_url"])
     if r.get("frameio_shoot_url"):
         link_bits.append("<%s|Open the shoot folder>" % r["frameio_shoot_url"])
     for name in (cfg.get("highres_folder_name", "High Res"), cfg.get("mls_folder_name", "MLS")):

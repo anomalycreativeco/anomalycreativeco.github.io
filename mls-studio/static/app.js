@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.7";
+  const APP_VERSION = "1.8";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -254,7 +254,7 @@
     $("btn-run").disabled = true;
     try {
       const o = opts();
-      const job = await api("POST", "/api/jobs", { source: state.source.path, name: $("shoot-name").value.trim(), options: o, frameio: state.picked ? Object.assign({}, state.picked, { create_shoot_folder: $("fio-shootfolder").checked }) : null });
+      const job = await api("POST", "/api/jobs", { source: state.source.path, name: $("shoot-name").value.trim(), options: o, frameio: state.picked ? Object.assign({}, state.picked, { create_shoot_folder: $("fio-shootfolder").checked, share: $("fio-share").checked, share_downloads: $("fio-share-dl").checked }) : null });
       banner(`Started <b>${esc(job.name)}</b>. You can close this tab; the job keeps running while the server is up.`, "picked");
       await loadJobs();
     } catch (e) { banner(esc(e.message), "err"); }
@@ -280,6 +280,8 @@
       const links = [];
       if (r.highres_dir) links.push(`<a href="#" data-open="${esc(r.highres_dir)}">Open High Res</a>`);
       if (r.mls_dir) links.push(`<a href="#" data-open="${esc(r.mls_dir)}">Open MLS</a>`);
+      if (r.share_url) links.push(`<a href="${esc(r.share_url)}" target="_blank" rel="noopener">Share link (client) ↗</a>`);
+      if (r.share_error) links.push(`<span class="small" style="color:var(--amber)">Share link failed: ${esc(r.share_error)}</span>`);
       if (r.frameio_shoot_url) links.push(`<a href="${esc(r.frameio_shoot_url)}" target="_blank" rel="noopener">Frame.io folder ↗</a>`);
       for (const k in r.frameio_links || {}) if (r.frameio_links[k] && !r.frameio_shoot_url) links.push(`<a href="${esc(r.frameio_links[k])}" target="_blank" rel="noopener">Frame.io › ${esc(k)} ↗</a>`);
       if (r.photoshoot_id) links.push(`<span class="small">AutoHDR shoot #${esc(r.photoshoot_id)}</span>`);
