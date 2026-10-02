@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.6"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.7"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -994,6 +994,9 @@ def slack_delivery_message(job, cfg):
     hi, mls = len(r.get("highres_files") or job["files"]), len(r.get("mls_files") or [])
     links = r.get("frameio_links") or {}
     dest = job.get("frameio") or {}
+    trail = dest.get("trail") or []
+    # In this workspace every Frame.io project is a client, so the project name is the client name.
+    client = dest.get("project_name") or (trail[0].get("name") if trail else None) or "Unknown client"
     where = dest.get("path", "Frame.io")
     if dest.get("create_shoot_folder", True):
         where += " / " + job["name"]
@@ -1012,10 +1015,10 @@ def slack_delivery_message(job, cfg):
         if links.get(name):
             link_bits.append("<%s|%s>" % (links[name], name))
     failed = r.get("resize_failed") or []
-    text = "Delivered to Frame.io: %s — %d High Res%s" % (job["name"], hi, (" + %d MLS" % mls) if mls else "")
-    fields = "*%d* High Res%s uploaded to *%s*" % (hi, (" + *%d* MLS" % mls) if mls else "", where)
+    text = "Delivered for %s: %s — %d High Res%s" % (client, job["name"], hi, (" + %d MLS" % mls) if mls else "")
+    fields = "*Client:* %s\n*Shoot:* %s\n*%d* High Res%s uploaded to *%s*" % (client, job["name"], hi, (" + *%d* MLS" % mls) if mls else "", where)
     blocks = [
-        {"type": "header", "text": {"type": "plain_text", "text": "Delivered: %s" % job["name"][:140], "emoji": False}},
+        {"type": "header", "text": {"type": "plain_text", "text": ("Delivered for %s" % client)[:150], "emoji": False}},
         {"type": "section", "text": {"type": "mrkdwn", "text": fields + ("\n" + " · ".join(parts) if parts else "")}},
     ]
     if link_bits:

@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.6";
+  const APP_VERSION = "1.7";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -191,7 +191,7 @@
   function usePicked(obj) {
     if (!obj && !state.fio.trail.length) return;
     const cur = state.fio.trail[state.fio.trail.length - 1];
-    state.picked = obj || { account_id: state.fio.account_id, workspace_id: state.fio.workspace_id, project_id: state.fio.project_id, folder_id: cur.id, path: state.fio.trail.map((t) => t.name).join(" / "), trail: state.fio.trail.slice() };
+    state.picked = obj || { account_id: state.fio.account_id, workspace_id: state.fio.workspace_id, project_id: state.fio.project_id, folder_id: cur.id, path: state.fio.trail.map((t) => t.name).join(" / "), trail: state.fio.trail.slice(), project_name: state.fio.trail[0].name };
     $("fio-picked").hidden = false;
     $("fio-picked").textContent = "Output folder: " + state.picked.path;
     estimate();
