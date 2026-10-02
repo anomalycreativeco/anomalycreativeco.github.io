@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MLS Studio — Team Setup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+<style>
+/* Anomaly house document (same CSS as the proposal template). Brand fonts and logo are injected by the build script. */
+@font-face { font-family: 'Creato Display'; src: url(data:font/otf;base64,__CREATO_REG__) format("opentype"); font-weight: 400; }
+@font-face { font-family: 'Creato Display'; src: url(data:font/otf;base64,__CREATO_MED__) format("opentype"); font-weight: 500; }
+@page { size: 8.5in 11in; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Creato Display', 'Helvetica Neue', Arial, sans-serif; color: #011412; background: #fff; }
+a { color: inherit; text-decoration: none; }
+.sheet { width: 8.5in; height: 11in; position: relative; overflow: hidden; background: #FAFAFA; page-break-after: always; break-after: page; }
+.sheet:last-of-type { page-break-after: auto; break-after: auto; }
+.mast { height: 0.95in; background: #000; display: flex; align-items: center; justify-content: space-between; padding: 0 0.6in; }
+.mast img { height: 0.42in; width: auto; display: block; }
+.mast .lbl { color: #B5C6C2; font-size: 8.5pt; letter-spacing: 0.24em; text-transform: uppercase; }
+.content { padding: 0.42in 0.6in 1.1in; }
+.foot { position: absolute; left: 0; right: 0; bottom: 0; height: 0.7in; background: #000; color: #B5C6C2; display: flex; align-items: center; justify-content: space-between; padding: 0 0.6in; font-size: 8.5pt; }
+.foot img { height: 0.22in; width: auto; display: block; }
+.foot .tg { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #FAFAFA; font-size: 9pt; }
+h2 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; font-size: 19pt; line-height: 1.2; margin: 0 0 8pt; padding-bottom: 6pt; border-bottom: 1.5px solid #6D8F88; }
+.sub { color: #6D8F88; font-size: 8.5pt; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; margin: 11pt 0 3pt; }
+p { font-size: 10.5pt; line-height: 1.5; margin: 0 0 6pt; }
+p.lead { font-size: 11pt; margin-bottom: 10pt; }
+.muted { color: #5D6C7B; }
+.small { font-size: 9pt; line-height: 1.45; }
+.block { break-inside: avoid; page-break-inside: avoid; }
+strong { font-weight: 500; }
+.cover-title { font-size: 34pt; font-weight: 400; line-height: 1.12; margin: 1.5in 0 6pt; letter-spacing: -0.01em; }
+.cover-sub { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #6D8F88; font-size: 15pt; margin: 0 0 0.35in; }
+.rule { border-top: 1px solid #D5DEDC; margin: 0 0 0.3in; }
+.meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.28in 0.4in; margin-bottom: 0.4in; }
+.meta .k { font-size: 7.5pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6D8F88; margin-bottom: 3pt; }
+.meta .v { font-size: 10.5pt; }
+.meta .v2 { font-size: 9.5pt; color: #5D6C7B; margin-top: 1pt; }
+.cover-intro { font-size: 12pt; line-height: 1.55; max-width: 6.2in; }
+.confidential { margin-top: 0.3in; font-size: 8.5pt; color: #5D6C7B; letter-spacing: 0.02em; }
+/* numbered steps = the proposal's pillar style */
+.pillar { display: grid; grid-template-columns: 0.42in 1fr; gap: 0 10pt; margin-top: 12pt; }
+.pillar .n { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #6D8F88; font-size: 22pt; line-height: 1; padding-top: 2pt; }
+.pillar .sub { margin-top: 0; }
+.pillar .tag { display: inline-block; font-size: 7pt; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid #B5C6C2; color: #5D6C7B; border-radius: 2px; padding: 1pt 5pt; margin-left: 6pt; vertical-align: 1pt; }
+.pillar p, .pillar li { font-size: 10pt; }
+.pillar ol, .pillar ul { margin: 2pt 0 4pt; padding-left: 14pt; }
+.pillar li { line-height: 1.45; margin-bottom: 2pt; }
+.callout { border-left: 3px solid #6D8F88; background: #EEF3F2; padding: 10pt 12pt; margin-top: 12pt; }
+.callout p { font-size: 9.5pt; margin: 0; }
+.callout .sub { margin-top: 0; margin-bottom: 4pt; }
+.cmd { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5pt; background: #fff; border: 1px solid #D5DEDC; padding: 7pt 10pt; margin: 4pt 0 6pt; word-break: break-all; line-height: 1.4; }
+code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9pt; background: #EEF3F2; padding: 0 3pt; border-radius: 2px; }
+.warn { border-left: 3px solid #9A5A2B; background: #F6EFE7; padding: 7pt 10pt; margin: 4pt 0 2pt; font-size: 9.5pt; line-height: 1.45; }
+.warn strong { color: #9A5A2B; }
+.note { font-size: 9pt; color: #5D6C7B; line-height: 1.45; margin: 2pt 0 0; }
+/* reference page */
+.inc { margin: 4pt 0 2pt; padding-left: 12pt; }
+.inc li { font-size: 9.5pt; line-height: 1.45; margin-bottom: 3pt; }
+.qa { border-bottom: 1px solid #D5DEDC; padding: 7pt 0; }
+.qa .q { font-size: 10pt; font-weight: 500; }
+.qa .a { font-size: 9.5pt; color: #5D6C7B; margin-top: 1pt; line-height: 1.45; }
+/* values page */
+.kv { display: grid; grid-template-columns: 1.5in 1fr; gap: 7pt 12pt; align-items: start; margin: 6pt 0 2pt; }
+.kv .k { font-size: 7.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: #6D8F88; padding-top: 6pt; }
+.kv .v { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5pt; background: #fff; border: 1px solid #D5DEDC; padding: 6pt 9pt; word-break: break-all; line-height: 1.4; min-height: 24pt; }
+.kv .v.blank { font-family: 'Creato Display', 'Helvetica Neue', Arial, sans-serif; color: #5D6C7B; font-style: italic; }
+.private { background: #000; color: #FAFAFA; padding: 10pt 12pt; font-size: 9.5pt; line-height: 1.5; margin-bottom: 10pt; }
+.private strong { color: #91ABA5; }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1: COVER ============ -->
+<section class="sheet">
+  <div class="mast">
+    <img src="data:image/png;base64,__LOGO__" alt="Anomaly Creative & Co.">
+    <span class="lbl">Team Setup</span>
+  </div>
+  <div class="content">
+    <div class="cover-title">MLS Studio<br>team setup</div>
+    <div class="cover-sub">Real-estate delivery in one sitting</div>
+    <div class="rule"></div>
+    <div class="meta">
+      <div><div class="k">Prepared for</div><div class="v">The editing team</div><div class="v2">Anomaly Creative &amp; Co.</div></div>
+      <div><div class="k">Prepared by</div><div class="v">Daniel Pan</div><div class="v2">Founder &amp; Creative Director</div></div>
+      <div><div class="k">Walkthrough</div><div class="v">Monday team meeting</div><div class="v2">October 5, 2026</div></div>
+      <div><div class="k">Time needed</div><div class="v">About 15 minutes per editor</div><div class="v2">Once, on the Mac that holds your shoot folders</div></div>
+    </div>
+    <p class="cover-intro">MLS Studio turns a shoot folder into a finished delivery: AutoHDR edits the photos, a High Res set and an MLS set under 4&nbsp;MB land in the client's Frame.io folder, the client gets a share link, and #general hears about it. It lives in the Studio Hub under Post-Production. This document walks through the one-time setup on your Mac, a practice run, and what day-to-day use looks like. The values you need to paste are on the last page.</p>
+    <div class="confidential">Internal. The last page holds studio credentials; keep this file out of shared channels.</div>
+  </div>
+  <div class="foot">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="tg">Build a brand the algorithm can't ignore.</span>
+    <span>anomalycreativestudio.com</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 2: SETUP 1–3 ============ -->
+<section class="sheet">
+  <div class="mast">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="lbl">Setup · Steps 1–3</span>
+  </div>
+  <div class="content">
+    <h2>Install and connect</h2>
+    <p class="lead">Do these in order on the Mac you edit from. Each one ends with a green check inside the app, so you know it worked before moving on.</p>
+
+    <div class="pillar block">
+      <div class="n">1</div>
+      <div>
+        <div class="sub">Install and start it <span class="tag">1 min</span></div>
+        <p>Press <strong>⌘-Space</strong>, type <strong>Terminal</strong>, press Return. Paste this line and press Return. It installs MLS Studio into <code>~/Applications/MLS Studio</code>, starts it, and opens the page in your browser.</p>
+        <div class="cmd">curl -fsSL https://anomalycreativeco.github.io/mls-studio/install.sh | zsh</div>
+        <div class="warn"><strong>If macOS asks</strong> whether Terminal may access your Desktop or Downloads folder, click <strong>Allow</strong>. That permission is what lets it read shoot folders.</div>
+        <p class="note">Leave the Terminal window open while you use MLS Studio. Ctrl-C in that window stops it. Run the same line again any time to update.</p>
+      </div>
+    </div>
+
+    <div class="pillar block">
+      <div class="n">2</div>
+      <div>
+        <div class="sub">AutoHDR <span class="tag">1 min</span></div>
+        <ol>
+          <li>On the page click <strong>Settings</strong> (top right) → <em>AutoHDR API app</em>.</li>
+          <li>Paste the <strong>AutoHDR client ID</strong> and <strong>client secret</strong> from the last page.</li>
+          <li>Press <strong>Test AutoHDR</strong>. Green: the studio email and the credit balance.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="pillar block">
+      <div class="n">3</div>
+      <div>
+        <div class="sub">Frame.io <span class="tag">3 min</span></div>
+        <ol>
+          <li>Settings → <em>Frame.io</em>. Leave <strong>OAuth Web App</strong> selected.</li>
+          <li>Paste the <strong>Adobe client ID</strong> and <strong>client secret</strong> from the last page. Press <strong>Connect Frame.io</strong>.</li>
+          <li>Adobe asks you to sign in: use <strong>the Adobe ID tied to your Frame.io seat</strong>, then approve.</li>
+          <li>A page warns the connection is not private. That is MLS Studio on your own Mac. Safari: <em>Show Details → visit this website</em>. Chrome: <em>Advanced → Proceed to localhost</em>. This happens once.</li>
+          <li>Back in MLS Studio press <strong>Test Frame.io</strong>: your name and “1 account”.</li>
+        </ol>
+        <div class="warn"><strong>Test says 0 accounts?</strong> You signed in with a different Adobe ID. Press Disconnect, Connect again, and pick the one on your Frame.io seat.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="tg">Build a brand the algorithm can't ignore.</span>
+    <span>anomalycreativestudio.com</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 3: SETUP 4–5 + DAY TO DAY ============ -->
+<section class="sheet">
+  <div class="mast">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="lbl">Setup · Steps 4–5</span>
+  </div>
+  <div class="content">
+    <h2>Slack, then a practice run</h2>
+
+    <div class="pillar block">
+      <div class="n">4</div>
+      <div>
+        <div class="sub">Slack, then Save <span class="tag">1 min</span></div>
+        <ol>
+          <li>Settings → <em>Slack</em>. Paste the <strong>webhook URL</strong> from the last page. Press <strong>Send a test message</strong>; a line appears in #general.</li>
+          <li>Press <strong>Save</strong>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="pillar block">
+      <div class="n">5</div>
+      <div>
+        <div class="sub">A three-photo practice run <span class="tag">3 min · 3 credits</span></div>
+        <ol>
+          <li>Make a folder on the Desktop with three finished JPEGs in it.</li>
+          <li><strong>Choose folder…</strong> and pick it. Shoot name: your first name plus “test”.</li>
+          <li>Step 2 on the page: switch to <strong>Finished photos — skip HDR</strong>.</li>
+          <li>Step 3: in the Frame.io browser click <strong>Studio Hub Tests</strong>. The folder you are standing in is the output folder.</li>
+          <li>Press <strong>Run</strong>. About a minute later the job card says Done, with links to the local folders, the Frame.io folder and the client share link, and #general gets the note.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout block">
+      <div class="sub">Day to day · running a real shoot</div>
+      <p><strong>Start it, then open it from the hub.</strong> Run the install line again (or <code>python3 ~/Applications/MLS\ Studio/server.py --open</code>), then Studio Hub → Post-Production → MLS Studio, or go straight to <code>localhost:8765</code>.</p>
+      <p style="margin-top:5pt"><strong>Brackets or camera files:</strong> leave the full HDR pipeline on, pick the interior and exterior looks, tick the enhancements the listing needs. RAW sets of 40–50 photos take AutoHDR about 30 minutes; the page keeps polling.</p>
+      <p style="margin-top:5pt"><strong>Frame.io:</strong> paste the client's <code>next.frame.io</code> project or folder link into the box, or click through the browser. A folder named after the shoot is created there with High Res and MLS inside, plus a client share link.</p>
+      <p style="margin-top:5pt"><strong>Closed the Terminal mid-job?</strong> Start it again; the job shows <em>interrupted</em> and Resume picks up where it stopped.</p>
+    </div>
+  </div>
+  <div class="foot">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="tg">Build a brand the algorithm can't ignore.</span>
+    <span>anomalycreativestudio.com</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 4: REFERENCE ============ -->
+<section class="sheet">
+  <div class="mast">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="lbl">Reference</span>
+  </div>
+  <div class="content">
+    <h2>Credits, and if something doesn't match</h2>
+
+    <div class="sub">What a delivery costs</div>
+    <ul class="inc">
+      <li>Everything bills the studio AutoHDR account, no matter who runs it. Upload and processing are free on house looks.</li>
+      <li>House looks (Classic, Lisa, the V4 skies, the twilights) cost <strong>1 credit per finished photo</strong> when the High Res set is downloaded. Re-downloads are free.</li>
+      <li>Creator looks (Aura, Fuse, Brut, Kasl, Editorial) show their per-photo price in the dropdown and bill when processing finishes, download or not.</li>
+      <li>A re-edit prompt is 1 credit per photo. The run bar shows the estimate and the live balance before you press Run.</li>
+      <li>Brackets merge into one photo, so a 150-file bracketed shoot is about 50 photos, not 150.</li>
+    </ul>
+
+    <div class="sub" style="margin-top:14pt">If something doesn't match</div>
+    <div class="qa block"><div class="q">The hub card says “MLS Studio isn't running on this Mac”</div><div class="a">It only runs while the Terminal window is open. Run the install line again. Chrome may ask once to allow the site to reach your local network; allow it.</div></div>
+    <div class="qa block"><div class="q">A “Restart needed” banner at the top of the page</div><div class="a">The page is newer than the server behind it. Ctrl-C in Terminal, run the start line again, reload.</div></div>
+    <div class="qa block"><div class="q">The folder shows fewer photos than it holds</div><div class="a">Videos and other non-photo files are left out on purpose; the scan line lists them. Subfolders are ignored, so run each shoot folder on its own.</div></div>
+    <div class="qa block"><div class="q">The certificate warning has no “proceed” option</div><div class="a">Safari hides it under Show Details; Chrome under Advanced. If a managed browser blocks it, open the address in Safari.</div></div>
+    <div class="qa block"><div class="q">Adobe says “invalid redirect_uri” when connecting</div><div class="a">Nothing on your side; the studio's Adobe credential needs the redirect address <code>https://localhost:8766/callback</code>. Tell Daniel.</div></div>
+    <div class="qa block"><div class="q">The AutoHDR test fails</div><div class="a">Usually a stray space at the end of a pasted value. A failed test stores nothing, so paste again and retry.</div></div>
+  </div>
+  <div class="foot">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="tg">Build a brand the algorithm can't ignore.</span>
+    <span>anomalycreativestudio.com</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 5: VALUES ============ -->
+<section class="sheet">
+  <div class="mast">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="lbl">Values · Private</span>
+  </div>
+  <div class="content">
+    <h2>Values to paste</h2>
+    <div class="private"><strong>Treat this page like a password.</strong> These values let anyone spend the studio's AutoHDR credits and post to Slack. Share this file by direct message or 1Password, never in a channel or a shared drive. The Adobe sign-in itself is personal and is not on this page.</div>
+
+    <div class="sub">Settings → AutoHDR API app</div>
+    <div class="kv">
+      <div class="k">Client ID</div><div class="v {{AH_ID_CLASS}}">{{AUTOHDR_CLIENT_ID}}</div>
+      <div class="k">Client secret</div><div class="v {{AH_SECRET_CLASS}}">{{AUTOHDR_CLIENT_SECRET}}</div>
+    </div>
+
+    <div class="sub" style="margin-top:14pt">Settings → Frame.io (OAuth Web App)</div>
+    <div class="kv">
+      <div class="k">Client ID</div><div class="v {{FIO_ID_CLASS}}">{{FRAMEIO_CLIENT_ID}}</div>
+      <div class="k">Client secret</div><div class="v {{FIO_SECRET_CLASS}}">{{FRAMEIO_CLIENT_SECRET}}</div>
+      <div class="k">Redirect URI</div><div class="v">https://localhost:8766/callback</div>
+    </div>
+    <p class="note">The ID and secret are the studio's and are the same for everyone. Sign in with your own Adobe ID when Adobe asks.</p>
+
+    <div class="sub" style="margin-top:14pt">Settings → Slack</div>
+    <div class="kv">
+      <div class="k">Webhook URL</div><div class="v {{SLACK_CLASS}}">{{SLACK_WEBHOOK_URL}}</div>
+    </div>
+
+    <p class="note" style="margin-top:16pt">Generated {{GENERATED}} on {{HOST}}. MLS Studio lives in the Studio Hub repo; the current install line is always on the hub's MLS Studio page.</p>
+  </div>
+  <div class="foot">
+    <img src="data:image/png;base64,__LOGO__" alt="">
+    <span class="tg">Build a brand the algorithm can't ignore.</span>
+    <span>anomalycreativestudio.com</span>
+  </div>
+</section>
+
+</body>
+</html>
