@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.9"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.10"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -304,7 +304,10 @@ class DryAutoHDR:
     def models(self):
         return [{"id": 1, "name": "Classic", "description": "Dry run", "type": "predefined", "variant": "indoor", "style_credit_cost": 1},
                 {"id": 32, "name": "Blue Sky V4", "description": "Dry run", "type": "predefined", "variant": "outdoor", "style_credit_cost": 1},
-                {"id": 43, "name": "Fuse", "description": "First ever true flambient model", "type": "custom", "variant": None, "style_credit_cost": 2}]
+                {"id": 43, "name": "Fuse", "description": "First ever true flambient model", "type": "custom", "variant": None, "style_credit_cost": 2},
+                # two-slot looks come back tagged "indoor/outdoor"; keep one here so a dry run exercises that case
+                {"id": 73, "name": "Kasl | Airy", "description": "Bright, open and clean", "type": "custom", "variant": "indoor/outdoor", "style_credit_cost": 5},
+                {"id": 33, "name": "Ember Twilight", "description": "Pink cotton candy clouds", "type": "predefined", "variant": "indoor/outdoor", "style_credit_cost": 5}]
 
     def capabilities(self):
         return [{"name": "reedit", "display_name": "AI Re-edit", "credit_cost": 1}]

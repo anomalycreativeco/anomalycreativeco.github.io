@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.8";
+  const APP_VERSION = "1.10";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -62,17 +62,22 @@
     fillModels("outdoor-model", "outdoor", state.cfg.default_outdoor_model_id);
     estimate();
   }
+  // a look that bills its own per-photo price: every creator look, plus house looks priced above 1 credit (the Embers)
+  const premium = (m) => m.type === "custom" || (m.style_credit_cost || 1) > 1;
   function fillModels(selId, slot, def) {
     const sel = $(selId);
     sel.innerHTML = '<option value="">Account default</option>';
     const groups = { House: [], Creator: [] };
-    state.models.filter((m) => !m.variant || m.variant === slot).forEach((m) => (m.type === "custom" ? groups.Creator : groups.House).push(m));
+    // AutoHDR tags a look "indoor", "outdoor" or "indoor/outdoor"; a blank tag also means either slot.
+    // Matching the tag exactly dropped every two-slot look (Kasl, Editorial, Aura, Fuse, the Embers).
+    const fits = (m) => !m.variant || String(m.variant).split("/").map((v) => v.trim()).includes(slot);
+    state.models.filter(fits).forEach((m) => (m.type === "custom" ? groups.Creator : groups.House).push(m));
     for (const g of ["House", "Creator"]) {
       if (!groups[g].length) continue;
       const og = document.createElement("optgroup"); og.label = g === "House" ? "House looks" : "Creator looks (bill per photo)";
       groups[g].forEach((m) => {
         const o = document.createElement("option");
-        o.value = m.id; o.textContent = m.name + (m.description ? " — " + m.description : "") + (m.type === "custom" ? " · " + m.style_credit_cost + " cr" : "");
+        o.value = m.id; o.textContent = m.name + (m.description ? " — " + m.description : "") + (premium(m) ? " · " + m.style_credit_cost + " cr" : "");
         og.appendChild(o);
       });
       sel.appendChild(og);
@@ -236,7 +241,7 @@
       parts.push(`<b>${state.source.count}</b> files`);
       if (o.do_autohdr) {
         let per = 1; const costs = [];
-        for (const id of [o.indoor_model_id, o.outdoor_model_id]) { const m = state.models.find((x) => x.id === id); if (m && m.type === "custom") costs.push(m.style_credit_cost); }
+        for (const id of [o.indoor_model_id, o.outdoor_model_id]) { const m = state.models.find((x) => x.id === id); if (m && premium(m)) costs.push(m.style_credit_cost); }
         if (o.reedit_prompt) per += 1;
         const hi = per + (costs.length ? Math.max(...costs) : 0);
         parts.push(o.kind === "raw" ? "AutoHDR HDR edit" : "AutoHDR enhance");
