@@ -155,7 +155,7 @@ def sheet_id():
 def code_from_name(name, taken):
     """A short stand-in code when the sheet's Code cell is blank: initials, kept unique."""
     words = re.findall(r"[A-Za-z]+", name)
-    base = ("".join(w[0] for w in words)[:4] or "ACCT").upper()
+    base = (words[0][:4] if len(words) == 1 else "".join(w[0] for w in words)[:4] or "ACCT").upper()
     code, n = base, 2
     while code in taken:
         code, n = f"{base}{n}", n + 1
