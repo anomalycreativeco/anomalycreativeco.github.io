@@ -34,7 +34,7 @@ for --days days after it goes up, then its numbers freeze.
 Never writes to clients/* and never prints a token or the sync key.
 Stdlib only, so launchd can run it with /usr/bin/python3 directly.
 """
-import argparse, hashlib, json, os, random, re, sys, time
+import argparse, csv, hashlib, io, json, os, random, re, sys, time
 import urllib.error, urllib.parse, urllib.request
 from datetime import datetime
 
@@ -44,6 +44,7 @@ STATE_DIR = os.path.expanduser("~/Library/Application Support/anomaly-social")
 KEY_PATH = os.path.join(STATE_DIR, "synckey")    # shared with sync_social_stats.py
 META_PATH = os.path.join(STATE_DIR, "meta.json")
 HISTORY_PATH = os.path.join(STATE_DIR, "ig_history.json")
+SHEET_PATH = os.path.join(STATE_DIR, "accounts_sheet")   # Google Sheet id or link: the account list Daniel maintains
 ADPICKS_STORE = "/Users/danielpan/Desktop/Claude/Next Level Physio : Dr. Jerry/data/store.json"
 
 UA = "AnomalyIgAnalytics/1.0"
@@ -72,6 +73,10 @@ class IgBlocked(Exception):
 
 
 class AdapterError(Exception):
+    pass
+
+
+class SheetError(Exception):
     pass
 
 
@@ -135,13 +140,92 @@ def handle_of(raw):
     return parts[0].lstrip("@").lower() if parts else None
 
 
+def sheet_id():
+    try:
+        with open(SHEET_PATH) as fh:
+            raw = fh.read().strip()
+    except OSError:
+        return ""
+    m = re.search(r"/spreadsheets/d/([A-Za-z0-9_-]{20,})", raw)
+    if m:
+        return m.group(1)
+    return raw if re.fullmatch(r"[A-Za-z0-9_-]{20,}", raw) else ""
+
+
+def code_from_name(name, taken):
+    """A short stand-in code when the sheet's Code cell is blank: initials, kept unique."""
+    words = re.findall(r"[A-Za-z]+", name)
+    base = ("".join(w[0] for w in words)[:4] or "ACCT").upper()
+    code, n = base, 2
+    while code in taken:
+        code, n = f"{base}{n}", n + 1
+    return code
+
+
+def load_sheet_rows():
+    """Rows of the accounts sheet (first tab), or None when no sheet is configured.
+    Columns are found by header name: Client, Code, Instagram, TikTok, YouTube, Active.
+    The sheet must be shared 'anyone with the link can view' — this job cannot sign in."""
+    sid = sheet_id()
+    if not sid:
+        return None
+    req = urllib.request.Request(f"https://docs.google.com/spreadsheets/d/{sid}/export?format=csv",
+                                 headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            ctype = r.headers.get("content-type", "")
+            text = r.read().decode("utf-8-sig", "replace")
+    except urllib.error.HTTPError as e:
+        raise SheetError(f"Google answered HTTP {e.code} for the accounts sheet — check it still exists and is shared by link.")
+    except urllib.error.URLError as e:
+        raise SheetError(f"couldn't reach Google Sheets ({e.reason})")
+    if "csv" not in ctype:
+        raise SheetError("the accounts sheet isn't shared as 'anyone with the link can view' (Google sent a sign-in page)")
+    rows = list(csv.reader(io.StringIO(text)))
+    if not rows:
+        raise SheetError("the accounts sheet is empty")
+    head = [h.strip().lower() for h in rows[0]]
+    def col(*names):
+        for n in names:
+            if n in head:
+                return head.index(n)
+        return None
+    ci, cc, cg, ct, cy, ca = col("client", "client name", "name"), col("code", "pipeline code", "abbr"), \
+        col("instagram", "ig", "instagram url"), col("tiktok", "tik tok"), col("youtube", "yt", "youtube shorts"), col("active")
+    if cg is None:
+        raise SheetError("the accounts sheet has no 'Instagram' column in its first row")
+    cell = lambda row, i: row[i].strip() if i is not None and i < len(row) else ""
+    out, taken = [], set()
+    for row in rows[1:]:
+        client, code = cell(row, ci), cell(row, cc).upper()
+        ig, tt, yt = cell(row, cg), cell(row, ct), cell(row, cy)
+        if client.startswith("#") or not (ig or tt or yt):
+            continue                                   # help lines and blank rows
+        active = cell(row, ca).lower() not in ("no", "n", "false", "0", "off", "paused", "inactive")
+        if not code:
+            code = code_from_name(client or ig, taken)
+        taken.add(code)
+        out.append({"client": client or code, "code": code, "ig": ig, "tiktok": tt, "yt": yt, "active": active})
+    return out
+
+
 def load_accounts(args):
-    """[{abbr, handle}] from --clients or the public mirror doc the pipeline keeps."""
+    """[{abbr, handle, name}] from --clients, else the accounts sheet, else the pipeline's mirror doc."""
+    sheet = None
     if args.clients:
         with open(args.clients) as fh:
             raw = json.load(fh)
         lst = raw.get("list", raw) if isinstance(raw, dict) else raw
     else:
+        try:
+            sheet = load_sheet_rows()
+        except SheetError as e:
+            sys.exit(f"Couldn't read the accounts sheet: {e}. Nothing written.")
+    if sheet is not None:
+        lst = [{"abbr": r["code"], "name": r["client"], "ig": r["ig"]} for r in sheet if r["active"] and r["ig"]]
+        paused = sum(1 for r in sheet if not r["active"])
+        print(f"Accounts sheet: {len(lst)} active Instagram account(s)" + (f", {paused} paused" if paused else "") + ".")
+    elif not args.clients:
         try:
             doc = http_json(FIRESTORE + "/hub/socialAccounts")
             lst = json.loads(doc["fields"]["list"]["stringValue"])
@@ -157,7 +241,8 @@ def load_accounts(args):
         if not abbr or not handle or handle in seen:
             continue
         seen.add(handle)
-        out.append({"abbr": abbr.upper() if len(abbr) <= 6 and " " not in abbr else abbr, "handle": handle})
+        out.append({"abbr": abbr.upper() if len(abbr) <= 6 and " " not in abbr else abbr, "handle": handle,
+                    "name": str(c.get("name") or "").strip()})
     only = {x.strip().upper() for x in (args.only or "").split(",") if x.strip()}
     if only:
         out = [a for a in out if a["abbr"].upper() in only]
@@ -571,7 +656,7 @@ def main():
     since = int(time.time()) - args.days * 86400
     warnings, report, fresh = [], {}, []
     for a in accounts:
-        report[a["handle"]] = {"abbr": a["abbr"], "handle": a["handle"], "source": "", "status": "pending",
+        report[a["handle"]] = {"abbr": a["abbr"], "name": a.get("name") or "", "handle": a["handle"], "source": "", "status": "pending",
                                "note": "", "followers": None, "posts": 0}
 
     # 1 — Meta's official API

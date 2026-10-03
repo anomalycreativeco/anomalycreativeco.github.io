@@ -287,7 +287,7 @@ import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} f
 import {getFirestore,doc,getDoc,getDocs,collection} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* Bump on every deploy — GitHub Pages caches at the edge for ~10 minutes. */
-const APP_VERSION="1.0.0", APP_BUILD="2026-09-30";
+const APP_VERSION="1.0.1", APP_BUILD="2026-10-03";
 const ACCESS_KEY="iganalytics";   // hub/access platform key; owners only until opened up
 
 /* DEMO: localhost only, ?demo=1 — synthetic data, no sign-in, no Firestore.
@@ -584,6 +584,7 @@ async function loadData(){
     try{ META=await (await fetch(DATA_DIR+"/igAnalytics.json",{cache:"no-store"})).json(); ACCOUNTS=META.accounts||[];
       for(const m of (META.months||[])){ const d=await (await fetch(DATA_DIR+"/igPosts_"+m+".json",{cache:"no-store"})).json(); POSTS.push(...(d.posts||[])); } }
     catch(e){ LOAD_ERR=e.message; }
+    ACCOUNTS.forEach(a=>{ if(a&&a.abbr&&a.name) NAMES[a.abbr]=a.name; });
     return;
   }
   if(DEMO){ demoData(); return; }
@@ -597,6 +598,8 @@ async function loadData(){
     docs.forEach(d=>{ if(!d||!d.exists()) return; (parse(d).posts||[]).forEach(p=>{ if(p&&p.id&&p.abbr&&p.ts&&!seen.has(p.id)){ seen.add(p.id); POSTS.push(p); } }); });
   }catch(e){ LOAD_ERR=e.code||e.message; }
   try{ const s=await getDocs(collection(db,"clients")); s.docs.forEach(d=>{ const c=d.data(); if(c&&c.abbr) NAMES[c.abbr]=c.name||c.abbr; }); }catch(e){}
+  // names from the accounts sheet (carried in the sync's index) win over pipeline names
+  ACCOUNTS.forEach(a=>{ if(a&&a.abbr&&a.name) NAMES[a.abbr]=a.name; });
 }
 function demoData(){
   let seed=7; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };

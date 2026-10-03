@@ -106,12 +106,32 @@ def load_accounts(args):
             raw = json.load(fh)
         lst = raw.get("list", raw) if isinstance(raw, dict) else raw
     else:
+        # The accounts sheet Daniel maintains wins when it is configured (same
+        # list the Instagram Analytics collector reads); the pipeline's mirror
+        # doc is the fallback.
+        sheet = None
+        try:
+            from sync_ig_analytics import load_sheet_rows, SheetError
+            try:
+                sheet = load_sheet_rows()
+            except SheetError as e:
+                sys.exit(f"Couldn't read the accounts sheet: {e}. Nothing written.")
+        except ImportError:
+            sheet = None
+        if sheet is not None:
+            lst = [{"abbr": r["code"], "name": r["client"], "ig": r["ig"], "tiktok": r["tiktok"], "yt": r["yt"]}
+                   for r in sheet if r["active"]]
+            return _expand_accounts(lst)
         try:
             doc = http(FIRESTORE + "/hub/socialAccounts")
             lst = json.loads(doc["fields"]["list"]["stringValue"])
         except urllib.error.HTTPError as e:
             sys.exit(f"Couldn't read hub/socialAccounts ({e.code}). Publish its read rule, "
                      f"or pass --clients <file>. Nothing written.")
+    return _expand_accounts(lst)
+
+
+def _expand_accounts(lst):
     out = []
     for c in lst:
         abbr = str(c.get("abbr") or "").strip().upper()
