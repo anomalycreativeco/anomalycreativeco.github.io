@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.11";
+  const APP_VERSION = "1.12";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -200,7 +200,7 @@
     state.picked = obj || { account_id: state.fio.account_id, workspace_id: state.fio.workspace_id, project_id: state.fio.project_id, folder_id: cur.id, path: state.fio.trail.map((t) => t.name).join(" / "), trail: state.fio.trail.slice(), project_name: state.fio.trail[0].name };
     $("fio-picked").hidden = false;
     $("fio-picked").textContent = "Output folder: " + state.picked.path;
-    suggestClient();
+    suggestClient(); renderNaming();
     estimate();
   }
   async function useLink() {
@@ -218,9 +218,10 @@
   }
 
   // --------------------------------------------------------------- naming --
-  // House standard: Client - Address_Shoot type  (RCH - 1208 Barcroft_MLS Interior). The server composes the
+  // House standard: Client - Address_Shoot type  (RCH - 1208 Barcroft_Interior MLS). The server composes the
   // final name from these three fields; this mirrors it for the live preview.
-  const STANDARD_TYPES = ["MLS", "MLS Interior", "MLS Exterior", "Twilight", "Drone", "Exteriors", "Staging", "Reshoot"];
+  // the words already in use across the team's Frame.io folders
+  const STANDARD_TYPES = ["MLS", "Interior MLS", "Exteriors", "Twilights", "Drone", "Reshoot", "Exterior Reshoot", "Interior Reshoot", "Staging", "Updated Exteriors"];
   const tidy = (v) => String(v || "").replace(/\s+/g, " ").trim();
   function naming() { return { client: tidy($("nm-client").value), address: tidy($("nm-address").value), type: tidy($("nm-type").value) }; }
   function namingComplete() { const n = naming(); return !!(n.client && n.address && n.type); }
@@ -228,7 +229,23 @@
   function renderNaming() {
     const n = naming(), el = $("nm-preview");
     const shown = { client: n.client || "Client", address: n.address || "Address", type: n.type || "Shoot type" };
-    el.innerHTML = "Shoot name: <b>" + esc(composeName(shown)) + "</b>" + (namingComplete() ? "" : " <span class=\"small\">— fill in all three</span>");
+    let html = "Shoot name: <b>" + esc(composeName(shown)) + "</b>" + (namingComplete() ? "" : " <span class=\"small\">— fill in all three</span>");
+    // Frame.io files by address with the shoot type beneath it; the client is already the project.
+    if (state.picked && $("do-frameio").checked) {
+      const chain = frameioChain(shown, state.picked);
+      const c = state.cfg || {}, sets = [c.highres_folder_name || "High Res"].concat($("do-resize").checked ? [c.mls_folder_name || "MLS"] : []);
+      html += "<br>Frame.io: <b>" + esc([state.picked.path].concat(chain).join(" / ")) + "</b> / " + esc(sets.join(" + "));
+    }
+    el.innerHTML = html;
+  }
+  // mirrors frameio_chain() in server.py
+  function frameioChain(n, picked) {
+    if (!$("fio-shootfolder").checked) return [];
+    const norm = (v) => tidy(v).toLowerCase(), trail = picked.trail || [], here = trail.length ? trail[trail.length - 1].name : "";
+    const chain = [];
+    if (norm(here) !== norm(n.address)) chain.push(n.address);
+    if (norm(n.type) !== "mls") chain.push(n.type);
+    return chain;
   }
   function fillNamingLists() {
     const c = state.cfg || {};
@@ -458,6 +475,7 @@
   $("btn-scan").onclick = () => scan($("src-manual").value.trim());
   $("src-manual").addEventListener("keydown", (e) => { if (e.key === "Enter") scan($("src-manual").value.trim()); });
   $("btn-run").onclick = run;
+  ["fio-shootfolder", "do-frameio", "do-resize"].forEach((id) => $(id).addEventListener("change", renderNaming));
   ["nm-client", "nm-address", "nm-type"].forEach((id) => $(id).addEventListener("input", () => { if (id === "nm-client") $("nm-client").dataset.auto = ""; renderNaming(); estimate(); }));
   ["do-autohdr", "do-resize", "do-frameio", "indoor-model", "outdoor-model", "reedit", "mls-limit", "enh-grass", "enh-declutter", "enh-fireplace", "enh-tv"].forEach((id) => $(id).addEventListener("change", estimate));
   document.querySelectorAll("input[name=kind]").forEach((r) => r.addEventListener("change", estimate));

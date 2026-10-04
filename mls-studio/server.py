@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.11"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.12"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -890,7 +890,7 @@ def clean_naming(n):
 
 
 def compose_name(n):
-    """The house naming standard: Client - Address_Shoot type  (RCH - 1208 Barcroft_MLS Interior).
+    """The house naming standard: Client - Address_Shoot type  (RCH - 1208 Barcroft_Interior MLS).
     One name everywhere: the AutoHDR shoot, the Frame.io folder, the Slack note and the hub card."""
     safe = lambda v: re.sub(r"[/\\:]+", "-", v)
     return "%s - %s_%s" % (safe(n["client"]), safe(n["address"]), safe(n["type"]))
@@ -900,6 +900,29 @@ def remember(lst, value, cap=60):
     """Newest-first list of distinct values (case-insensitive), for the naming suggestions."""
     out = [value] + [v for v in (lst or []) if isinstance(v, str) and v.strip().lower() != value.strip().lower()]
     return out[:cap]
+
+
+def frameio_chain(job):
+    """The folders a delivery is filed under, inside the Frame.io folder the editor picked.
+    Frame.io projects are already one per client, and the team files by address with the shoot type beneath it
+    (Client Facing / 3353 Cheswick / Twilights), so the client stays out of the folder names. The main MLS shoot
+    keeps its High Res + MLS pair directly under the address, as the existing deliveries do. A re-edit carries its
+    original shoot's naming, so it resolves to the same folders."""
+    dest = job.get("frameio") or {}
+    if not dest.get("create_shoot_folder", True):
+        return []
+    n = job.get("naming")
+    if not n or dest.get("layout") != "address":
+        return [job.get("parent_name") or job["name"]]  # jobs from before 1.12 keep the one folder they were given
+    norm = lambda v: re.sub(r"\s+", " ", str(v or "")).strip().lower()
+    trail = dest.get("trail") or []
+    here = trail[-1].get("name") if trail else ""
+    chain = []
+    if norm(here) != norm(n["address"]):  # already standing in the address folder: don't nest a second one
+        chain.append(n["address"])
+    if norm(n["type"]) != "mls":
+        chain.append(n["type"])
+    return chain
 
 
 def set_dir(job, cfg, which):
@@ -1168,12 +1191,12 @@ def step_frameio(job, cfg):
     mls = [Path(p) for p in job["results"].get("mls_files") or []]
     parent = folder_id
     rs = job["options"].get("restyle")
-    shoot_name = job.get("parent_name") or job["name"]  # a re-edit lands inside the original shoot's folder
-    if dest.get("create_shoot_folder", True):
-        shoot, created = fio.find_or_create_folder(acct, folder_id, shoot_name)
-        parent = shoot["id"]
-        jlog(job, "%s Frame.io folder '%s'" % ("Created" if created else "Using existing", shoot_name))
-        job["results"]["frameio_shoot_url"] = shoot.get("view_url")
+    chain = frameio_chain(job)  # e.g. ["1208 Barcroft", "Interior MLS"]
+    for step_name in chain:
+        made, created = fio.find_or_create_folder(acct, parent, step_name)
+        parent = made["id"]
+        jlog(job, "%s Frame.io folder '%s'" % ("Created" if created else "Using existing", step_name))
+        job["results"]["frameio_shoot_url"] = made.get("view_url")
     if rs:
         sub_folder, created = fio.find_or_create_folder(acct, parent, rs["folder"])
         parent = sub_folder["id"]
@@ -1192,7 +1215,7 @@ def step_frameio(job, cfg):
         links[name] = folder.get("view_url")
         existing = {c.get("name") for c in fio.children(acct, folder["id"]) if c.get("type") == "file"}
         uploaded = skipped = 0
-        jlog(job, "Uploading %d files to Frame.io › %s / %s" % (len(files), job["name"] if dest.get("create_shoot_folder", True) else dest.get("path", ""), name))
+        jlog(job, "Uploading %d files to Frame.io › %s / %s" % (len(files), " / ".join(chain + ([rs["folder"]] if rs else [])) or dest.get("path", ""), name))
         for f in files:
             check_cancel(job)
             _, state = fio.upload_file(acct, folder["id"], f, existing)
@@ -1209,7 +1232,11 @@ def step_frameio(job, cfg):
         try:
             client = dest.get("project_name") or ((dest.get("trail") or [{}])[0].get("name")) or ""
             share_name = ("%s · %s" % (client, job["name"])) if client else job["name"]
-            asset_ids = [parent] if (dest.get("create_shoot_folder", True) or rs) else [f["id"] for f in folder_ids_for_share]
+            # A plain MLS delivery sits directly in the address folder, which the listing's other shoots share,
+            # so its link carries just its own two sets; anything with a folder of its own shares that folder.
+            n = job.get("naming") if dest.get("layout") == "address" else None
+            own_folder = bool(rs) or (bool(chain) and not (n and n["type"].strip().lower() == "mls"))
+            asset_ids = [parent] if own_folder else [f["id"] for f in folder_ids_for_share]
             share = fio.create_share(acct, dest["project_id"], share_name, asset_ids, downloads=dest.get("share_downloads", True), comments=True)
             job["results"]["share_url"] = share.get("short_url")
             job["results"]["share_id"] = share.get("id")
@@ -1282,9 +1309,7 @@ def slack_delivery_message(job, cfg):
     trail = dest.get("trail") or []
     # In this workspace every Frame.io project is a client, so the project name is the client name.
     client = dest.get("project_name") or (trail[0].get("name") if trail else None) or "Unknown client"
-    where = dest.get("path", "Frame.io")
-    if dest.get("create_shoot_folder", True):
-        where += " / " + job["name"]
+    where = " / ".join([dest.get("path", "Frame.io")] + frameio_chain(job))
     parts = []
     if o.get("do_autohdr"):
         looks = [n for n in (o.get("indoor_model_name"), o.get("outdoor_model_name")) if n]
@@ -1722,7 +1747,10 @@ class Handler(BaseHTTPRequestHandler):
         naming = clean_naming(body.get("naming"))
         name = compose_name(naming) if naming else ((body.get("name") or "").strip() or info["name"])
         o = body.get("options") or {}
-        fio = body.get("frameio") or {}
+        fio = dict(body.get("frameio") or {})
+        fio.pop("layout", None)
+        if naming:
+            fio["layout"] = "address"  # filed as Address / Shoot type; see frameio_chain
         if o.get("do_frameio") and not fio.get("folder_id"):
             raise ApiError("Pick a Frame.io output folder, or turn off the Frame.io upload.")
         if o.get("do_autohdr") and o.get("kind", "raw") == "raw" and not (o.get("indoor_model_id") or o.get("outdoor_model_id")):

@@ -86,12 +86,18 @@ Frame.io account), and the shared Slack webhook. Everything stays in that Mac's 
 
 Every shoot is named from three fields so the whole team names things the same way:
 
-    Client - Address_Shoot type        e.g.  RCH - 1208 Barcroft_MLS Interior
+    Client - Address_Shoot type        e.g.  RCH - 1208 Barcroft_Interior MLS
 
-That one name is the AutoHDR shoot, the Frame.io folder, the Slack note and the hub card. Client and
-shoot type suggest what has been used before (shoot type also offers MLS, MLS Interior, MLS Exterior,
-Twilight, Drone, Exteriors, Staging, Reshoot); picking a Frame.io project fills in the client last used
-with it. A folder already named to the standard fills all three fields when it is scanned. Run stays
+That name is the AutoHDR shoot, the Slack note and the hub card. In Frame.io the client is already the
+project, so the same fields file the delivery the way the team already does by hand:
+
+    <picked folder> / <Address> / <Shoot type> / High Res + MLS
+    <picked folder> / <Address> / High Res + MLS                  (shoot type "MLS": the main listing shoot)
+
+If the picked folder is already the address folder, no second address folder is made. Client and shoot
+type suggest what has been used before (shoot type also offers MLS, Interior MLS, Exteriors, Twilights,
+Drone, Reshoot, Exterior Reshoot, Interior Reshoot, Staging, Updated Exteriors); picking a Frame.io
+project fills in the client last used with it. A folder already named to the standard fills all three fields when it is scanned. Run stays
 disabled until all three are filled in.
 
 ## Re-edit with a different look
@@ -102,7 +108,8 @@ ticked photo from the original files with that look (its `style` transform), so 
 again. It runs as its own job: re-render, download, MLS resize, Frame.io, Slack.
 
 - The first delivery is never touched. The re-edit lands beside it in `Re-edit 1 - <Look>` (then 2, 3…),
-  both in `_MLS Studio/` on disk and inside the shoot's Frame.io folder, with its own client share link.
+  both in `_MLS Studio/` on disk and inside the shoot's Frame.io folder (under the address, or under the
+  shoot type when there is one), with its own client share link.
 - Cost: the look's per-photo price times the photos ticked, charged by AutoHDR on submit; failed photos
   are refunded and keep their earlier look.
 - A look applies to every ticked photo, interior or exterior. For a mixed set, run it once for the
