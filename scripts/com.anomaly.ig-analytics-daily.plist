@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Instagram Analytics sync — Mondays at 07:40.
+  Instagram Analytics sync — every day at 07:40.
 
-  Collects every client Instagram post from the last five weeks
-  (scripts/sync_ig_analytics.py) and writes hub/igAnalytics + hub/igPosts_YYYY-MM
-  for the Studio Hub's Instagram Analytics page.
+  Reads each client account's public Instagram numbers (scripts/sync_ig_analytics.py)
+  and writes hub/igAnalytics + hub/igPosts_YYYY-MM for the Studio Hub's Instagram
+  Analytics page. Daily, because Instagram only lists an account's newest 6 posts:
+  a missed week is missed posts. launchd runs a missed slot when the Mac next wakes.
 
   NOT installed automatically. Install only after a supervised run:
 
-      cp scripts/com.anomaly.ig-analytics-weekly.plist ~/Library/LaunchAgents/
-      launchctl load ~/Library/LaunchAgents/com.anomaly.ig-analytics-weekly.plist
+      cp scripts/com.anomaly.ig-analytics-daily.plist ~/Library/LaunchAgents/
+      launchctl load ~/Library/LaunchAgents/com.anomaly.ig-analytics-daily.plist
 
   To check on it:
       launchctl list | grep anomaly
       tail -f ~/Library/Logs/anomaly-ig-analytics.log
 
   To stop it:
-      launchctl unload ~/Library/LaunchAgents/com.anomaly.ig-analytics-weekly.plist
+      launchctl unload ~/Library/LaunchAgents/com.anomaly.ig-analytics-daily.plist
 
   /usr/bin/python3 is invoked directly — no shell wrapper — because a
   launchd-spawned zsh has no Desktop access (that is why the ad-picks monthly
-  job never runs). 07:40 sits clear of the other Monday jobs: social stats
-  06:40, financials 07:15, Ares 08:47, the scheduled Claude tasks from 09:02.
+  job never runs). 07:40 sits clear of the other morning jobs: social stats
+  Mon 06:40, financials Mon 07:15, Ares 08:47, the scheduled Claude tasks from 09:02.
+  A run takes roughly 10 to 20 minutes: it reads slowly on purpose.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.anomaly.ig-analytics-weekly</string>
+    <string>com.anomaly.ig-analytics-daily</string>
 
     <key>ProgramArguments</key>
     <array>
@@ -40,7 +42,6 @@
 
     <key>StartCalendarInterval</key>
     <dict>
-        <key>Weekday</key><integer>1</integer>
         <key>Hour</key><integer>7</integer>
         <key>Minute</key><integer>40</integer>
     </dict>

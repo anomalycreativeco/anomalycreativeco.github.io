@@ -721,7 +721,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.4.1", APP_BUILD="2026-10-04";
+const APP_VERSION="2.4.2", APP_BUILD="2026-10-04";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -739,7 +739,7 @@ const PLATFORMS={
   ufplanner:{name:"Universal Furniture Planner",cat:"pre",def:"everyone"},
   analytics:{name:"Analytics Dashboard (revenue)",cat:null,def:"owners"},
   financials:{name:"Financials (QuickBooks P&L, balance sheet)",cat:null,def:"owners"},
-  iganalytics:{name:"Instagram Analytics (client post views, likes, shares)",cat:null,def:"owners"},
+  iganalytics:{name:"Instagram Analytics (client post views, likes, comments)",cat:null,def:"owners"},
   automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
   ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"},
   social:{name:"Social Stats (weekly views · IG / TikTok / YT)",cat:null,def:"everyone"}
