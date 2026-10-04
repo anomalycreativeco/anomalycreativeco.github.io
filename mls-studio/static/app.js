@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.13";
+  const APP_VERSION = "1.14";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -28,6 +28,25 @@
   }
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   function banner(html, kind) { $("banner").innerHTML = html ? `<div class="${kind || "flag"}">${html}</div>` : ""; }
+  // A newer copy on the Studio Hub: say so, and take it in one click (the server swaps itself and restarts).
+  function renderUpdate(u) {
+    const el = $("update-bar");
+    if (!u || !u.available) { el.innerHTML = ""; return; }
+    const what = `<b>MLS Studio v${esc(u.latest)} is ready</b> (this Mac has v${esc(u.current)}).${u.notes ? " " + esc(u.notes) : ""}`;
+    el.innerHTML = u.can_update
+      ? `<div class="flag">${what} <button class="btn sm primary" id="update-now" style="margin-left:8px">Update now</button></div>`
+      : `<div class="flag">${what} To update, press Control-C in the Terminal window running MLS Studio and paste: <code>curl -fsSL https://anomalycreativeco.github.io/mls-studio/install.sh | zsh</code></div>`;
+    const b = $("update-now");
+    if (b) b.onclick = async () => {
+      b.disabled = true; b.textContent = "Updating…";
+      try {
+        await api("POST", "/api/update", {});
+        el.innerHTML = `<div class="flag"><b>Updating to v${esc(u.latest)}…</b> MLS Studio restarts by itself; this page reloads in a few seconds.</div>`;
+        const t = setInterval(async () => { try { const c = await api("GET", "/api/config"); if (c.version === u.latest) { clearInterval(t); location.reload(); } } catch (e) { /* restarting */ } }, 1500);
+      } catch (err) { b.disabled = false; b.textContent = "Update now"; banner(esc(err.message), "err"); }
+    };
+  }
+  setInterval(async () => { try { renderUpdate(await api("GET", "/api/update")); } catch (e) { /* offline */ } }, 15 * 60 * 1000);
   function setDot(id, ok, text) { const el = $(id); el.innerHTML = `<i class="dot ${ok === null ? "" : ok ? "ok" : "bad"}"></i>${text}`; }
 
   // ---------------------------------------------------------------- config --
@@ -37,6 +56,8 @@
     $("mls-limit").value = c.mls_limit_kb || 3999;
     fillNamingLists();
     $("appver").textContent = "v" + (c.version || APP_VERSION);
+    renderUpdate(c.update);
+    if (c.update && !c.update.latest) setTimeout(async () => { try { renderUpdate(await api("GET", "/api/update")); } catch (e) { /* offline */ } }, 8000);  // first check still in flight
     $("s-redirect").textContent = c.frameio_redirect_uri;
     if (c.dry_run) banner("<b>Dry run.</b> AutoHDR and Frame.io are simulated; nothing is uploaded and no credits are spent.", "flag");
     if (c.version !== APP_VERSION) { banner("<b>Restart needed.</b> This page is newer than the server behind it. In the terminal press Ctrl-C, run the start command again, then reload this page.", "flag"); return; }

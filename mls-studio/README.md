@@ -100,6 +100,21 @@ Drone, Reshoot, Exterior Reshoot, Interior Reshoot, Staging, Updated Exteriors);
 project fills in the client last used with it. A folder already named to the standard fills all three fields when it is scanned. Run stays
 disabled until all three are filled in.
 
+## Updates
+
+The Studio Hub site is where every copy of MLS Studio comes from, and it always holds the newest one.
+
+- **Starting MLS Studio** takes the newest published copy first, then starts (a few seconds; skipped when offline).
+- **While it is running**, a bar appears at the top when a newer copy is published: **Update now** swaps it in and
+  restarts by itself, in the same Terminal window. It refuses while a job is running. The copy it replaced is kept
+  in `~/Applications/MLS Studio/.previous/`.
+- **Copies older than 1.14** cannot do this. The hub's MLS Studio page shows them the one line to paste, once.
+- Keys, settings and the job list are not part of the app folder, so an update never touches them.
+
+For whoever changes the app: bump `APP_VERSION` in `server.py` and `static/app.js`, then run
+`zsh mls-studio/release.sh "what changed"` before committing. It writes `version.json`, which is the only way
+running copies learn that a release exists.
+
 ## Re-edit with a different look
 
 When a finished set should have been a different look, press **Re-edit…** on its job card, pick the

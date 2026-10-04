@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.13"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.14"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -655,6 +655,111 @@ RUNNERS = {}       # id -> thread
 CANCEL = set()
 
 
+# ----------------------------------------------------------------- updates --
+# The Studio Hub site is where every copy of MLS Studio comes from (install.sh downloads from it). Each release
+# also publishes version.json there, so a running copy can see that a newer one exists and replace itself with it.
+UPDATE_BASE = (os.environ.get("MLS_STUDIO_UPDATE_BASE") or "https://anomalycreativeco.github.io/mls-studio").rstrip("/")
+UPDATE_FILES = ["server.py", "frameio_mcp.py", "README.md", "install.sh", "static/index.html", "static/app.js",
+                "static/logomark.png", "static/logomark-white.png", "static/logo-white.png"]  # used when version.json lists none
+_update = {"latest": None, "notes": "", "files": None, "checked": 0.0, "error": None, "busy": False}
+
+
+def ver_tuple(v):
+    return tuple(int(x) for x in re.findall(r"\d+", str(v or "0"))[:4]) or (0,)
+
+
+def can_self_update():
+    """Only the installed copy replaces itself; a development or practice copy is left alone."""
+    if os.environ.get("MLS_STUDIO_SELF_UPDATE") == "1":
+        return True
+    return (not DRY_RUN) and APP_DIR == (Path.home() / "Applications" / "MLS Studio") and os.access(str(APP_DIR), os.W_OK)
+
+
+def fetch_published(rel, timeout=20):
+    url = "%s/%s?t=%d" % (UPDATE_BASE, rel, int(time.time()))
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"Cache-Control": "no-cache"}), timeout=timeout) as r:
+        return r.read()
+
+
+def check_update(force=False, timeout=6):
+    """What the hub is publishing right now. Cached for 30 minutes; never raises."""
+    if not force and time.time() - _update["checked"] < 1800:
+        return _update
+    _update["checked"] = time.time()
+    try:
+        d = json.loads(fetch_published("version.json", timeout).decode())
+        files = [f for f in (d.get("files") or []) if isinstance(f, str) and re.match(r"^[\w][\w ./-]*$", f) and ".." not in f]
+        _update.update(latest=str(d.get("version") or "") or None, notes=str(d.get("notes") or "")[:300], files=files or None, error=None)
+    except Exception as e:  # noqa - offline, or the hub is briefly unreachable
+        _update["error"] = "%s: %s" % (type(e).__name__, e)
+    return _update
+
+
+def update_status(refresh=True):
+    if refresh and time.time() - _update["checked"] >= 1800:
+        threading.Thread(target=check_update, daemon=True).start()  # never hold a page request on the network
+    latest = _update["latest"]
+    return {"current": APP_VERSION, "latest": latest, "notes": _update["notes"], "can_update": can_self_update(), "busy": _update["busy"],
+            "available": bool(latest) and ver_tuple(latest) > ver_tuple(APP_VERSION)}
+
+
+def apply_update():
+    """Download the published copy next to this one, check it, then swap it in. The copy being replaced is kept in
+    .previous/. Nothing in the app folder changes unless every file arrived and the new server is sound."""
+    u = check_update(force=True, timeout=15)
+    latest = u["latest"]
+    if not latest or ver_tuple(latest) <= ver_tuple(APP_VERSION):
+        raise ApiError("MLS Studio %s is already the newest version." % APP_VERSION)
+    files = u["files"] or UPDATE_FILES
+    tmp = Path(tempfile.mkdtemp(prefix="mls-update-"))
+    try:
+        for f in files:
+            (tmp / f).parent.mkdir(parents=True, exist_ok=True)
+            (tmp / f).write_bytes(fetch_published(f, 60))
+        src = (tmp / "server.py").read_text(encoding="utf-8")
+        try:
+            compile(src, "server.py", "exec")
+        except SyntaxError as e:
+            raise ApiError("The published update (%s) is damaged, so it was not installed and this copy keeps running. Tell Daniel. (%s)" % (latest, e))
+        got = re.search(r'^APP_VERSION = "([^"]+)"', src, re.M)
+        page = re.search(r'const APP_VERSION = "([^"]+)"', (tmp / "static" / "app.js").read_text(encoding="utf-8"))
+        if not got or not page or got.group(1) != latest or page.group(1) != latest:
+            raise ApiError("The published update is incomplete (the hub may still be rolling it out). Try again in a few minutes.")
+        prev = APP_DIR / ".previous"
+        shutil.rmtree(prev, ignore_errors=True)
+        for f in files:
+            if (APP_DIR / f).exists():
+                (prev / f).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(APP_DIR / f, prev / f)
+        for f in files:
+            (APP_DIR / f).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(tmp / f, APP_DIR / f)
+        return latest
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def restart_self():
+    """Become the new copy: same process, same terminal window, same port."""
+    args = [a for a in sys.argv[1:] if a != "--open"]
+    os.environ["MLS_STUDIO_JUST_UPDATED"] = "1"
+    os.execv(sys.executable, [sys.executable, str(APP_DIR / "server.py")] + args)
+
+
+def update_at_start():
+    """Starting MLS Studio is the moment nobody is mid-job, so a newer published copy is taken then."""
+    if os.environ.get("MLS_STUDIO_JUST_UPDATED") or not can_self_update() or get_config().get("auto_update", True) is False:
+        return
+    try:
+        u = check_update(force=True, timeout=5)
+        if u["latest"] and ver_tuple(u["latest"]) > ver_tuple(APP_VERSION):
+            log("MLS Studio %s is published (this is %s). Updating before starting…" % (u["latest"], APP_VERSION))
+            apply_update()
+            restart_self()
+    except Exception as e:  # noqa - an update must never stop the app from starting
+        log("Could not update (%s). Starting %s as it is." % (e, APP_VERSION))
+
+
 def get_config():
     cfg = dict(DEFAULT_CONFIG)
     cfg.update(load_json(CONFIG_PATH, {}))
@@ -673,6 +778,7 @@ def public_config():
     }
     cfg["dry_run"] = DRY_RUN
     cfg["version"] = APP_VERSION
+    cfg["update"] = update_status()
     cfg["port"] = PORT
     cfg["frameio_redirect_uri"] = REDIRECT_URI
     return cfg
@@ -1639,6 +1745,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_file(path[len("/static/"):])
             if path == "/api/config":
                 return self.send_json(public_config())
+            if path == "/api/update":
+                check_update(force=q.get("force") == "1")
+                return self.send_json(update_status(refresh=False))
             if path == "/api/autohdr/models":
                 hdr = autohdr_client()
                 return self.send_json({"models": hdr.models(), "transforms": hdr.capabilities()})
@@ -1681,6 +1790,27 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_error(404)
 
         body = self.read_json()
+        if path == "/api/update":
+            origin = self.headers.get("Origin") or ""
+            if origin and origin not in HUB_ORIGINS and origin not in ("http://localhost:%d" % PORT, "http://127.0.0.1:%d" % PORT):
+                return self.send_json({"error": "Not allowed from this page."}, 403)
+            if not can_self_update():
+                raise ApiError("This copy does not update itself. Run the install line from the Studio Hub's MLS Studio page.")
+            with _lock:
+                active = [x["name"] for x in JOBS.values() if x.get("status") in ("running", "queued")]
+                if active:
+                    raise ApiError("A job is still running (%s). Update when it has finished." % active[0])
+                if _update["busy"]:
+                    raise ApiError("An update is already in progress.")
+                _update["busy"] = True
+            try:
+                new = apply_update()
+            except Exception:
+                _update["busy"] = False
+                raise
+            log("Updated %s -> %s. Restarting…" % (APP_VERSION, new))
+            threading.Timer(0.8, restart_self).start()  # after this reply has gone out
+            return self.send_json({"ok": True, "version": new, "restarting": True})
         if path == "/api/config":
             return self.save_config(body)
         if path == "/api/frameio/resolve":
@@ -1759,7 +1889,7 @@ class Handler(BaseHTTPRequestHandler):
             cfg = get_config()
             for k in ("autohdr_client_id", "frameio_mode", "frameio_client_id", "frameio_account_id", "mls_limit_kb",
                       "default_indoor_model_id", "default_outdoor_model_id", "frameio_last_folder",
-                      "highres_folder_name", "mls_folder_name", "slack_notify", "slack_channel", "hub_sync", "editor_name"):
+                      "highres_folder_name", "mls_folder_name", "slack_notify", "slack_channel", "hub_sync", "editor_name", "auto_update"):
                 if k in body:
                     cfg[k] = body[k]
             save_json(CONFIG_PATH, cfg)
@@ -1904,6 +2034,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    update_at_start()
     for j in load_json(JOBS_PATH, {}).get("jobs", []):
         if j.get("status") == "running":
             j["status"] = "interrupted"

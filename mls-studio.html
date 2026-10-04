@@ -67,10 +67,24 @@ body.live .shell{display:none}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .small{font-size:11.5px;color:var(--faint)}
 a{color:var(--green-deep)}
+/* a copy older than the one published here: say so over the embedded app */
+#upd{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:5;width:min(720px,calc(100% - 24px));background:var(--card);box-shadow:var(--shadow);border-left:3px solid var(--amber);border-radius:0 16px 16px 0;padding:14px 16px;display:none;flex-direction:column;gap:9px}
+#upd.on{display:flex}
+#upd ol{margin:0 0 0 18px;display:flex;flex-direction:column;gap:5px;color:var(--mid)}
 </style>
 </head>
 <body>
 <iframe id="app" title="MLS Studio" allow="clipboard-write; clipboard-read"></iframe>
+<div id="upd" role="status">
+  <div><b id="updTitle"></b> <span class="small" id="updNote"></span></div>
+  <ol>
+    <li>Click the Terminal window that is running MLS Studio and press Control-C.</li>
+    <li>Paste this line there and press Return:
+      <div class="cmd" style="margin-top:6px"><code id="cmdUpdate">curl -fsSL https://anomalycreativeco.github.io/mls-studio/install.sh | zsh</code><button class="btn" data-copy="cmdUpdate">Copy</button></div></li>
+    <li>Reload this page. From then on MLS Studio updates itself.</li>
+  </ol>
+  <div class="row"><button class="btn" id="updLater">Later</button></div>
+</div>
 
 <div class="shell">
   <div class="top">
@@ -86,7 +100,7 @@ a{color:var(--green-deep)}
     <div class="steps">
       <div class="st"><div><b>Already installed? Start it.</b><span class="small">Paste in Terminal (⌘-Space, type Terminal). Leave the window open while you work.</span>
         <div class="cmd" style="margin-top:8px"><code id="cmdStart">python3 ~/Applications/MLS\ Studio/server.py --open</code><button class="btn" data-copy="cmdStart">Copy</button></div></div></div>
-      <div class="st"><div><b>First time on this Mac? Install it.</b><span class="small">One line; it downloads MLS Studio into ~/Applications/MLS Studio and starts it. Run the same line again any time to update.</span>
+      <div class="st"><div><b>First time on this Mac? Install it.</b><span class="small">One line; it downloads MLS Studio into ~/Applications/MLS Studio and starts it. After that it keeps itself up to date: it takes the newest version each time it starts.</span>
         <div class="cmd" style="margin-top:8px"><code id="cmdInstall">curl -fsSL https://anomalycreativeco.github.io/mls-studio/install.sh | zsh</code><button class="btn" data-copy="cmdInstall">Copy</button></div></div></div>
       <div class="st"><div><b>Then come back here.</b><span class="small">This page checks every few seconds and switches to the app as soon as it answers. Or open it directly at <a href="http://localhost:8765" target="_blank" rel="noopener">localhost:8765</a>.</span></div></div>
     </div>
@@ -115,12 +129,30 @@ a{color:var(--green-deep)}
       if(!live){ live=true; app.src=base+"/?embedded=1&theme="+encodeURIComponent(theme); document.body.classList.add("live"); }
       state.innerHTML='<i class="dot" style="background:var(--green)"></i>MLS Studio v'+(c.version||"")+' running';
       clearInterval(timer); timer=null;
+      checkUpdate(c.version);
     }catch(e){
       live=false; document.body.classList.remove("live"); app.src="about:blank";
       state.innerHTML='<i class="dot bad"></i>Not running on this Mac';
       offline.hidden=false;
       if(!timer) timer=setInterval(check,5000);
     }
+  }
+  // This site is where every copy is downloaded from, so version.json here is the newest there is. Copies from
+  // 1.14 on show their own Update button; older ones cannot, so the steps are shown over the app instead.
+  const num=s=>String(s||"0").split(".").map(n=>parseInt(n,10)||0);
+  const newer=(a,b)=>{a=num(a);b=num(b);for(let i=0;i<Math.max(a.length,b.length);i++){const x=a[i]||0,y=b[i]||0;if(x!==y)return x>y;}return false;};
+  async function checkUpdate(running){
+    const box=document.getElementById("upd");
+    try{
+      const v=await (await fetch("mls-studio/version.json?t="+Date.now(),{cache:"no-store"})).json();
+      const old=newer("1.14",running);
+      let dismissed=null; try{dismissed=sessionStorage.getItem("mls-upd-later");}catch(e){}
+      if(!(old&&newer(v.version,running))||dismissed===v.version){ box.classList.remove("on"); return; }
+      document.getElementById("updTitle").textContent="Update needed: MLS Studio v"+v.version+" is out, this Mac is running v"+(running||"?")+".";
+      document.getElementById("updNote").textContent=v.notes||"";
+      document.getElementById("updLater").onclick=()=>{ try{sessionStorage.setItem("mls-upd-later",v.version);}catch(e){} box.classList.remove("on"); };
+      box.classList.add("on");
+    }catch(e){ box.classList.remove("on"); }
   }
   document.getElementById("retry").onclick=check;
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{const t=document.getElementById(b.dataset.copy).textContent;try{await navigator.clipboard.writeText(t);b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1400);}catch(e){const s=window.getSelection(),rg=document.createRange();rg.selectNodeContents(document.getElementById(b.dataset.copy));s.removeAllRanges();s.addRange(rg);}});

@@ -1,0 +1,16 @@
+{
+ "version": "1.14",
+ "notes": "MLS Studio now updates itself: an Update now bar while it runs, and automatically each time it starts.",
+ "released": "2026-10-04",
+ "files": [
+  "server.py",
+  "frameio_mcp.py",
+  "README.md",
+  "install.sh",
+  "static/index.html",
+  "static/app.js",
+  "static/logomark.png",
+  "static/logomark-white.png",
+  "static/logo-white.png"
+ ]
+}
