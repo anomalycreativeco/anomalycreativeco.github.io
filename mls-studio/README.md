@@ -115,6 +115,17 @@ again. It runs as its own job: re-render, download, MLS resize, Frame.io, Slack.
 - A look applies to every ticked photo, interior or exterior. For a mixed set, run it once for the
   interiors and once for the exteriors.
 - A resumed re-edit never resubmits a photo it already sent (a repeat would be charged again).
+- The re-render starts from the original camera files (the brackets), never from the earlier edit. It
+  lands as a new version in the photo's AutoHDR history; AutoHDR's download only ever returns a photo's
+  *current* version and does not switch to the new one by itself, so MLS Studio makes the new version
+  current, checks that AutoHDR agrees, and only then downloads. If AutoHDR still shows the earlier look
+  the job stops with an error instead of delivering the first edit a second time.
+- Anything done on top of the first look (AutoHDR's automatic camera removal, a prompt edit) is not part
+  of a fresh render. The job card lists those photos so they can be checked.
+- Re-edits made with 1.11 or 1.12 delivered the first edit again. Their job cards show **Fetch the
+  re-edited photos**: it pulls the versions AutoHDR already made (no new charge), replaces the local
+  copies, and uploads to `Re-edit N - <Look> (corrected)` in Frame.io with a new share link. Delete the
+  uncorrected Frame.io folder by hand afterwards.
 
 ## Credits (AutoHDR)
 

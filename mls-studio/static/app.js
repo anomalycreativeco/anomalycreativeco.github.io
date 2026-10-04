@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.12";
+  const APP_VERSION = "1.13";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -406,6 +406,11 @@
       if (r.slack_posted) links.push(`<span class="small">Slack: posted</span>`);
       if (r.slack_error) links.push(`<span class="small" style="color:var(--warn)">Slack failed: ${esc(r.slack_error)}</span>`);
       const failedResize = (r.resize_failed || []).length ? `<div class="flag"><b>${r.resize_failed.length} could not get under the limit:</b> ${esc(r.resize_failed.join(", "))}</div>` : "";
+      const rsJob = (j.options || {}).restyle;
+      // through 1.12 a re-edit delivered the earlier look again; the real re-render is still in AutoHDR
+      const stale = rsJob && j.status === "done" && r.restyle_jobs && !r.restyle_promoted;
+      const staleFlag = stale ? `<div class="flag"><b>This re-edit delivered the first edit again.</b> AutoHDR made the new look but MLS Studio (before 1.13) downloaded the old version. The re-edited photos are still in AutoHDR and already paid for. <button class="btn sm primary" data-act="refetch" data-id="${j.id}" style="margin-left:8px">Fetch the re-edited photos</button></div>` : "";
+      const lostFlag = (r.restyle_lost_edits || []).length ? `<div class="flag"><b>${r.restyle_lost_edits.length} had an edit on top of the first look that a fresh render does not carry over — check them:</b> ${esc(r.restyle_lost_edits.join(", "))}</div>` : "";
       const btns = [];
       if (running) btns.push(`<button class="btn sm" data-act="cancel" data-id="${j.id}">Cancel</button>`);
       if (["failed", "interrupted", "cancelled"].includes(j.status)) btns.push(`<button class="btn sm primary" data-act="resume" data-id="${j.id}">Resume</button>`);
@@ -416,7 +421,7 @@
         <div class="sub">${j.files.length} files · ${esc(j.source)} · ${new Date(j.created * 1000).toLocaleString()}</div>
         ${running || j.status === "queued" ? `<div class="bar ${p.total ? "" : "indet"}"><i style="width:${pct}%"></i></div><div class="label">${esc(STEP_LABEL[j.step] || j.step || "Starting")}${p.label ? " · " + esc(p.label) : ""}${p.total ? ` · ${p.current}/${p.total}` : ""}</div>` : ""}
         ${j.error ? `<div class="err">${esc(j.error)}</div>` : ""}
-        ${failedResize}
+        ${failedResize}${staleFlag}${lostFlag}
         ${links.length ? `<div class="links">${links.join("")}</div>` : ""}
         <details ${running ? "open" : ""}><summary>Log</summary><pre class="log">${esc((j.log || []).slice(-40).join("\n"))}</pre></details>
       </div>`;

@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.12"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.13"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -289,6 +289,13 @@ class AutoHDR:
     def transform_job(self, job_id):
         return self.call("GET", "/transforms/%s" % job_id)[1]
 
+    def history(self, photoshoot_id, image_uuid):
+        return self.call("GET", "/photoshoots/%s/photos/%s/history" % (photoshoot_id, image_uuid))[1].get("steps", [])
+
+    def set_version(self, photoshoot_id, image_uuid, image_version_uuid):
+        """Make one of a photo's history versions its current one: the version download returns. Free."""
+        return self.call("POST", "/photoshoots/%s/photos/%s/version" % (photoshoot_id, image_uuid), {"image_version_uuid": image_version_uuid})[1]
+
 
 class DryAutoHDR:
     """Simulates AutoHDR so the whole pipeline can be exercised without spending credits."""
@@ -334,19 +341,49 @@ class DryAutoHDR:
         done = time.time() - s["t"] > 8
         return {"status": "success" if done else "in_progress", "pipeline": "hdr", "image_count": len(s["files"]), "awaiting_files": False}
 
+    @staticmethod
+    def _first(pid, image_uuid):
+        return str(uuid.uuid5(uuid.NAMESPACE_URL, "dry/%s/%s/first-edit" % (pid, image_uuid)))
+
     def photos(self, pid):
-        return [{"image_uuid": str(uuid.uuid5(uuid.NAMESPACE_URL, "dry/%s/%s" % (pid, f))), "image_version_uuid": str(uuid.uuid4()),
-                 "name": Path(f).stem + ".jpg", "_src": f}
-                for f in self._shoots.get(pid, {"files": []})["files"]]
+        s = self._shoots.get(int(pid), {"files": []})
+        out = []
+        for f in s["files"]:
+            iu = str(uuid.uuid5(uuid.NAMESPACE_URL, "dry/%s/%s" % (pid, f)))
+            out.append({"image_uuid": iu, "image_version_uuid": (s.get("heads") or {}).get(iu) or self._first(pid, iu),
+                        "name": Path(f).stem + ".jpg", "_src": f})
+        return out
 
     def download(self, pid, items):
-        return {"credits_charged": 0, "downloads": [{"image_uuid": i["image_uuid"], "filename": i["filename"], "url": "dry://" + i["filename"]} for i in items]}
+        heads = {p["image_uuid"]: p["image_version_uuid"] for p in self.photos(pid)}
+        return {"credits_charged": 0, "downloads": [{"image_uuid": i["image_uuid"], "filename": i["filename"], "url": "dry://" + i["filename"],
+                                                     "version": heads.get(i["image_uuid"])} for i in items]}
 
-    def submit_transform(self, *a, **k):
-        return {"job_id": str(uuid.uuid4()), "status": "queued"}
+    # Like the real service: a re-render lands in the photo's history but does NOT become its current version.
+    def submit_transform(self, pid, image_uuid, image_version_uuid, transform_name, **extra):
+        jid = str(uuid.uuid4())
+        s = self._shoots.setdefault(int(pid), {"files": [], "t": 0})
+        s.setdefault("jobs", {})[jid] = {"image_uuid": image_uuid, "out": str(uuid.uuid4()), "transform": transform_name}
+        self._save()
+        return {"job_id": jid, "status": "queued"}
 
     def transform_job(self, job_id):
+        for s in self._shoots.values():
+            if job_id in (s.get("jobs") or {}):
+                return {"status": "succeeded", "output_image_version_uuid": s["jobs"][job_id]["out"]}
         return {"status": "succeeded", "output_image_version_uuid": str(uuid.uuid4())}
+
+    def history(self, pid, image_uuid):
+        s = self._shoots.get(int(pid), {})
+        head = (s.get("heads") or {}).get(image_uuid) or self._first(pid, image_uuid)
+        vs = [self._first(pid, image_uuid)] + [x["out"] for x in (s.get("jobs") or {}).values() if x["image_uuid"] == image_uuid]
+        return [{"image_version_uuid": v, "parent_image_version_uuid": "dry-original", "is_head": v == head, "label": "Enhanced"} for v in vs]
+
+    def set_version(self, pid, image_uuid, image_version_uuid):
+        s = self._shoots.setdefault(int(pid), {"files": [], "t": 0})
+        s.setdefault("heads", {})[image_uuid] = image_version_uuid
+        self._save()
+        return {"photoshoot_id": int(pid), "image_uuid": image_uuid, "image_version_uuid": image_version_uuid}
 
 
 # ------------------------------------------------------------- Frame.io API --
@@ -1059,7 +1096,8 @@ def step_reedit(job, cfg):
 
 def step_restyle(job, cfg):
     """Re-render already-processed photos with another look (AutoHDR's `style` transform). It starts again from
-    the original files, so nothing is re-uploaded, and each photo's new look becomes its current version."""
+    the original camera files, not from the earlier edit, so nothing is re-uploaded. The result is a NEW version in
+    the photo's history; step_download makes it the current one before anything is fetched."""
     hdr = autohdr_client()
     pid = job["results"]["photoshoot_id"]
     rs = job["options"]["restyle"]
@@ -1068,7 +1106,11 @@ def step_restyle(job, cfg):
     if not photos:
         raise ApiError("AutoHDR no longer lists these photos for shoot %s." % pid)
     pending = job["results"].get("restyle_jobs") or {}
-    jlog(job, "Re-editing %d photos with %s%s" % (len(photos), rs["model_name"], " (%s credits each)" % rs["cost"] if rs.get("cost") else ""))
+    todo = [p for p in photos if p["image_uuid"] not in pending]
+    if todo:
+        jlog(job, "Re-editing %d photos with %s%s" % (len(todo), rs["model_name"], " (%s credits each)" % rs["cost"] if rs.get("cost") else ""))
+    else:
+        jlog(job, "Using the %d re-renders AutoHDR already made in %s (nothing re-submitted)." % (len(pending), rs["model_name"]))
     for p in photos:
         check_cancel(job)
         if p["image_uuid"] in pending:
@@ -1089,13 +1131,20 @@ def step_restyle(job, cfg):
         for k in open_:
             r = hdr.transform_job(pending[k]["job_id"])
             pending[k]["status"] = r.get("status")
+            if r.get("status") == "succeeded":
+                pending[k]["output"] = r.get("output_image_version_uuid")
             if r.get("status") == "failed":
                 pending[k]["error"] = r.get("failure_message")
         job["results"]["restyle_jobs"] = pending
         jset(job)
         time.sleep(1 if DRY_RUN else 10)
-    ok = [k for k, v in pending.items() if v.get("status") == "succeeded"]
+    for v in pending.values():  # a re-edit made before 1.13 never recorded its new versions; AutoHDR still has them
+        if v.get("status") == "succeeded" and "output" not in v:
+            v["output"] = hdr.transform_job(v["job_id"]).get("output_image_version_uuid")
+    ok = [k for k, v in pending.items() if v.get("status") == "succeeded" and v.get("output")]
     failed = [v.get("name") or k for k, v in pending.items() if v.get("status") == "failed"]
+    failed += [v.get("name") or k for k, v in pending.items() if v.get("status") == "succeeded" and not v.get("output")]  # ran, changed nothing
+    job["results"]["restyle_jobs"] = pending
     job["results"]["restyle_ok"] = ok
     job["results"]["restyle_failed"] = failed
     jset(job)
@@ -1104,9 +1153,60 @@ def step_restyle(job, cfg):
     jlog(job, "Re-edit finished: %d photos in %s%s." % (len(ok), rs["model_name"], " (%d failed, refunded, earlier look kept: %s)" % (len(failed), ", ".join(failed)) if failed else ""))
 
 
+_SHOOT_LOCKS = {}
+
+
+def shoot_lock(pid):
+    with _lock:
+        return _SHOOT_LOCKS.setdefault(str(pid), threading.Lock())
+
+
+def use_restyle_versions(job, hdr, pid):
+    """AutoHDR's download returns a photo's CURRENT version, and a re-render does not reliably become it (through
+    1.12 a re-edit therefore brought the first edit down again). Make each new version current, then prove it;
+    if AutoHDR still shows the earlier look, stop rather than deliver it a second time."""
+    jobs = job["results"].get("restyle_jobs") or {}
+    want = {k: jobs[k]["output"] for k in job["results"].get("restyle_ok") or [] if (jobs.get(k) or {}).get("output")}
+    if not want:
+        raise ApiError("AutoHDR reported no new versions for this re-edit, so there is nothing new to download.")
+    heads = {p["image_uuid"]: p.get("image_version_uuid") for p in hdr.photos(pid)}
+    todo = [k for k in want if heads.get(k) != want[k]]
+    lost = []
+    for n, k in enumerate(todo, 1):
+        check_cancel(job)
+        try:  # an edit stacked on the earlier look (camera removal, a prompt edit) is not part of a fresh render
+            by = {s.get("image_version_uuid"): s for s in hdr.history(pid, k)}
+            old, new = by.get(heads.get(k)), by.get(want[k])
+            if old and new and old.get("parent_image_version_uuid") != new.get("parent_image_version_uuid"):
+                lost.append("%s (%s)" % (jobs[k].get("name") or k, old.get("label") or "edit"))
+        except ApiError:
+            pass
+        hdr.set_version(pid, k, want[k])
+        jset(job, progress={"current": n, "total": len(todo), "label": "Switching to the new look"})
+    heads = {p["image_uuid"]: p.get("image_version_uuid") for p in hdr.photos(pid)}
+    wrong = [jobs[k].get("name") or k for k in want if heads.get(k) != want[k]]
+    if wrong:
+        raise ApiError("AutoHDR still shows the earlier look as current for %d photo%s (%s), so nothing was downloaded. Press Resume to try again."
+                       % (len(wrong), "" if len(wrong) == 1 else "s", ", ".join(wrong[:6]) + ("…" if len(wrong) > 6 else "")))
+    job["results"]["restyle_promoted"] = True
+    job["results"]["restyle_lost_edits"] = lost
+    jset(job)
+    jlog(job, "AutoHDR now has the new look as the current version of %d photo%s." % (len(want), "" if len(want) == 1 else "s"))
+    if lost:
+        jlog(job, "NOTE: %d had an edit on top of the earlier look that a fresh render does not carry over: %s" % (len(lost), ", ".join(lost)))
+
+
 def step_download(job, cfg):
     hdr = autohdr_client()
     pid = job["results"]["photoshoot_id"]
+    if job["options"].get("restyle"):
+        with shoot_lock(pid):  # two re-edits of one shoot must not swap versions under each other mid-download
+            use_restyle_versions(job, hdr, pid)
+            return download_photos(job, cfg, hdr, pid)
+    return download_photos(job, cfg, hdr, pid)
+
+
+def download_photos(job, cfg, hdr, pid):
     photos = hdr.photos(pid)
     if not photos:
         raise ApiError("AutoHDR returned no photos for shoot %s." % pid)
@@ -1198,9 +1298,10 @@ def step_frameio(job, cfg):
         jlog(job, "%s Frame.io folder '%s'" % ("Created" if created else "Using existing", step_name))
         job["results"]["frameio_shoot_url"] = made.get("view_url")
     if rs:
-        sub_folder, created = fio.find_or_create_folder(acct, parent, rs["folder"])
+        rs_folder = rs.get("frameio_folder") or rs["folder"]
+        sub_folder, created = fio.find_or_create_folder(acct, parent, rs_folder)
         parent = sub_folder["id"]
-        jlog(job, "%s Frame.io folder '%s' for the re-edit" % ("Created" if created else "Using existing", rs["folder"]))
+        jlog(job, "%s Frame.io folder '%s' for the re-edit" % ("Created" if created else "Using existing", rs_folder))
         job["results"]["frameio_shoot_url"] = sub_folder.get("view_url")
     sets = [(cfg.get("highres_folder_name", "High Res"), highres)]
     if mls:
@@ -1215,7 +1316,7 @@ def step_frameio(job, cfg):
         links[name] = folder.get("view_url")
         existing = {c.get("name") for c in fio.children(acct, folder["id"]) if c.get("type") == "file"}
         uploaded = skipped = 0
-        jlog(job, "Uploading %d files to Frame.io › %s / %s" % (len(files), " / ".join(chain + ([rs["folder"]] if rs else [])) or dest.get("path", ""), name))
+        jlog(job, "Uploading %d files to Frame.io › %s / %s" % (len(files), " / ".join(chain + ([rs.get("frameio_folder") or rs["folder"]] if rs else [])) or dest.get("path", ""), name))
         for f in files:
             check_cancel(job)
             _, state = fio.upload_file(acct, folder["id"], f, existing)
@@ -1281,7 +1382,7 @@ def slack_reedit_message(job, cfg):
     n, mls = len(r.get("highres_files") or []), len(r.get("mls_files") or [])
     text = "Re-edit delivered for %s: %s — %d photo%s in %s" % (client, shoot, n, "" if n == 1 else "s", rs["model_name"])
     fields = "*Client:* %s\n*Shoot:* %s\n*%d* photo%s re-edited with *%s*%s, in the folder *%s*" % (
-        client, shoot, n, "" if n == 1 else "s", rs["model_name"], (" + *%d* MLS" % mls) if mls else "", rs["folder"])
+        client, shoot, n, "" if n == 1 else "s", rs["model_name"], (" + *%d* MLS" % mls) if mls else "", rs.get("frameio_folder") or rs["folder"])
     blocks = [{"type": "header", "text": {"type": "plain_text", "text": ("Re-edit delivered for %s" % client)[:150], "emoji": False}},
               {"type": "section", "text": {"type": "mrkdwn", "text": fields}}]
     link_bits = []
@@ -1294,6 +1395,8 @@ def slack_reedit_message(job, cfg):
     ctx = ["AutoHDR shoot #%s" % r["photoshoot_id"]] if r.get("photoshoot_id") else []
     if r.get("restyle_failed"):
         ctx.append("%d could not be re-edited" % len(r["restyle_failed"]))
+    if r.get("restyle_lost_edits"):
+        ctx.append("%d lost an edit made after the first look (check them)" % len(r["restyle_lost_edits"]))
     ctx.append("%d min · MLS Studio" % max(1, int((time.time() - job.get("created", time.time())) / 60)))
     blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": "  ·  ".join(ctx)}]})
     return text, blocks
@@ -1612,7 +1715,7 @@ class Handler(BaseHTTPRequestHandler):
             if not parent:
                 return self.send_json({"error": "No such job"}, 404)
             return self.create_reedit(parent, body)
-        m = re.match(r"^/api/jobs/([\w-]+)/(cancel|resume|delete)$", path)
+        m = re.match(r"^/api/jobs/([\w-]+)/(cancel|resume|delete|refetch)$", path)
         if m:
             job = JOBS.get(m.group(1))
             if not job:
@@ -1625,6 +1728,21 @@ class Handler(BaseHTTPRequestHandler):
                 if job["status"] in ("running",):
                     raise ApiError("Job is already running.")
                 jlog(job, "Resuming from step '%s'." % job.get("step"))
+                start_job(job)
+            elif action == "refetch":
+                # Through 1.12 a re-edit downloaded each photo's current version, which AutoHDR had left on the
+                # earlier look. The re-rendered versions exist and are paid for, so only delivery is repeated.
+                rs = (job.get("options") or {}).get("restyle")
+                r = job.get("results") or {}
+                if not rs or job["status"] != "done" or not r.get("restyle_jobs"):
+                    raise ApiError("Only a finished re-edit can be fetched again.")
+                if r.get("restyle_promoted"):
+                    raise ApiError("This re-edit already delivered the new look.")
+                rs["frameio_folder"] = rs["folder"] + " (corrected)"  # the first upload holds the earlier look under the same file names
+                job["results"] = {k: r[k] for k in ("photoshoot_id", "restyle_jobs") if k in r}
+                job["steps"] = plan_steps(job)
+                jset(job, status="queued", step=None, step_index=0, error=None, progress={"current": 0, "total": 0, "label": ""})
+                jlog(job, "Fetching the re-edited photos again. Nothing is re-submitted to AutoHDR, so there is no new charge.")
                 start_job(job)
             elif action == "delete":
                 if job["status"] == "running":
