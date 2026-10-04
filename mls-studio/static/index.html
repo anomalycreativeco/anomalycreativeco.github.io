@@ -92,6 +92,18 @@ body.embedded #btn-theme{display:none}
 .row>input[type=text]{flex:1;width:auto;min-width:220px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px}
+@media (max-width:640px){.grid3{grid-template-columns:1fr}}
+.nameprev{font-family:var(--mono);font-size:11.5px;color:var(--mid);background:var(--line);border-radius:8px;padding:7px 10px}
+.nameprev b{color:var(--ink);font-weight:600}
+/* re-edit picker */
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;max-height:340px;overflow:auto;padding:2px}
+.thumb{position:relative;display:block;border-radius:10px;overflow:hidden;background:var(--line);cursor:pointer;aspect-ratio:3/2;outline:2px solid transparent;outline-offset:-2px}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb input{position:absolute;top:6px;left:6px;width:16px;height:16px;accent-color:var(--green-deep)}
+.thumb span{position:absolute;left:0;right:0;bottom:0;font-family:var(--mono);font-size:9px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65));padding:10px 6px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb.on{outline-color:var(--green-deep)}
+.thumb:not(.on) img{opacity:.45}
 label.f{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
 label.f input,label.f select,label.f textarea{font-family:var(--sans);font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink)}
 input[type=text],input[type=password],input[type=number],select,textarea{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;width:100%;color:var(--ink);box-shadow:var(--shadow-sm)}
@@ -242,9 +254,15 @@ footer{border-top:1px solid var(--line);padding-top:14px;font-size:11.5px;color:
         <button class="btn" id="btn-scan">Scan</button>
       </div>
       <div id="src-info"></div>
-      <label class="f">Shoot name (becomes the AutoHDR address and the Frame.io folder name)
-        <input type="text" id="shoot-name" placeholder="e.g. 214 Hawthorne Ln">
-      </label>
+      <div class="grid3">
+        <label class="f">Client <input type="text" id="nm-client" list="nm-clients" placeholder="e.g. RCH" autocomplete="off"></label>
+        <label class="f">Address <input type="text" id="nm-address" placeholder="e.g. 1208 Barcroft" autocomplete="off"></label>
+        <label class="f">Shoot type <input type="text" id="nm-type" list="nm-types" placeholder="e.g. MLS" autocomplete="off"></label>
+      </div>
+      <datalist id="nm-clients"></datalist>
+      <datalist id="nm-types"></datalist>
+      <div class="nameprev" id="nm-preview">Shoot name: <b>Client - Address_Shoot type</b></div>
+      <p class="note">One name everywhere: the AutoHDR shoot, the Frame.io folder, the Slack note and the hub card.</p>
     </div>
   </article>
 
@@ -326,6 +344,30 @@ footer{border-top:1px solid var(--line);padding-top:14px;font-size:11.5px;color:
 
   <footer>Runs entirely on this Mac. AutoHDR, Frame.io and Slack keys live in the macOS Keychain; nothing is sent anywhere except to those three services.</footer>
 </div>
+
+<dialog id="reedit-dlg">
+  <div class="inner">
+    <h2>Re-edit with a different look</h2>
+    <p class="small" id="re-title"></p>
+    <div id="re-msg"></div>
+    <label class="f">New look <select id="re-look"></select></label>
+    <div class="row" style="justify-content:space-between">
+      <span class="small" id="re-count"></span>
+      <span class="row"><button class="btn sm" id="re-all" type="button">Select all</button><button class="btn sm" id="re-none" type="button">Select none</button></span>
+    </div>
+    <div class="thumbs" id="re-grid"></div>
+    <div class="row">
+      <label class="switch"><input type="checkbox" id="re-resize" checked> <span>Make the MLS set</span></label>
+      <label class="switch"><input type="checkbox" id="re-frameio" checked> <span>Upload to Frame.io</span></label>
+    </div>
+    <p class="note" id="re-note">AutoHDR re-renders each ticked photo from the original files with the new look, so nothing is uploaded again. The first delivery stays exactly where it is; the re-edit lands beside it in its own folder, locally and in Frame.io.</p>
+    <div class="nameprev" id="re-est"></div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" id="re-cancel" type="button">Cancel</button>
+      <button class="btn primary" id="re-run" type="button">Re-edit</button>
+    </div>
+  </div>
+</dialog>
 
 <dialog id="settings">
   <div class="inner">

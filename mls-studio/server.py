@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.10"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.11"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -77,12 +77,15 @@ DEFAULT_CONFIG = {
     "mls_folder_name": "MLS",
     "slack_notify": True,             # post to Slack after a Frame.io delivery
     "slack_channel": "#general",      # used with a bot token; a webhook already targets its channel
+    "clients": [],                    # client names used before, newest first (suggestions for the naming fields)
+    "shoot_types": [],                # shoot types typed by hand, on top of the standard list in the page
+    "client_by_project": {},          # Frame.io project id -> the client name last used with it
     "hub_sync": True,                 # report job progress to the Studio Hub home page (needs the hub key)
     "editor_name": "",                # how this Mac's jobs are labelled on the hub; blank = Frame.io name
 }
 HUB_FIRESTORE = "https://firestore.googleapis.com/v1/projects/anomaly-post-pipeline/databases/(default)/documents/hub/mlsJobs"
 HUB_HEARTBEAT = 60                    # seconds between pushes while a job is running
-HUB_STEP_WEIGHTS = {"create": 1, "upload": 3, "commit": 1, "process": 10, "reedit": 4, "download": 3, "resize": 2, "frameio": 3, "notify": 1, "done": 0}
+HUB_STEP_WEIGHTS = {"create": 1, "upload": 3, "commit": 1, "process": 10, "reedit": 4, "restyle": 8, "download": 3, "resize": 2, "frameio": 3, "notify": 1, "done": 0}
 
 _lock = threading.RLock()
 
@@ -332,7 +335,8 @@ class DryAutoHDR:
         return {"status": "success" if done else "in_progress", "pipeline": "hdr", "image_count": len(s["files"]), "awaiting_files": False}
 
     def photos(self, pid):
-        return [{"image_uuid": str(uuid.uuid4()), "image_version_uuid": str(uuid.uuid4()), "name": Path(f).stem + ".jpg", "_src": f}
+        return [{"image_uuid": str(uuid.uuid5(uuid.NAMESPACE_URL, "dry/%s/%s" % (pid, f))), "image_version_uuid": str(uuid.uuid4()),
+                 "name": Path(f).stem + ".jpg", "_src": f}
                 for f in self._shoots.get(pid, {"files": []})["files"]]
 
     def download(self, pid, items):
@@ -733,6 +737,9 @@ def hub_job_view(j):
     client = dest.get("project_name") or ((dest.get("trail") or [{}])[0].get("name")) or ""
     steps = j.get("steps") or []
     looks = [n for n in (o.get("indoor_model_name"), o.get("outdoor_model_name")) if n]
+    if o.get("restyle"):
+        looks = [o["restyle"].get("model_name") or "new look"]
+    client = client or (j.get("naming") or {}).get("client") or ""
     return {
         "id": j["id"], "name": j.get("name") or "", "client": client, "status": j.get("status"),
         "step": j.get("step"), "step_index": j.get("step_index", 0), "steps": steps,
@@ -816,7 +823,9 @@ def start_hub_worker():
 def plan_steps(job):
     o = job["options"]
     steps = []
-    if o.get("do_autohdr"):
+    if o.get("restyle"):
+        steps += ["restyle", "download"]
+    elif o.get("do_autohdr"):
         steps += ["create", "upload", "commit", "process"]
         if (o.get("reedit_prompt") or "").strip():
             steps.append("reedit")
@@ -865,6 +874,41 @@ def run_job(job):
         jlog(job, "FAILED: %s: %s" % (type(e).__name__, e))
     finally:
         CANCEL.discard(job["id"])
+
+
+def clean_naming(n):
+    """{client, address, type} with tidy whitespace; None when the page sent no naming fields at all."""
+    if not isinstance(n, dict):
+        return None
+    out = {k: re.sub(r"\s+", " ", str(n.get(k) or "")).strip() for k in ("client", "address", "type")}
+    if not any(out.values()):
+        return None
+    missing = [label for k, label in (("client", "Client"), ("address", "Address"), ("type", "Shoot type")) if not out[k]]
+    if missing:
+        raise ApiError("Fill in %s to name the shoot." % " and ".join(missing))
+    return out
+
+
+def compose_name(n):
+    """The house naming standard: Client - Address_Shoot type  (RCH - 1208 Barcroft_MLS Interior).
+    One name everywhere: the AutoHDR shoot, the Frame.io folder, the Slack note and the hub card."""
+    safe = lambda v: re.sub(r"[/\\:]+", "-", v)
+    return "%s - %s_%s" % (safe(n["client"]), safe(n["address"]), safe(n["type"]))
+
+
+def remember(lst, value, cap=60):
+    """Newest-first list of distinct values (case-insensitive), for the naming suggestions."""
+    out = [value] + [v for v in (lst or []) if isinstance(v, str) and v.strip().lower() != value.strip().lower()]
+    return out[:cap]
+
+
+def set_dir(job, cfg, which):
+    """Where a job keeps its High Res / MLS set on disk. A re-edit gets its own folder beside the first delivery."""
+    base = output_root(job)
+    rs = job["options"].get("restyle")
+    if rs:
+        base = base / rs["folder"]
+    return base / (cfg.get("highres_folder_name", "High Res") if which == "highres" else cfg.get("mls_folder_name", "MLS"))
 
 
 def source_files(job):
@@ -990,13 +1034,65 @@ def step_reedit(job, cfg):
     jlog(job, "Re-edits finished%s." % (" (%d failed, refunded, original kept)" % len(failed) if failed else ""))
 
 
+def step_restyle(job, cfg):
+    """Re-render already-processed photos with another look (AutoHDR's `style` transform). It starts again from
+    the original files, so nothing is re-uploaded, and each photo's new look becomes its current version."""
+    hdr = autohdr_client()
+    pid = job["results"]["photoshoot_id"]
+    rs = job["options"]["restyle"]
+    want = {Path(n).stem.lower() for n in job["files"]}
+    photos = [p for p in hdr.photos(pid) if Path(p.get("name") or "").stem.lower() in want]
+    if not photos:
+        raise ApiError("AutoHDR no longer lists these photos for shoot %s." % pid)
+    pending = job["results"].get("restyle_jobs") or {}
+    jlog(job, "Re-editing %d photos with %s%s" % (len(photos), rs["model_name"], " (%s credits each)" % rs["cost"] if rs.get("cost") else ""))
+    for p in photos:
+        check_cancel(job)
+        if p["image_uuid"] in pending:
+            continue  # AutoHDR charges again for a repeated submit, so a resumed job never resubmits
+        r = hdr.submit_transform(pid, p["image_uuid"], p["image_version_uuid"], "style", model_id=int(rs["model_id"]))
+        pending[p["image_uuid"]] = {"job_id": r["job_id"], "status": r.get("status"), "name": p.get("name")}
+        job["results"]["restyle_jobs"] = pending
+        jset(job, progress={"current": len(pending), "total": len(photos), "label": "Submitting to AutoHDR"})
+    started = time.time()
+    while True:
+        check_cancel(job)
+        open_ = [k for k, v in pending.items() if v.get("status") not in ("succeeded", "failed")]
+        jset(job, progress={"current": len(pending) - len(open_), "total": len(pending), "label": "Re-rendering with " + rs["model_name"]})
+        if not open_:
+            break
+        if time.time() - started > 2 * 3600:
+            raise ApiError("AutoHDR has been re-rendering for over 2 hours. Check the shoot in the AutoHDR app, then Resume.")
+        for k in open_:
+            r = hdr.transform_job(pending[k]["job_id"])
+            pending[k]["status"] = r.get("status")
+            if r.get("status") == "failed":
+                pending[k]["error"] = r.get("failure_message")
+        job["results"]["restyle_jobs"] = pending
+        jset(job)
+        time.sleep(1 if DRY_RUN else 10)
+    ok = [k for k, v in pending.items() if v.get("status") == "succeeded"]
+    failed = [v.get("name") or k for k, v in pending.items() if v.get("status") == "failed"]
+    job["results"]["restyle_ok"] = ok
+    job["results"]["restyle_failed"] = failed
+    jset(job)
+    if not ok:
+        raise ApiError("AutoHDR could not re-edit any of the photos (failed ones are refunded).")
+    jlog(job, "Re-edit finished: %d photos in %s%s." % (len(ok), rs["model_name"], " (%d failed, refunded, earlier look kept: %s)" % (len(failed), ", ".join(failed)) if failed else ""))
+
+
 def step_download(job, cfg):
     hdr = autohdr_client()
     pid = job["results"]["photoshoot_id"]
     photos = hdr.photos(pid)
     if not photos:
         raise ApiError("AutoHDR returned no photos for shoot %s." % pid)
-    out = output_root(job) / cfg.get("highres_folder_name", "High Res")
+    if job["options"].get("restyle"):
+        keep = set(job["results"].get("restyle_ok") or [])  # a re-edit only brings down what it re-rendered
+        photos = [p for p in photos if p["image_uuid"] in keep]
+        if not photos:
+            raise ApiError("None of the re-edited photos are available to download.")
+    out = set_dir(job, cfg, "highres")
     out.mkdir(parents=True, exist_ok=True)
     items = []
     for p in photos:
@@ -1040,7 +1136,7 @@ def step_resize(job, cfg):
         skipped = len(job["files"]) - len(inputs)
         if skipped:
             jlog(job, "Skipping %d RAW files in MLS resize (resize works on finished JPEG/PNG/HEIC/TIFF)." % skipped)
-    out = output_root(job) / cfg.get("mls_folder_name", "MLS")
+    out = set_dir(job, cfg, "mls")
     out.mkdir(parents=True, exist_ok=True)
     jlog(job, "Resizing %d photos to under %d KB -> %s" % (len(inputs), limit_kb, out))
     results, failed = [], []
@@ -1071,11 +1167,18 @@ def step_frameio(job, cfg):
     highres = [Path(p) for p in job["results"].get("highres_files") or []] or [f for f in source_files(job)]
     mls = [Path(p) for p in job["results"].get("mls_files") or []]
     parent = folder_id
+    rs = job["options"].get("restyle")
+    shoot_name = job.get("parent_name") or job["name"]  # a re-edit lands inside the original shoot's folder
     if dest.get("create_shoot_folder", True):
-        shoot, created = fio.find_or_create_folder(acct, folder_id, job["name"])
+        shoot, created = fio.find_or_create_folder(acct, folder_id, shoot_name)
         parent = shoot["id"]
-        jlog(job, "%s Frame.io folder '%s'" % ("Created" if created else "Using existing", job["name"]))
+        jlog(job, "%s Frame.io folder '%s'" % ("Created" if created else "Using existing", shoot_name))
         job["results"]["frameio_shoot_url"] = shoot.get("view_url")
+    if rs:
+        sub_folder, created = fio.find_or_create_folder(acct, parent, rs["folder"])
+        parent = sub_folder["id"]
+        jlog(job, "%s Frame.io folder '%s' for the re-edit" % ("Created" if created else "Using existing", rs["folder"]))
+        job["results"]["frameio_shoot_url"] = sub_folder.get("view_url")
     sets = [(cfg.get("highres_folder_name", "High Res"), highres)]
     if mls:
         sets.append((cfg.get("mls_folder_name", "MLS"), mls))
@@ -1106,7 +1209,7 @@ def step_frameio(job, cfg):
         try:
             client = dest.get("project_name") or ((dest.get("trail") or [{}])[0].get("name")) or ""
             share_name = ("%s · %s" % (client, job["name"])) if client else job["name"]
-            asset_ids = [parent] if dest.get("create_shoot_folder", True) else [f["id"] for f in folder_ids_for_share]
+            asset_ids = [parent] if (dest.get("create_shoot_folder", True) or rs) else [f["id"] for f in folder_ids_for_share]
             share = fio.create_share(acct, dest["project_id"], share_name, asset_ids, downloads=dest.get("share_downloads", True), comments=True)
             job["results"]["share_url"] = share.get("short_url")
             job["results"]["share_id"] = share.get("id")
@@ -1143,7 +1246,35 @@ def slack_post(text, blocks=None, cfg=None):
     raise ApiError("Slack is not set up. Open Settings and add an incoming webhook URL for #general.")
 
 
+def slack_reedit_message(job, cfg):
+    r, dest, rs = job["results"], job.get("frameio") or {}, job["options"]["restyle"]
+    trail = dest.get("trail") or []
+    client = dest.get("project_name") or (trail[0].get("name") if trail else None) or "Unknown client"
+    shoot = job.get("parent_name") or job["name"]
+    n, mls = len(r.get("highres_files") or []), len(r.get("mls_files") or [])
+    text = "Re-edit delivered for %s: %s — %d photo%s in %s" % (client, shoot, n, "" if n == 1 else "s", rs["model_name"])
+    fields = "*Client:* %s\n*Shoot:* %s\n*%d* photo%s re-edited with *%s*%s, in the folder *%s*" % (
+        client, shoot, n, "" if n == 1 else "s", rs["model_name"], (" + *%d* MLS" % mls) if mls else "", rs["folder"])
+    blocks = [{"type": "header", "text": {"type": "plain_text", "text": ("Re-edit delivered for %s" % client)[:150], "emoji": False}},
+              {"type": "section", "text": {"type": "mrkdwn", "text": fields}}]
+    link_bits = []
+    if r.get("share_url"):
+        link_bits.append("<%s|Share link (client)>" % r["share_url"])
+    if r.get("frameio_shoot_url"):
+        link_bits.append("<%s|Open the re-edit folder>" % r["frameio_shoot_url"])
+    if link_bits:
+        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": "  ·  ".join(link_bits)}})
+    ctx = ["AutoHDR shoot #%s" % r["photoshoot_id"]] if r.get("photoshoot_id") else []
+    if r.get("restyle_failed"):
+        ctx.append("%d could not be re-edited" % len(r["restyle_failed"]))
+    ctx.append("%d min · MLS Studio" % max(1, int((time.time() - job.get("created", time.time())) / 60)))
+    blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": "  ·  ".join(ctx)}]})
+    return text, blocks
+
+
 def slack_delivery_message(job, cfg):
+    if job["options"].get("restyle"):
+        return slack_reedit_message(job, cfg)
     o, r = job["options"], job["results"]
     hi, mls = len(r.get("highres_files") or job["files"]), len(r.get("mls_files") or [])
     links = r.get("frameio_links") or {}
@@ -1412,6 +1543,9 @@ class Handler(BaseHTTPRequestHandler):
                 with _lock:
                     jobs = sorted(JOBS.values(), key=lambda j: j["created"], reverse=True)
                 return self.send_json({"jobs": jobs})
+            m = re.match(r"^/api/jobs/([\w-]+)/thumb$", path)
+            if m:
+                return self.send_thumb(JOBS.get(m.group(1)), q.get("name") or "")
             m = re.match(r"^/api/jobs/([\w-]+)$", path)
             if m:
                 job = JOBS.get(m.group(1))
@@ -1447,6 +1581,12 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json({"ok": True})
         if path == "/api/jobs":
             return self.create_job(body)
+        m = re.match(r"^/api/jobs/([\w-]+)/reedit$", path)
+        if m:
+            parent = JOBS.get(m.group(1))
+            if not parent:
+                return self.send_json({"error": "No such job"}, 404)
+            return self.create_reedit(parent, body)
         m = re.match(r"^/api/jobs/([\w-]+)/(cancel|resume|delete)$", path)
         if m:
             job = JOBS.get(m.group(1))
@@ -1467,6 +1607,7 @@ class Handler(BaseHTTPRequestHandler):
                 with _lock:
                     JOBS.pop(job["id"], None)
                 persist_jobs()
+                shutil.rmtree(DATA_DIR / "thumbs" / job["id"], ignore_errors=True)
             return self.send_json({"ok": True})
         return self.send_error(404)
 
@@ -1510,12 +1651,76 @@ class Handler(BaseHTTPRequestHandler):
         exchange_frameio_code(q)
         return self.redirect("/?frameio=connected#settings")
 
+    def send_thumb(self, job, name):
+        """A small JPEG of one finished photo, made from the local High Res copy, for the re-edit picker."""
+        files = {Path(f).name: f for f in ((job or {}).get("results") or {}).get("highres_files") or []}
+        src = files.get(name)
+        if not src or not Path(src).is_file():
+            return self.send_error(404)
+        cache = DATA_DIR / "thumbs" / job["id"] / (Path(name).stem + ".jpg")
+        if not cache.is_file() or cache.stat().st_mtime < Path(src).stat().st_mtime:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            r = subprocess.run(["sips", "-Z", "360", "-s", "format", "jpeg", "-s", "formatOptions", "60", src, "--out", str(cache)], capture_output=True)
+            if r.returncode != 0 or not cache.is_file():
+                return self.send_error(404)
+        data = cache.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "image/jpeg")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "max-age=3600")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def create_reedit(self, parent, body):
+        """A new job that re-renders some or all of a finished shoot's photos with a different look."""
+        r = parent.get("results") or {}
+        pid = r.get("photoshoot_id")
+        if parent.get("status") != "done" or not pid:
+            raise ApiError("Re-edit works on a finished AutoHDR job.")
+        try:
+            model_id = int(body.get("model_id"))
+        except (TypeError, ValueError):
+            raise ApiError("Pick the look to re-edit with.")
+        model_name = re.sub(r"\s+", " ", str(body.get("model_name") or "")).strip() or ("look %d" % model_id)
+        have = [Path(f).name for f in r.get("highres_files") or []]
+        if not have:
+            raise ApiError("This job has no finished photos to re-edit.")
+        want = body.get("names")
+        names = [n for n in have if n in set(want)] if isinstance(want, list) else have
+        if not names:
+            raise ApiError("Tick at least one photo to re-edit.")
+        root_id = parent.get("parent_id") or parent["id"]
+        parent_name = parent.get("parent_name") or parent["name"]
+        with _lock:
+            n = 1 + sum(1 for j in JOBS.values() if j.get("parent_id") == root_id)
+        folder = "Re-edit %d - %s" % (n, re.sub(r"\s+", " ", re.sub(r"[/\\:|]+", " ", model_name)).strip())
+        fio = dict(parent.get("frameio") or {})
+        o = {"restyle": {"model_id": model_id, "model_name": model_name, "folder": folder, "cost": body.get("cost")},
+             "do_resize": bool(body.get("do_resize", True)),
+             "do_frameio": bool(body.get("do_frameio", True)) and bool(fio.get("folder_id")),
+             "mls_limit_kb": (parent.get("options") or {}).get("mls_limit_kb")}
+        job = {
+            "id": uuid.uuid4().hex[:10], "name": "%s · re-edit (%s)" % (parent_name, model_name), "naming": parent.get("naming"),
+            "parent_id": root_id, "parent_name": parent_name, "source": parent["source"], "files": names,
+            "options": o, "frameio": fio, "created": time.time(), "updated": time.time(), "status": "queued",
+            "step": None, "step_index": 0, "progress": {"current": 0, "total": 0, "label": ""}, "log": [],
+            "results": {"photoshoot_id": pid}, "error": None,
+        }
+        job["steps"] = plan_steps(job)
+        with _lock:
+            JOBS[job["id"]] = job
+        persist_jobs()
+        jlog(job, "Queued: re-edit %d of %d photos from '%s' with %s" % (len(names), len(have), parent_name, model_name))
+        start_job(job)
+        return self.send_json(job)
+
     def create_job(self, body):
         src = body.get("source") or ""
         info = scan_folder(src)
         if not info["count"]:
             raise ApiError("That folder has no photos in it.")
-        name = (body.get("name") or "").strip() or info["name"]
+        naming = clean_naming(body.get("naming"))
+        name = compose_name(naming) if naming else ((body.get("name") or "").strip() or info["name"])
         o = body.get("options") or {}
         fio = body.get("frameio") or {}
         if o.get("do_frameio") and not fio.get("folder_id"):
@@ -1525,7 +1730,7 @@ class Handler(BaseHTTPRequestHandler):
         if not (o.get("do_autohdr") or o.get("do_resize") or o.get("do_frameio")):
             raise ApiError("Turn on at least one stage: AutoHDR edit, MLS resize, or Frame.io upload.")
         job = {
-            "id": uuid.uuid4().hex[:10], "name": name, "source": info["path"], "files": [f["name"] for f in info["files"]],
+            "id": uuid.uuid4().hex[:10], "name": name, "naming": naming, "source": info["path"], "files": [f["name"] for f in info["files"]],
             "options": o, "frameio": fio, "created": time.time(), "updated": time.time(), "status": "queued",
             "step": None, "step_index": 0, "progress": {"current": 0, "total": 0, "label": ""}, "log": [], "results": {}, "error": None,
         }
@@ -1539,6 +1744,11 @@ class Handler(BaseHTTPRequestHandler):
                 cfg["default_indoor_model_id"] = o["indoor_model_id"]
             if o.get("outdoor_model_id"):
                 cfg["default_outdoor_model_id"] = o["outdoor_model_id"]
+            if naming:
+                cfg["clients"] = remember(cfg.get("clients"), naming["client"])
+                cfg["shoot_types"] = remember(cfg.get("shoot_types"), naming["type"])
+                if fio.get("project_id"):
+                    cfg["client_by_project"] = dict(cfg.get("client_by_project") or {}, **{fio["project_id"]: naming["client"]})
             save_json(CONFIG_PATH, cfg)
         persist_jobs()
         jlog(job, "Queued: %d files from %s" % (len(job["files"]), job["source"]))

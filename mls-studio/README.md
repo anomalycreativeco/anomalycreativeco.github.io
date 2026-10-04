@@ -82,6 +82,33 @@ their own Adobe sign-in for Frame.io (their Adobe ID must be a member of the Ano
 Frame.io account), and the shared Slack webhook. Everything stays in that Mac's Keychain. Keep the
 `mls-studio` folder in a shared location (the hub repo) so everyone runs the same version.
 
+## Naming a shoot
+
+Every shoot is named from three fields so the whole team names things the same way:
+
+    Client - Address_Shoot type        e.g.  RCH - 1208 Barcroft_MLS Interior
+
+That one name is the AutoHDR shoot, the Frame.io folder, the Slack note and the hub card. Client and
+shoot type suggest what has been used before (shoot type also offers MLS, MLS Interior, MLS Exterior,
+Twilight, Drone, Exteriors, Staging, Reshoot); picking a Frame.io project fills in the client last used
+with it. A folder already named to the standard fills all three fields when it is scanned. Run stays
+disabled until all three are filled in.
+
+## Re-edit with a different look
+
+When a finished set should have been a different look, press **Re-edit…** on its job card, pick the
+new look and tick the photos (thumbnails come from the local High Res copy). AutoHDR re-renders each
+ticked photo from the original files with that look (its `style` transform), so nothing is uploaded
+again. It runs as its own job: re-render, download, MLS resize, Frame.io, Slack.
+
+- The first delivery is never touched. The re-edit lands beside it in `Re-edit 1 - <Look>` (then 2, 3…),
+  both in `_MLS Studio/` on disk and inside the shoot's Frame.io folder, with its own client share link.
+- Cost: the look's per-photo price times the photos ticked, charged by AutoHDR on submit; failed photos
+  are refunded and keep their earlier look.
+- A look applies to every ticked photo, interior or exterior. For a mixed set, run it once for the
+  interiors and once for the exteriors.
+- A resumed re-edit never resubmits a photo it already sent (a repeat would be charged again).
+
 ## Credits (AutoHDR)
 
 - House looks (Classic, Lisa, V4 skies, twilights): upload and processing are free; **1 credit per

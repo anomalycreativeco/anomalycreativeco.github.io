@@ -7,7 +7,7 @@
     picked: null, jobs: [], polling: null,
   };
 
-  const APP_VERSION = "1.10";
+  const APP_VERSION = "1.11";
   // theme: the hub passes ?theme=light|dark when it embeds the page; standalone it follows the system unless toggled
   const THEMES = ["auto", "light", "dark"], THEME_LABEL = { auto: "◐", light: "☀", dark: "☾" }, THEME_TITLE = { auto: "Theme: follows the system", light: "Theme: light", dark: "Theme: dark" };
   const params = new URLSearchParams(location.search);
@@ -35,6 +35,7 @@
     state.cfg = await api("GET", "/api/config");
     const c = state.cfg;
     $("mls-limit").value = c.mls_limit_kb || 3999;
+    fillNamingLists();
     $("appver").textContent = "v" + (c.version || APP_VERSION);
     $("s-redirect").textContent = c.frameio_redirect_uri;
     if (c.dry_run) banner("<b>Dry run.</b> AutoHDR and Frame.io are simulated; nothing is uploaded and no credits are spent.", "flag");
@@ -96,7 +97,7 @@
       const info = await api("POST", "/api/scan", { path });
       state.source = info;
       $("src-path").textContent = info.path; $("src-manual").value = info.path;
-      if (!$("shoot-name").value) $("shoot-name").value = info.name;
+      prefillNaming(info.name);
       const chips = info.files.slice(0, 14).map((f) => `<span class="chip">${esc(f.name)}</span>`).join("") + (info.count > 14 ? `<span class="chip">+${info.count - 14} more</span>` : "");
       $("src-info").innerHTML = `<div class="stat"><b>${info.count}</b> photos · ${info.total_mb} MB${info.raw_count ? ` · <b>${info.raw_count}</b> RAW` : ""}${Object.keys(info.skipped || {}).length ? ` · <span style="color:var(--warn)">not photos, left out: ${esc(Object.entries(info.skipped).map(([k, v]) => `${v} ${k}`).join(", "))}</span>` : ""}${info.subfolders.length ? ` · subfolders ignored: ${esc(info.subfolders.join(", "))}` : ""}</div><div class="chipset" style="margin-top:8px">${chips}</div>`;
       if (info.raw_count && info.raw_count < info.count) $("src-info").innerHTML += `<p class="flag" style="margin-top:10px"><b>Mixed folder.</b> RAW and finished files together. AutoHDR takes both as camera files; the MLS resize only works on finished JPEG/PNG/HEIC/TIFF.</p>`;
@@ -199,6 +200,7 @@
     state.picked = obj || { account_id: state.fio.account_id, workspace_id: state.fio.workspace_id, project_id: state.fio.project_id, folder_id: cur.id, path: state.fio.trail.map((t) => t.name).join(" / "), trail: state.fio.trail.slice(), project_name: state.fio.trail[0].name };
     $("fio-picked").hidden = false;
     $("fio-picked").textContent = "Output folder: " + state.picked.path;
+    suggestClient();
     estimate();
   }
   async function useLink() {
@@ -214,6 +216,99 @@
       if (!state.picked || state.picked.folder_id !== r.folder_id) usePicked(r);
     } catch (e) { $("fio-hint").textContent = e.message; }
   }
+
+  // --------------------------------------------------------------- naming --
+  // House standard: Client - Address_Shoot type  (RCH - 1208 Barcroft_MLS Interior). The server composes the
+  // final name from these three fields; this mirrors it for the live preview.
+  const STANDARD_TYPES = ["MLS", "MLS Interior", "MLS Exterior", "Twilight", "Drone", "Exteriors", "Staging", "Reshoot"];
+  const tidy = (v) => String(v || "").replace(/\s+/g, " ").trim();
+  function naming() { return { client: tidy($("nm-client").value), address: tidy($("nm-address").value), type: tidy($("nm-type").value) }; }
+  function namingComplete() { const n = naming(); return !!(n.client && n.address && n.type); }
+  function composeName(n) { const safe = (v) => v.replace(/[\/\\:]+/g, "-"); return `${safe(n.client)} - ${safe(n.address)}_${safe(n.type)}`; }
+  function renderNaming() {
+    const n = naming(), el = $("nm-preview");
+    const shown = { client: n.client || "Client", address: n.address || "Address", type: n.type || "Shoot type" };
+    el.innerHTML = "Shoot name: <b>" + esc(composeName(shown)) + "</b>" + (namingComplete() ? "" : " <span class=\"small\">— fill in all three</span>");
+  }
+  function fillNamingLists() {
+    const c = state.cfg || {};
+    const opt = (v) => `<option value="${esc(v)}"></option>`;
+    $("nm-clients").innerHTML = (c.clients || []).map(opt).join("");
+    const seen = new Set(STANDARD_TYPES.map((t) => t.toLowerCase()));
+    $("nm-types").innerHTML = STANDARD_TYPES.concat((c.shoot_types || []).filter((t) => !seen.has(String(t).toLowerCase()))).map(opt).join("");
+    renderNaming();
+  }
+  // A folder already named to the standard fills the fields; anything else is left for the editor to type.
+  function prefillNaming(folderName) {
+    const m = /^(.+?) - (.+)_([^_]+)$/.exec(folderName || "");
+    if (m) { if (!$("nm-client").value) $("nm-client").value = m[1].trim(); if (!$("nm-address").value) $("nm-address").value = m[2].trim(); if (!$("nm-type").value) $("nm-type").value = m[3].trim(); }
+    renderNaming();
+  }
+  // Picking the Frame.io folder suggests the client: the name last used with that project, else the project's name.
+  function suggestClient() {
+    const el = $("nm-client"), p = state.picked;
+    if (!p || (el.value && el.dataset.auto !== "1")) return;
+    const known = ((state.cfg || {}).client_by_project || {})[p.project_id];
+    const guess = known || p.project_name || ((p.trail || [])[0] || {}).name || "";
+    if (guess) { el.value = guess; el.dataset.auto = "1"; renderNaming(); }
+  }
+
+  // -------------------------------------------------------------- re-edit --
+  // "This set should have been a different look": re-render some or all of a finished shoot's photos with
+  // another AutoHDR look. Runs as its own job (re-render -> download -> MLS resize -> Frame.io).
+  const re = { job: null, names: [], picked: new Set() };
+  function reLook() { return state.models.find((m) => String(m.id) === $("re-look").value) || null; }
+  function renderReEstimate() {
+    const n = re.picked.size, m = reLook();
+    $("re-count").textContent = `${n} of ${re.names.length} photos ticked`;
+    $("re-run").disabled = !n || !m;
+    $("re-run").textContent = n ? `Re-edit ${n} photo${n === 1 ? "" : "s"}` : "Re-edit";
+    if (!m) { $("re-est").textContent = "Pick a look."; return; }
+    const cost = m.style_credit_cost || 1, total = cost * n;
+    $("re-est").innerHTML = `<b>${n}</b> × ${cost} credit${cost === 1 ? "" : "s"} = <b>${total}</b> credit${total === 1 ? "" : "s"}, charged by AutoHDR when the re-edit is submitted (failed photos are refunded)` + (state.balance != null ? ` · balance ${state.balance}` : "");
+  }
+  function openReedit(job) {
+    const r = job.results || {};
+    re.job = job; re.names = (r.highres_files || []).map((p) => p.split("/").pop()); re.picked = new Set(re.names);
+    $("re-title").textContent = job.name + " · AutoHDR shoot #" + r.photoshoot_id;
+    $("re-msg").innerHTML = "";
+    const slotNote = (m) => (m.variant === "indoor" ? " (interior)" : m.variant === "outdoor" ? " (exterior)" : "");
+    const groups = { House: [], Creator: [] };
+    state.models.forEach((m) => (m.type === "custom" ? groups.Creator : groups.House).push(m));
+    $("re-look").innerHTML = '<option value="">Choose a look…</option>' + ["House", "Creator"].map((g) => groups[g].length
+      ? `<optgroup label="${g === "House" ? "House looks" : "Creator looks"}">` + groups[g].map((m) => `<option value="${m.id}">${esc(m.name + slotNote(m) + (m.description ? " — " + m.description : "") + " · " + (m.style_credit_cost || 1) + " cr")}</option>`).join("") + "</optgroup>" : "").join("");
+    $("re-grid").innerHTML = re.names.map((n, i) => `<label class="thumb on" data-i="${i}"><img loading="lazy" alt="" src="/api/jobs/${encodeURIComponent(job.id)}/thumb?name=${encodeURIComponent(n)}" onerror="this.style.display='none'"><input type="checkbox" checked><span>${esc(n)}</span></label>`).join("");
+    $("re-resize").checked = (job.options || {}).do_resize !== false;
+    const hasFio = !!((job.frameio || {}).folder_id);
+    $("re-frameio").checked = hasFio; $("re-frameio").disabled = !hasFio;
+    renderReEstimate();
+    $("reedit-dlg").showModal();
+  }
+  function setRePicked(names) {
+    re.picked = new Set(names);
+    $("re-grid").querySelectorAll(".thumb").forEach((t) => { const on = re.picked.has(re.names[+t.dataset.i]); t.classList.toggle("on", on); t.querySelector("input").checked = on; });
+    renderReEstimate();
+  }
+  $("re-grid").addEventListener("change", (e) => {
+    const t = e.target.closest(".thumb"); if (!t) return;
+    const n = re.names[+t.dataset.i]; if (e.target.checked) re.picked.add(n); else re.picked.delete(n);
+    t.classList.toggle("on", e.target.checked); renderReEstimate();
+  });
+  $("re-all").onclick = () => setRePicked(re.names);
+  $("re-none").onclick = () => setRePicked([]);
+  $("re-look").onchange = renderReEstimate;
+  $("re-cancel").onclick = () => $("reedit-dlg").close();
+  $("re-run").onclick = async () => {
+    const m = reLook(); if (!m || !re.picked.size) return;
+    $("re-run").disabled = true;
+    try {
+      const job = await api("POST", `/api/jobs/${re.job.id}/reedit`, { model_id: m.id, model_name: m.name, cost: m.style_credit_cost || 1,
+        names: re.names.filter((n) => re.picked.has(n)), do_resize: $("re-resize").checked, do_frameio: $("re-frameio").checked });
+      $("reedit-dlg").close();
+      banner(`Started <b>${esc(job.name)}</b>.`, "picked");
+      await loadJobs();
+    } catch (e) { $("re-msg").innerHTML = `<div class="err">${esc(e.message)}</div>`; renderReEstimate(); }
+  };
 
   // ------------------------------------------------------------- estimate --
   function opts() {
@@ -251,6 +346,7 @@
       if (o.do_frameio) { parts.push(state.picked ? `→ Frame.io: ${esc(state.picked.path)}` : "<span style='color:var(--warn)'>pick a Frame.io folder</span>"); if (!state.picked) ok = false; }
       if (!(o.do_autohdr || o.do_resize || o.do_frameio)) { parts.push("<span style='color:var(--warn)'>turn on at least one stage</span>"); ok = false; }
     }
+    if (state.source && !namingComplete()) { parts.push("<span style='color:var(--warn)'>name the shoot: client, address and shoot type</span>"); ok = false; }
     $("est").innerHTML = parts.join(" · ");
     $("btn-run").disabled = !ok;
   }
@@ -259,7 +355,7 @@
     $("btn-run").disabled = true;
     try {
       const o = opts();
-      const job = await api("POST", "/api/jobs", { source: state.source.path, name: $("shoot-name").value.trim(), options: o, frameio: state.picked ? Object.assign({}, state.picked, { create_shoot_folder: $("fio-shootfolder").checked, share: $("fio-share").checked, share_downloads: $("fio-share-dl").checked }) : null });
+      const job = await api("POST", "/api/jobs", { source: state.source.path, naming: naming(), options: o, frameio: state.picked ? Object.assign({}, state.picked, { create_shoot_folder: $("fio-shootfolder").checked, share: $("fio-share").checked, share_downloads: $("fio-share-dl").checked }) : null });
       banner(`Started <b>${esc(job.name)}</b>. You can close this tab; the job keeps running while the server is up.`, "picked");
       await loadJobs();
     } catch (e) { banner(esc(e.message), "err"); }
@@ -274,7 +370,7 @@
     const wanted = active ? 3000 : 10000;
     if (state.pollingEvery !== wanted) { if (state.polling) clearInterval(state.polling); state.polling = setInterval(loadJobs, wanted); state.pollingEvery = wanted; }
   }
-  const STEP_LABEL = { notify: "Posting to Slack", create: "Creating shoot", upload: "Uploading to AutoHDR", commit: "Committing", process: "AutoHDR processing", reedit: "Re-editing", download: "Downloading high-res", resize: "Resizing for MLS", frameio: "Uploading to Frame.io", done: "Done" };
+  const STEP_LABEL = { notify: "Posting to Slack", create: "Creating shoot", upload: "Uploading to AutoHDR", commit: "Committing", process: "AutoHDR processing", reedit: "Re-editing", restyle: "Re-editing with the new look", download: "Downloading high-res", resize: "Resizing for MLS", frameio: "Uploading to Frame.io", done: "Done" };
   function renderJobs() {
     const el = $("jobs");
     if (!state.jobs.length) { el.innerHTML = '<p class="small">No jobs yet.</p>'; return; }
@@ -296,6 +392,7 @@
       const btns = [];
       if (running) btns.push(`<button class="btn sm" data-act="cancel" data-id="${j.id}">Cancel</button>`);
       if (["failed", "interrupted", "cancelled"].includes(j.status)) btns.push(`<button class="btn sm primary" data-act="resume" data-id="${j.id}">Resume</button>`);
+      if (j.status === "done" && r.photoshoot_id && (r.highres_files || []).length) btns.push(`<button class="btn sm" data-reedit="${j.id}" title="Re-render some or all of these photos with a different look">Re-edit…</button>`);
       if (!running) btns.push(`<button class="btn sm danger" data-act="delete" data-id="${j.id}">Remove</button>`);
       return `<div class="job">
         <div class="head"><div><span class="title">${esc(j.name)}</span> <span class="pill ${esc(j.status)}">${esc(j.status)}</span></div><div class="row">${btns.join("")}</div></div>
@@ -310,6 +407,8 @@
   }
   $("jobs").addEventListener("click", async (e) => {
     const a = e.target.closest("[data-act]"); const o = e.target.closest("[data-open]");
+    const re = e.target.closest("[data-reedit]");
+    if (re) { const job = state.jobs.find((x) => x.id === re.dataset.reedit); if (job) openReedit(job); return; }
     if (o) { e.preventDefault(); api("POST", "/api/open", { path: o.dataset.open }); }
     if (a) { try { await api("POST", `/api/jobs/${a.dataset.id}/${a.dataset.act}`); await loadJobs(); } catch (err) { banner(esc(err.message), "err"); } }
   });
@@ -359,6 +458,7 @@
   $("btn-scan").onclick = () => scan($("src-manual").value.trim());
   $("src-manual").addEventListener("keydown", (e) => { if (e.key === "Enter") scan($("src-manual").value.trim()); });
   $("btn-run").onclick = run;
+  ["nm-client", "nm-address", "nm-type"].forEach((id) => $(id).addEventListener("input", () => { if (id === "nm-client") $("nm-client").dataset.auto = ""; renderNaming(); estimate(); }));
   ["do-autohdr", "do-resize", "do-frameio", "indoor-model", "outdoor-model", "reedit", "mls-limit", "enh-grass", "enh-declutter", "enh-fireplace", "enh-tv"].forEach((id) => $(id).addEventListener("change", estimate));
   document.querySelectorAll("input[name=kind]").forEach((r) => r.addEventListener("change", estimate));
   $("reedit").addEventListener("input", estimate);

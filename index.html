@@ -721,7 +721,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.4.0", APP_BUILD="2026-10-02";
+const APP_VERSION="2.4.1", APP_BUILD="2026-10-04";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -978,7 +978,7 @@ async function loadJosh(){
    also running on THIS Mac, its jobs are read straight off localhost as well,
    which keeps the bar moving even before a report lands. */
 let MLS={jobs:[],hasDoc:false,err:""}, MLS_LOCAL=[], mlsLocalTimer=null;
-const MLS_W={create:1,upload:3,commit:1,process:10,reedit:4,download:3,resize:2,frameio:3,notify:1,done:0};
+const MLS_W={create:1,upload:3,commit:1,process:10,reedit:4,restyle:8,download:3,resize:2,frameio:3,notify:1,done:0};
 function mlsPct(j){
   const steps=j.steps||[]; if(!steps.length) return j.status==="done"?1:0;
   if(j.status==="done") return 1;
@@ -989,7 +989,7 @@ function mlsPct(j){
   else if(cur==="process"&&(j.photos||0)>0&&p.current>0) acc+=(MLS_W.process)*Math.min(.9,p.current/j.photos);
   return Math.max(0,Math.min(1,acc/tot));
 }
-const MLS_STEP={create:"Starting the AutoHDR shoot",upload:"Uploading to AutoHDR",commit:"Submitting to AutoHDR",process:"AutoHDR processing",reedit:"Re-edits running",download:"Downloading the finished set",resize:"Resizing for MLS",frameio:"Uploading to Frame.io",notify:"Posting to Slack",done:"Done"};
+const MLS_STEP={create:"Starting the AutoHDR shoot",upload:"Uploading to AutoHDR",commit:"Submitting to AutoHDR",process:"AutoHDR processing",reedit:"Re-edits running",restyle:"Re-editing with a new look",download:"Downloading the finished set",resize:"Resizing for MLS",frameio:"Uploading to Frame.io",notify:"Posting to Slack",done:"Done"};
 function mlsAge(ms){ const m=Math.max(0,Math.round((Date.now()-ms)/6e4)); return m<1?"just now":m<60?m+" min":m<1440?Math.round(m/60)+" h":Math.round(m/1440)+" d"; }
 function mlsRows(){
   const by={}; MLS.jobs.forEach(j=>{ by[j.id]=j; });
