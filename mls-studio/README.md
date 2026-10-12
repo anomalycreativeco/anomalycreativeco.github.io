@@ -45,6 +45,13 @@ create a project, add the **Frame.io API**, and choose **OAuth Web App**:
 - Default redirect URI: `https://localhost:8766/callback`
 - Redirect URI pattern: `https://localhost:8766/callback$`
 
+**Who can sign in.** An OAuth Web App credential starts "In Development", and Adobe only lets the
+emails on its **Beta users** list sign in; everyone else sees *"Please contact the application
+developer to gain access to Project …"* on Adobe's page. For every new editor: Developer Console →
+the project → Credentials → OAuth Web App → **Beta users** → add the email of the Adobe ID they use
+for Frame.io → Save; it syncs within a few minutes. No review is needed for this. (Promoting the
+credential to production would open it to any Adobe ID but needs Adobe approval.)
+
 Adobe only accepts `https` redirect URIs, even on localhost, so the page runs a second listener on
 port 8766 with a self-signed certificate (generated once into
 `~/Library/Application Support/Anomaly Studio Hub/mls-studio/tls/`). The browser warns once
@@ -79,7 +86,8 @@ the job card and never fails the delivery.
 Each editor runs the server on their own Mac (it has to see their local shoot folder) and does
 the Settings once: the studio's AutoHDR client ID/secret (all credits bill the studio account),
 their own Adobe sign-in for Frame.io (their Adobe ID must be a member of the Anomaly Creative
-Frame.io account), and the shared Slack webhook. Everything stays in that Mac's Keychain. Keep the
+Frame.io account **and** be listed as a beta user of the studio's Adobe app — see below), and the
+shared Slack webhook. Everything stays in that Mac's Keychain. Keep the
 `mls-studio` folder in a shared location (the hub repo) so everyone runs the same version.
 
 ## Naming a shoot

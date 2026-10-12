@@ -1,6 +1,6 @@
 {
- "version": "1.15",
- "notes": "Fixes 'certificate verify failed' on Macs where MLS Studio was started with a python.org Python: it now uses the Mac's own certificates.",
+ "version": "1.16",
+ "notes": "Settings now explains Adobe's 'contact the application developer' message: ask Daniel to add your Adobe ID to the app's beta users.",
  "released": "2026-10-12",
  "files": [
   "server.py",
