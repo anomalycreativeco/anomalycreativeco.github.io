@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.14"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.15"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -147,6 +147,38 @@ class ApiError(Exception):
 USER_AGENT = "MLSStudio/1.0 (Anomaly Studio Hub; +https://anomalycreativestudio.com)"
 
 
+def ssl_setup():
+    """A Python installed from python.org ships with an EMPTY certificate store (until its "Install
+    Certificates.command" is run), so every https call dies with CERTIFICATE_VERIFY_FAILED. The Mac's own
+    bundle is fine, so when the running Python has no roots, use the Mac's. Installed as the global opener,
+    so every urlopen in this file goes through it. Returns where the roots came from, for the start-up log."""
+    ctx = ssl.create_default_context()
+    source = "python"
+    if ctx.cert_store_stats().get("x509", 0) == 0:
+        for cafile in ("/etc/ssl/cert.pem", "/private/etc/ssl/cert.pem"):
+            if os.path.exists(cafile):
+                try:
+                    ctx.load_verify_locations(cafile=cafile)
+                    source = cafile
+                    break
+                except Exception:  # noqa
+                    pass
+    if ctx.cert_store_stats().get("x509", 0) == 0:
+        try:  # last resort: export the system roots with the Mac's own tool
+            out = subprocess.run(["security", "find-certificate", "-a", "-p", "/System/Library/Keychains/SystemRootCertificates.keychain"],
+                                 capture_output=True, text=True, timeout=20).stdout
+            if "BEGIN CERTIFICATE" in out:
+                DATA_DIR.mkdir(parents=True, exist_ok=True)
+                pem = DATA_DIR / "system-roots.pem"
+                pem.write_text(out)
+                ctx.load_verify_locations(cafile=str(pem))
+                source = str(pem)
+        except Exception:  # noqa
+            pass
+    urllib.request.install_opener(urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx)))
+    return source
+
+
 def http_call(method, url, headers=None, body=None, timeout=300):
     h = dict(headers or {})
     h.setdefault("User-Agent", USER_AGENT)  # api.frame.io returns an HTML 403 to Python's default agent
@@ -156,6 +188,12 @@ def http_call(method, url, headers=None, body=None, timeout=300):
             return r.status, r.read(), dict(r.headers)
     except urllib.error.HTTPError as e:
         return e.code, e.read(), dict(e.headers)
+    except urllib.error.URLError as e:
+        if "CERTIFICATE_VERIFY_FAILED" in str(e.reason):
+            raise ApiError("This Mac's Python cannot verify secure connections (it has no certificate store). "
+                           "Press Control-C in this window and run the install line from the hub's MLS Studio page; "
+                           "it starts MLS Studio with the Mac's built-in Python.")
+        raise
 
 
 def http_json(method, url, headers=None, json_body=None, form=None, timeout=120):
@@ -2034,6 +2072,9 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    roots = ssl_setup()
+    if roots != "python":
+        log("This Python has no certificate store; using the Mac's (%s)." % roots)
     update_at_start()
     for j in load_json(JOBS_PATH, {}).get("jobs", []):
         if j.get("status") == "running":

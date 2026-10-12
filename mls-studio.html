@@ -99,7 +99,7 @@ a{color:var(--green-deep)}
     <p>MLS Studio runs locally because it reads the shoot folder straight off your drive, then sends it to AutoHDR, resizes the MLS set and delivers to Frame.io. Start it and this page turns into the app.</p>
     <div class="steps">
       <div class="st"><div><b>Already installed? Start it.</b><span class="small">Paste in Terminal (⌘-Space, type Terminal). Leave the window open while you work.</span>
-        <div class="cmd" style="margin-top:8px"><code id="cmdStart">python3 ~/Applications/MLS\ Studio/server.py --open</code><button class="btn" data-copy="cmdStart">Copy</button></div></div></div>
+        <div class="cmd" style="margin-top:8px"><code id="cmdStart">/usr/bin/python3 ~/Applications/MLS\ Studio/server.py --open</code><button class="btn" data-copy="cmdStart">Copy</button></div></div></div>
       <div class="st"><div><b>First time on this Mac? Install it.</b><span class="small">One line; it downloads MLS Studio into ~/Applications/MLS Studio and starts it. After that it keeps itself up to date: it takes the newest version each time it starts.</span>
         <div class="cmd" style="margin-top:8px"><code id="cmdInstall">curl -fsSL https://anomalycreativeco.github.io/mls-studio/install.sh | zsh</code><button class="btn" data-copy="cmdInstall">Copy</button></div></div></div>
       <div class="st"><div><b>Then come back here.</b><span class="small">This page checks every few seconds and switches to the app as soon as it answers. Or open it directly at <a href="http://localhost:8765" target="_blank" rel="noopener">localhost:8765</a>.</span></div></div>

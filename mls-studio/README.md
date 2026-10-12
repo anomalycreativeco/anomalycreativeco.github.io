@@ -20,7 +20,7 @@ server restart.
 ## Run
 
 ```bash
-python3 mls-studio/server.py --open
+/usr/bin/python3 mls-studio/server.py --open   # always the Mac's own Python: a python.org one has no certificate store
 ```
 
 Then open <http://localhost:8765> (`--open` does it for you). Port: `MLS_STUDIO_PORT`.
@@ -28,7 +28,7 @@ Then open <http://localhost:8765> (`--open` does it for you). Port: `MLS_STUDIO_
 Dry run (AutoHDR + Frame.io simulated, nothing uploaded, no credits spent):
 
 ```bash
-python3 mls-studio/server.py --dry-run --open
+/usr/bin/python3 mls-studio/server.py --dry-run --open
 ```
 
 ## One-time setup (Settings button, top right)
