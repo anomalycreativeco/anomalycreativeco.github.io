@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.16"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.17"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -627,6 +627,16 @@ class DryFrameIO:
     def upload_file(self, a, folder_id, path, existing_names=None):
         time.sleep(0.1)
         return {"id": "dry", "name": Path(path).name}, "uploaded"
+
+
+def ims_whoami(cfg):
+    """Which Adobe ID the stored sign-in belongs to, from Adobe's own userinfo endpoint. None when unknown."""
+    try:
+        st, body, _ = http_json("GET", "https://ims-na1.adobelogin.com/ims/userinfo/v2?client_id=" + urllib.parse.quote(cfg.get("frameio_client_id", "")),
+                                {"Authorization": "Bearer " + (kc_get("frameio_access_token") or "")}, timeout=20)
+        return body if st == 200 and isinstance(body, dict) else None
+    except Exception:  # noqa
+        return None
 
 
 def store_frameio_tokens(body):
@@ -1793,7 +1803,19 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json(autohdr_client().me())
             if path == "/api/frameio/me":
                 fio = frameio_client()
-                return self.send_json({"me": fio.me(), "accounts": fio.accounts()})
+                try:
+                    return self.send_json({"me": fio.me(), "accounts": fio.accounts()})
+                except ApiError as e:
+                    # Adobe accepted the sign-in but Frame.io does not know that identity: almost always the browser
+                    # was already signed in to a different Adobe ID (a personal one), and Adobe used it without asking.
+                    if e.status == 401 and getattr(fio, "mode", "user") == "user":
+                        who = ims_whoami(get_config()) or {}
+                        ident = who.get("email") or who.get("name")
+                        raise ApiError(("Adobe signed you in as %s, but Frame.io does not recognise that identity. " % ident if ident else
+                                        "Adobe accepted the sign-in, but Frame.io does not recognise that identity. ")
+                                       + "Press Disconnect, sign out at account.adobe.com (or use a private window), press Connect Frame.io "
+                                       "and sign in with the email you use at next.frame.io.")
+                    raise
             if path == "/api/frameio/accounts":
                 return self.send_json({"accounts": frameio_client().accounts()})
             if path == "/api/frameio/workspaces":

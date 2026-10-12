@@ -1,6 +1,6 @@
 {
- "version": "1.16",
- "notes": "Settings now explains Adobe's 'contact the application developer' message: ask Daniel to add your Adobe ID to the app's beta users.",
+ "version": "1.17",
+ "notes": "Test Frame.io now names the Adobe ID that signed in when Frame.io rejects it, and says how to reconnect with the right one.",
  "released": "2026-10-12",
  "files": [
   "server.py",
