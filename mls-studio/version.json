@@ -1,6 +1,6 @@
 {
- "version": "1.17",
- "notes": "Test Frame.io now names the Adobe ID that signed in when Frame.io rejects it, and says how to reconnect with the right one.",
+ "version": "1.18",
+ "notes": "Test Frame.io now gives the exact fix when Frame.io says your user is not linked to an Adobe ID.",
  "released": "2026-10-12",
  "files": [
   "server.py",

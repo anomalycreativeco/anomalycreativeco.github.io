@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.17"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.18"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -1811,10 +1811,17 @@ class Handler(BaseHTTPRequestHandler):
                     if e.status == 401 and getattr(fio, "mode", "user") == "user":
                         who = ims_whoami(get_config()) or {}
                         ident = who.get("email") or who.get("name")
+                        detail = err_text(e.body) if e.body else str(e)
+                        if "not linked" in detail.lower():
+                            # Frame.io's own answer: the seat is a Frame-managed login that has never been joined to Adobe.
+                            raise ApiError(("Adobe signed you in as %s. " % ident if ident else "")
+                                           + "Your Frame.io user is not linked to an Adobe ID yet. Sign in at next.frame.io, open Account Settings → "
+                                           "Profile → Authentication and click Connect next to Adobe (your Frame.io email and Adobe email must match; "
+                                           "Google sign-in or SSO must be off first). Then come back here, press Disconnect, then Connect Frame.io.")
                         raise ApiError(("Adobe signed you in as %s, but Frame.io does not recognise that identity. " % ident if ident else
                                         "Adobe accepted the sign-in, but Frame.io does not recognise that identity. ")
                                        + "Press Disconnect, sign out at account.adobe.com (or use a private window), press Connect Frame.io "
-                                       "and sign in with the email you use at next.frame.io.")
+                                       "and sign in with the email you use at next.frame.io. Frame.io said: " + detail[:200])
                     raise
             if path == "/api/frameio/accounts":
                 return self.send_json({"accounts": frameio_client().accounts()})
