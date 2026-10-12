@@ -1,6 +1,6 @@
 {
- "version": "1.18",
- "notes": "Test Frame.io now gives the exact fix when Frame.io says your user is not linked to an Adobe ID.",
+ "version": "1.19",
+ "notes": "Settings now removes stray spaces and line breaks from pasted keys, secrets and the Slack webhook (a PDF copy was breaking them).",
  "released": "2026-10-12",
  "files": [
   "server.py",

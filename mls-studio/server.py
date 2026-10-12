@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.18"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.19"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -1952,6 +1952,11 @@ class Handler(BaseHTTPRequestHandler):
         return self.send_error(404)
 
     def save_config(self, body):
+        # Keys, secrets and webhook URLs never contain whitespace; what arrives with a space or a line break in
+        # the middle was copied out of a PDF or a chat where the line wrapped. Drop it rather than save it broken.
+        for k in ("autohdr_client_id", "frameio_client_id"):
+            if isinstance(body.get(k), str):
+                body[k] = re.sub(r"\s+", "", body[k])
         with _lock:
             cfg = get_config()
             for k in ("autohdr_client_id", "frameio_mode", "frameio_client_id", "frameio_account_id", "mls_limit_kb",
@@ -1962,7 +1967,7 @@ class Handler(BaseHTTPRequestHandler):
             save_json(CONFIG_PATH, cfg)
         for k in ("autohdr_client_secret", "frameio_client_secret", "slack_webhook_url", "slack_bot_token", "hub_sync_key"):
             if body.get(k):
-                kc_set(k, body[k].strip())
+                kc_set(k, re.sub(r"\s+", "", body[k]))
         if body.get("hub_clear"):
             kc_delete("hub_sync_key")
         if "editor_name" in body:
