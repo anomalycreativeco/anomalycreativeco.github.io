@@ -1,7 +1,7 @@
 {
- "version": "1.19",
- "notes": "Settings now removes stray spaces and line breaks from pasted keys, secrets and the Slack webhook (a PDF copy was breaking them).",
- "released": "2026-10-12",
+ "version": "1.20",
+ "notes": "The Mac no longer dozes off mid-job: MLS Studio keeps it awake while a job runs (lid open).",
+ "released": "2026-10-18",
  "files": [
   "server.py",
   "frameio_mcp.py",

@@ -31,7 +31,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP_VERSION = "1.19"  # bump whenever a route changes so an open page can ask for a restart
+APP_VERSION = "1.20"  # bump whenever a route changes so an open page can ask for a restart
 PORT = int(os.environ.get("MLS_STUDIO_PORT", "8765"))
 CALLBACK_PORT = int(os.environ.get("MLS_STUDIO_CALLBACK_PORT", "8766"))  # HTTPS, Adobe requires https even on localhost
 DRY_RUN = os.environ.get("MLS_STUDIO_DRYRUN", "") not in ("", "0", "false") or "--dry-run" in sys.argv
@@ -1035,9 +1035,27 @@ def check_cancel(job):
         raise ApiError("Cancelled")
 
 
+_caffeinate = {"proc": None}
+
+
+def keep_awake(on):
+    """While a job runs, stop the Mac from napping (idle sleep, and system sleep on power). Closing the lid still
+    sleeps a MacBook; this only covers a Mac left alone with the lid open. Best effort: never fails a job."""
+    try:
+        p = _caffeinate["proc"]
+        if on and (p is None or p.poll() is not None):
+            _caffeinate["proc"] = subprocess.Popen(["caffeinate", "-i", "-s"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        elif not on and p is not None and p.poll() is None:
+            p.terminate()
+            _caffeinate["proc"] = None
+    except Exception:  # noqa
+        pass
+
+
 def run_job(job):
     steps = job.get("steps") or plan_steps(job)
     cfg = get_config()
+    keep_awake(True)
     try:
         jset(job, status="running", error=None)
         idx = job.get("step_index", 0)
@@ -1065,6 +1083,10 @@ def run_job(job):
         jlog(job, "FAILED: %s: %s" % (type(e).__name__, e))
     finally:
         CANCEL.discard(job["id"])
+        with _lock:
+            others = any(j.get("status") == "running" and j["id"] != job["id"] for j in JOBS.values())
+        if not others:
+            keep_awake(False)
 
 
 def clean_naming(n):
