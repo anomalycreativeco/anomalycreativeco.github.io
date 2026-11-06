@@ -1,0 +1,99 @@
+// Website Tickets rules. NOT deployed by this file: merge this block by hand into the
+// project's live rules (Firebase console, project anomaly-post-pipeline), inside
+// `match /databases/{database}/documents { ... }`. Requires rules_version = '2'.
+// Keep every existing rule. A broad existing rule can widen these, because rules are OR'ed.
+
+function isTicketTeam() {
+  return request.auth != null && request.auth.token.email_verified == true
+    && (request.auth.token.email in ['daniel@anomalycreativestudio.com', 'info@anomalycreativestudio.com']);
+}
+function portalPath(token) { return /databases/$(database)/documents/ticketPortals/$(token); }
+function portalActive(token) { return get(portalPath(token)).data.active == true; }
+
+// Anyone holding the link can read that one client's brand. Links can't be listed.
+match /ticketPortals/{token} {
+  allow get: if true;
+  allow list: if isTicketTeam();
+  allow create, delete: if isTicketTeam();
+  // Filing a ticket bumps the counter by exactly one, and the matching ticket must be created alongside it.
+  allow update: if isTicketTeam()
+    || (resource.data.active == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seq'])
+        && request.resource.data.seq == resource.data.seq + 1
+        && existsAfter(/databases/$(database)/documents/ticketPortals/$(token)/tickets/$(string(request.resource.data.seq))));
+
+  match /tickets/{ticketId} {
+    allow get, list: if isTicketTeam() || portalActive(token);
+    allow create: if isTicketTeam()
+      || (portalActive(token)
+          && ticketId == string(getAfter(portalPath(token)).data.seq)
+          && request.resource.data.keys().hasOnly(['num','abbr','title','details','type','page','seen','urgency','video','fileCount','status','archived','awaitingTeam','createdAt'])
+          && request.resource.data.keys().hasAll(['num','abbr','title','details','type','page','seen','urgency','video','fileCount','status','archived','awaitingTeam','createdAt'])
+          && request.resource.data.num == getAfter(portalPath(token)).data.seq
+          && request.resource.data.abbr == get(portalPath(token)).data.abbr
+          && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 140
+          && request.resource.data.details is string && request.resource.data.details.size() > 0 && request.resource.data.details.size() <= 5000
+          && request.resource.data.type is string && request.resource.data.type.size() <= 60
+          && request.resource.data.page is string && request.resource.data.page.size() <= 300
+          && request.resource.data.seen is string && request.resource.data.seen.size() <= 40
+          && request.resource.data.urgency is string && request.resource.data.urgency.size() <= 60
+          && request.resource.data.video is string && request.resource.data.video.size() <= 500
+          && request.resource.data.fileCount is int && request.resource.data.fileCount >= 0 && request.resource.data.fileCount <= 3
+          && request.resource.data.status == 'submitted'
+          && request.resource.data.archived == false
+          && request.resource.data.awaitingTeam == false
+          && request.resource.data.createdAt == request.time);
+    // A client can only flag that they answered a Needs more question.
+    allow update: if isTicketTeam()
+      || (portalActive(token)
+          && resource.data.status == 'needs'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['awaitingTeam','lastClientAt'])
+          && request.resource.data.awaitingTeam == true
+          && request.resource.data.lastClientAt == request.time);
+    allow delete: if isTicketTeam();
+
+    // Name and email: written by the client once, read only by Anomaly.
+    match /private/{docId} {
+      allow read, delete, update: if isTicketTeam();
+      allow create: if isTicketTeam()
+        || (docId == 'contact' && portalActive(token)
+            && existsAfter(/databases/$(database)/documents/ticketPortals/$(token)/tickets/$(ticketId))
+            && !exists(/databases/$(database)/documents/ticketPortals/$(token)/tickets/$(ticketId))
+            && request.resource.data.keys().hasOnly(['name','email'])
+            && request.resource.data.name is string && request.resource.data.name.size() <= 100
+            && request.resource.data.email is string && request.resource.data.email.size() <= 200);
+    }
+    // Screenshots: only as part of filing the ticket, 3 at most, never overwritten.
+    match /files/{fileId} {
+      allow get, list: if isTicketTeam() || portalActive(token);
+      allow update, delete: if isTicketTeam();
+      allow create: if isTicketTeam()
+        || (fileId in ['1','2','3'] && portalActive(token)
+            && existsAfter(/databases/$(database)/documents/ticketPortals/$(token)/tickets/$(ticketId))
+            && !exists(/databases/$(database)/documents/ticketPortals/$(token)/tickets/$(ticketId))
+            && request.resource.data.keys().hasOnly(['data'])
+            && request.resource.data.data is string && request.resource.data.data.size() <= 750000);
+    }
+    // Replies: clients can only add their own, and only while a question is open.
+    match /messages/{msgId} {
+      allow get, list: if isTicketTeam() || portalActive(token);
+      allow update, delete: if isTicketTeam();
+      allow create: if isTicketTeam()
+        || (portalActive(token)
+            && get(/databases/$(database)/documents/ticketPortals/$(token)/tickets/$(ticketId)).data.status == 'needs'
+            && request.resource.data.keys().hasOnly(['from','text','at','image'])
+            && request.resource.data.from == 'client'
+            && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 3000
+            && request.resource.data.at == request.time
+            && (!('image' in request.resource.data) || (request.resource.data.image is string && request.resource.data.image.size() <= 750000)));
+    }
+  }
+}
+
+// Main funnel: reads every client's tickets at once. Team only.
+match /{path=**}/tickets/{ticketId} {
+  allow read: if isTicketTeam();
+}
+// Triage, owners, internal notes, history, site notes. Never reach a client's browser.
+match /ticketOps/{id} { allow read, write: if isTicketTeam(); }
+match /ticketClients/{abbr} { allow read, write: if isTicketTeam(); }

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Anomaly · Website Tickets</title>
+<link rel="icon" href="logomark.png">
+<style>
+:root{--page:#E9E9E6;--card:#F6F6F4;--card2:#FFF;--ink:#16181A;--mid:#5D6165;--faint:#7C8084;--line:rgba(0,0,0,.09);
+  --green:#3C5C55;--green-t:rgba(143,179,172,.22);--red:#B34E36;--red-t:rgba(192,86,60,.13);--amber:#8F6A2C;--amber-t:rgba(185,138,62,.16);--grey-t:rgba(0,0,0,.06);
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif}
+[data-theme="dark"]{--page:#0C0D0E;--card:#161819;--card2:#1C1F20;--ink:#F2F3F3;--mid:#9BA1A5;--faint:#7F858A;--line:rgba(255,255,255,.09);
+  --green:#B9D4CE;--green-t:rgba(143,179,172,.16);--red:#E0785C;--red-t:rgba(224,120,92,.15);--amber:#D6A758;--amber-t:rgba(214,167,88,.15);--grey-t:rgba(255,255,255,.08);color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page);color:var(--ink);font:13.5px/1.45 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:7px 9px;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--green);outline-offset:0}
+textarea{min-height:64px;resize:vertical}
+.lbl{font:9.5px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 16px}
+.top h1{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0}
+.top .tag{font:10px var(--mono);background:var(--red-t);color:var(--red);padding:2px 7px;border-radius:99px}
+.top .sp{flex:1}
+.hub{padding:0 14px 14px;display:grid;grid-template-columns:200px minmax(0,1fr) 340px;gap:12px;align-items:start}
+.hc{background:var(--card);border-radius:18px;padding:14px;min-width:0}
+.cl{all:unset;display:flex;justify-content:space-between;gap:8px;width:100%;box-sizing:border-box;padding:7px 9px;border-radius:9px;cursor:pointer}
+.cl[aria-pressed="true"]{background:var(--card2);box-shadow:0 1px 2px rgba(0,0,0,.08);font-weight:600}
+.cl em{font:11px var(--mono);color:var(--faint);font-style:normal}.cl em.hot{color:var(--red)}
+.cl small{color:var(--amber);font-weight:400}
+.hhead{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hhead h2{margin:2px 0 0;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.mini{all:unset;cursor:pointer;padding:6px 10px;border-radius:9px;background:var(--card2);font-size:12px;box-shadow:0 1px 2px rgba(0,0,0,.07);white-space:nowrap}
+.mini.pri{background:var(--ink);color:var(--page)}
+.mini[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+.mini:focus-visible,.cl:focus-visible,.row:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.filters{display:grid;grid-template-columns:minmax(120px,1.6fr) repeat(5,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.filters>*{font-size:12px;padding:5px 7px}
+.row{all:unset;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px;border-radius:12px;cursor:pointer;width:100%;box-sizing:border-box}
+.row+.row{margin-top:2px}
+.row[aria-current="true"]{background:var(--card2);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.row b{font-weight:600;overflow-wrap:anywhere}.row .m{font-size:12px;color:var(--mid);grid-column:1}
+.row code{font:11px var(--mono);color:var(--faint);margin-right:6px}
+.urg{color:var(--red);font-weight:600}
+.flag{color:var(--amber);font-weight:600}
+.st{font-size:12px;padding:3px 9px;border-radius:999px;white-space:nowrap;align-self:start;background:var(--grey-t);color:var(--mid)}
+.st.new{background:var(--red-t);color:var(--red)}.st.prog{background:var(--amber-t);color:var(--amber)}.st.wait{background:var(--grey-t);color:var(--mid)}.st.done{background:var(--green-t);color:var(--green)}
+.dt{display:grid;gap:11px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.dt h3{margin:0;font-size:15.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.dt p{margin:0;color:var(--mid);white-space:pre-wrap;overflow-wrap:anywhere}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;font-size:12px;margin:0}
+.kv dt{color:var(--faint)}.kv dd{margin:0;overflow-wrap:anywhere}
+.kv a{color:inherit}
+.shots{display:grid;gap:6px}
+.shots img{width:100%;max-height:240px;object-fit:contain;background:var(--grey-t);border-radius:9px;display:block}
+.sw{display:flex;gap:4px;flex-wrap:wrap}
+.sw button{all:unset;cursor:pointer;font-size:12px;padding:4px 9px;border-radius:7px;color:var(--mid)}
+.sw button[aria-pressed="true"]{background:var(--card2);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.sw button:focus-visible{outline:2px solid var(--green)}
+.msg{padding:8px 10px;border-radius:10px;background:var(--card2);font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.note{background:var(--amber-t)}
+.msg small{display:block;color:var(--faint);font-size:11px;margin-bottom:2px}
+.msg img{display:block;max-width:100%;border-radius:6px;margin-top:6px}
+.thread{display:grid;gap:6px}
+.log{font-size:11.5px;color:var(--faint);display:grid;gap:2px}
+.empty{color:var(--mid);margin:8px}
+.err{color:var(--red);font-size:12.5px;margin:0}
+/* gate */
+.gate{position:fixed;inset:0;background:var(--page);display:grid;place-items:center;z-index:50;padding:16px}
+.gate>div{background:var(--card);border-radius:18px;padding:26px;max-width:380px;width:100%;display:grid;gap:12px;text-align:center}
+.gate h2{margin:0;font-size:19px}
+.gate .mini{justify-self:center}
+/* dialog */
+dialog{border:0;border-radius:18px;background:var(--card);color:var(--ink);padding:18px;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 24px)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.fg{display:grid;gap:10px}
+.fg h3{margin:0;font-size:16px}
+.f{display:grid;gap:4px;min-width:0;align-content:start}.f label{font-size:12px;color:var(--mid)}.f small{font-size:11.5px;color:var(--faint)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.col{display:flex;gap:6px}.col input[type=color]{width:38px;flex:none;padding:2px;height:34px}
+.warn{font-size:12px;color:var(--amber);background:var(--amber-t);padding:7px 9px;border-radius:9px}
+.good{font-size:12px;color:var(--green);background:var(--green-t);padding:7px 9px;border-radius:9px}
+.prev{border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.prev .b{padding:10px 12px;display:flex;align-items:center;min-height:52px}.prev .b img{max-height:32px;max-width:180px}
+.prev .c{padding:10px 12px;font-size:13px}
+@media(max-width:1100px){.hub{grid-template-columns:minmax(0,1fr)}.dt{position:static;max-height:none}#clist{display:flex;overflow-x:auto;gap:4px}.cl{width:auto;white-space:nowrap;gap:12px}.clbl{display:none}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filters>input{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="gate" id="gate"><div>
+  <h2 id="gateTitle">Website Tickets</h2>
+  <p id="gateMsg" style="margin:0;color:var(--mid)">Sign in with your Anomaly Google account.</p>
+  <button class="mini pri" id="gGoogle">Sign in with Google</button>
+  <button class="mini" id="gOut" hidden>Sign out</button>
+</div></div>
+
+<div id="app" hidden>
+  <div class="top">
+    <h1>Website Tickets</h1><span class="tag" id="opencount"></span>
+    <span class="sp"></span>
+    <button class="mini" id="btnExport">Export all</button>
+    <button class="mini" id="themeBtn">Theme</button>
+  </div>
+  <div class="hub">
+    <div class="hc">
+      <div class="lbl clbl" style="margin-bottom:8px">Clients</div>
+      <div id="clist"></div>
+      <button class="mini" id="btnAdd" style="margin-top:10px">Add client</button>
+    </div>
+    <div class="hc">
+      <div class="hhead"><div><div class="lbl" id="hsub"></div><h2 id="htitle"></h2></div><div class="acts" id="hacts"></div></div>
+      <div class="filters">
+        <input id="fq" aria-label="Search tickets" placeholder="Search">
+        <select id="fstage" aria-label="Stage"></select>
+        <select id="ftype" aria-label="Request type"></select>
+        <select id="furg" aria-label="Urgency"></select>
+        <select id="fown" aria-label="Owner"></select>
+        <select id="fdate" aria-label="Date"><option value="0">Any time</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select>
+      </div>
+      <p class="err" id="loadErr" hidden></p>
+      <div id="rows"></div>
+    </div>
+    <div class="hc dt" id="detail"><div class="lbl">Select a ticket</div></div>
+  </div>
+</div>
+
+<dialog id="brandDlg"><form method="dialog" class="fg" id="brandForm">
+  <h3 id="brandTitle">Client brand</h3>
+  <div class="two">
+    <div class="f" id="pickWrap"><label for="bClient">Client</label><select id="bClient"></select></div>
+    <div class="f"><label for="bAbbr">Ticket prefix</label><input id="bAbbr" maxlength="6" placeholder="COL"><small>Letters and numbers. It can't change later.</small></div>
+  </div>
+  <div class="f"><label for="bName">Name clients see</label><input id="bName" maxlength="80"></div>
+  <div class="f"><label for="bLogo">Logo</label><input id="bLogo" type="file" accept="image/*"><small id="bLogoNote">Should read on the header color. A white logo usually fits a dark header.</small></div>
+  <div class="two">
+    <div class="f"><label for="bPrimaryT">Header and button color</label><div class="col"><input type="color" id="bPrimary" aria-label="Pick header color"><input id="bPrimaryT" maxlength="7"></div></div>
+    <div class="f"><label for="bOnT">Text on that color</label><div class="col"><input type="color" id="bOn" aria-label="Pick text color"><input id="bOnT" maxlength="7"></div></div>
+    <div class="f"><label for="bInkT">Page text</label><div class="col"><input type="color" id="bInk" aria-label="Pick page text color"><input id="bInkT" maxlength="7"></div></div>
+    <div class="f"><label for="bPaperT">Page background</label><div class="col"><input type="color" id="bPaper" aria-label="Pick page background"><input id="bPaperT" maxlength="7"></div></div>
+  </div>
+  <div id="bContrast"></div>
+  <div class="two">
+    <div class="f"><label for="bHead">Heading font (Google Fonts)</label><input id="bHead" maxlength="60"></div>
+    <div class="f"><label for="bBody">Body font (Google Fonts)</label><input id="bBody" maxlength="60"></div>
+    <div class="f"><label for="bHeadL">Heading font when installed</label><input id="bHeadL" maxlength="60"><small>For a licensed brand font. Devices without it use the Google font.</small></div>
+    <div class="f"><label for="bBodyL">Body font when installed</label><input id="bBodyL" maxlength="60"></div>
+  </div>
+  <div id="bPrev" class="prev"></div>
+  <div class="f"><label for="bPages">Pages clients can choose</label><textarea id="bPages" placeholder="One per line"></textarea></div>
+  <div class="f"><label for="bOwner">Default ticket owner</label><select id="bOwner"></select></div>
+  <div class="f"><label for="bNotes">Site notes (Anomaly only)</label><textarea id="bNotes" placeholder="Platform, staging method. No passwords or keys."></textarea></div>
+  <p class="err" id="bErr" hidden></p>
+  <div class="acts"><button class="mini pri" id="bSave" type="button">Save</button><button class="mini" id="bCancel" type="button">Cancel</button></div>
+</form></dialog>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc,getDocs,setDoc,updateDoc,addDoc,collection,collectionGroup,onSnapshot,writeBatch,serverTimestamp,arrayUnion} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
+const auth=getAuth(app), db=getFirestore(app);
+const OWNERS=["daniel@anomalycreativestudio.com","info@anomalycreativestudio.com"];
+const DEFAULT_OWNER="daniel@anomalycreativestudio.com";
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(3,"0");
+const ms=v=>v&&v.toMillis?v.toMillis():(typeof v==="number"?v:0);
+const DAY=864e5, ARCHIVE_AFTER=30*DAY;
+function ago(v){const t=ms(v);if(!t)return "now";const m=Math.round((Date.now()-t)/6e4);if(m<60)return Math.max(m,1)+"m";const h=Math.round(m/60);if(h<36)return h+"h";const d=Math.round(h/24);if(d<14)return d+"d";return Math.round(d/7)+"w";}
+const safeImg=v=>typeof v==="string"&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(v)?v:"";
+
+/* team stage: [label, pill class, status the client's page shows]. Agent working arrives with phase two. */
+const STAGE={inbox:["Inbox","new",null],triaged:["Triaged","wait","viewed"],agent:["Agent working","prog","progress"],human:["With team","prog","progress"],review:["Your review","new","progress"],needs:["Needs client","wait","needs"],live:["Live, verified","done","done"],archived:["Archived","wait","done"]};
+const PICKABLE=["inbox","triaged","human","review","needs","live","archived"];
+const CLIENT_LABEL={submitted:"Submitted",viewed:"Viewed",progress:"In progress",needs:"Needs more",done:"Completed"};
+const PRESETS=[{m:/currin/i,b:{primary:"#91191b",onPrimary:"#ffffff",ink:"#1a1a1a",paper:"#ffffff",headLocal:"Optima",headFont:"Marcellus",bodyLocal:"",bodyFont:"Manrope",logo:"logos/clients/currin-outdoor-living-white.png"}}];
+
+let USER=null,MYEMAIL="";
+let portals=[],clientsMeta={},tickets=[],ops={},clientsList=[],team=[];
+let client="all",shelf="active",sel=null,mode="reply",drafts={};
+let selMsgs=[],selFiles=[],selContact=null,msgUnsub=null,gotT=false,gotO=false,swept=false;
+
+const ticketKey=t=>t.token+"/"+t.id;
+const dispId=t=>`${t.abbr}-${pad(t.num)}`;
+const stageOf=t=>t.archived?"archived":(ops[dispId(t)]||{}).stage||"inbox";
+const defaultOwnerOf=abbr=>(clientsMeta[abbr]||{}).defaultOwner||DEFAULT_OWNER;
+const ownerOf=t=>{const o=ops[dispId(t)];return o&&o.owner!==undefined?o.owner:defaultOwnerOf(t.abbr);};
+const shortName=e=>e?String(e).split("@")[0].replace(/^./,c=>c.toUpperCase()):"Unassigned";
+const isOpen=t=>!t.archived&&stageOf(t)!=="live";
+const portalOf=abbr=>portals.find(p=>p.abbr===abbr);
+const nameOf=abbr=>(portalOf(abbr)||{}).clientName||abbr;
+
+/* ── theme ── */
+const root=document.documentElement;
+function setTheme(t){if(t==="dark")root.setAttribute("data-theme","dark");else root.removeAttribute("data-theme");try{localStorage.setItem("hub-theme",t);}catch(e){}}
+try{setTheme(localStorage.getItem("hub-theme")||"light");}catch(e){}
+$("#themeBtn").onclick=()=>setTheme(root.getAttribute("data-theme")==="dark"?"light":"dark");
+
+/* ── gate: same access model as Client Automations. Firestore rules enforce it too. ── */
+$("#gGoogle").onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());}catch(e){$("#gateMsg").textContent="Sign-in failed: "+(e.code||e.message);}};
+$("#gOut").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async u=>{
+  if(!u){$("#gate").hidden=false;$("#app").hidden=true;$("#gGoogle").hidden=false;$("#gOut").hidden=true;return;}
+  USER=u;MYEMAIL=(u.email||"").toLowerCase();
+  let ok=OWNERS.includes(MYEMAIL);
+  if(!ok){try{const d=await getDoc(doc(db,"hub","access"));const c=(d.exists()?((d.data()||{}).platforms||{}):{}).tickets||{mode:"owners"};
+    if(c.mode==="custom")ok=(c.emails||[]).map(e=>e.toLowerCase()).includes(MYEMAIL);}catch(e){}}
+  if(!ok){$("#gateTitle").textContent="Restricted";$("#gGoogle").hidden=true;$("#gOut").hidden=false;$("#gateMsg").textContent="Signed in as "+MYEMAIL+". This account can't view website tickets.";return;}
+  $("#gate").hidden=true;$("#app").hidden=false;
+  start();
+});
+
+/* ── live data ── */
+function loadFail(e){console.error(e);const l=$("#loadErr");l.textContent="Couldn't load tickets ("+(e.code||e.message)+").";l.hidden=false;}
+function start(){
+  onSnapshot(collection(db,"ticketPortals"),s=>{portals=s.docs.map(d=>({token:d.id,...d.data()}));render();},loadFail);
+  onSnapshot(collection(db,"ticketClients"),s=>{clientsMeta={};s.docs.forEach(d=>clientsMeta[d.id]=d.data());render();},loadFail);
+  onSnapshot(collectionGroup(db,"tickets"),s=>{tickets=s.docs.filter(d=>d.ref.parent.parent&&d.ref.parent.parent.parent.id==="ticketPortals").map(d=>({id:d.id,token:d.ref.parent.parent.id,...d.data()}));gotT=true;sweep();render();},loadFail);
+  onSnapshot(collection(db,"ticketOps"),s=>{ops={};s.docs.forEach(d=>ops[d.id]=d.data());gotO=true;sweep();render();},loadFail);
+  getDocs(collection(db,"clients")).then(s=>{clientsList=s.docs.map(d=>({abbr:d.id,...d.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name)));}).catch(e=>console.warn(e));
+  getDocs(collection(db,"roles")).then(s=>{team=s.docs.map(d=>d.id.toLowerCase());render();}).catch(e=>console.warn(e));
+}
+/* closed tickets archive 30 days after closing. There's no server, so this runs when the panel opens. */
+function sweep(){
+  if(swept||!gotT||!gotO)return;swept=true;
+  tickets.filter(t=>!t.archived&&stageOf(t)==="live"&&ms(t.closedAt)&&Date.now()-ms(t.closedAt)>ARCHIVE_AFTER).forEach(t=>setStage(t,"archived","Auto-archived 30 days after closing").catch(e=>console.warn(e)));
+}
+
+/* ── writes ── */
+const tRef=t=>doc(db,"ticketPortals",t.token,"tickets",t.id);
+const oRef=t=>doc(db,"ticketOps",dispId(t));
+const logEntry=(kind,text)=>({at:Date.now(),by:MYEMAIL,kind,text});
+async function markViewed(t){
+  if(t.status!=="submitted")return;
+  const b=writeBatch(db);
+  b.update(tRef(t),{status:"viewed",viewedAt:serverTimestamp()});
+  b.set(oRef(t),{abbr:t.abbr,log:arrayUnion(logEntry("viewed","First opened"))},{merge:true});
+  await b.commit();
+}
+async function setStage(t,s,why){
+  const patch={archived:s==="archived",awaitingTeam:false};
+  const mapped=STAGE[s][2];
+  patch.status=mapped||(t.status==="submitted"?"submitted":"viewed");
+  if(s==="live"||s==="archived"){patch.closedAt=t.closedAt||serverTimestamp();}else{patch.closedAt=null;}
+  const b=writeBatch(db);
+  b.update(tRef(t),patch);
+  b.set(oRef(t),{abbr:t.abbr,stage:s,log:arrayUnion(logEntry("stage",why||("Moved to "+STAGE[s][0])))},{merge:true});
+  await b.commit();
+}
+async function setOwner(t,o){await setDoc(oRef(t),{abbr:t.abbr,owner:o,log:arrayUnion(logEntry("owner","Owner: "+shortName(o)))},{merge:true});}
+async function send(t,text){
+  if(mode==="note"){await setDoc(oRef(t),{abbr:t.abbr,log:arrayUnion(logEntry("note",text))},{merge:true});return;}
+  await addDoc(collection(db,"ticketPortals",t.token,"tickets",t.id,"messages"),{from:"anomaly",kind:mode==="ask"?"ask":"reply",text,at:serverTimestamp()});
+  if(mode==="ask")await setStage(t,"needs","Asked the client: "+text.slice(0,80));
+  else await setDoc(oRef(t),{abbr:t.abbr,log:arrayUnion(logEntry("reply","Replied to client"))},{merge:true});
+}
+
+/* ── render ── */
+function opts(el,list,keep){const v=el.value;el.innerHTML=list.map(([val,txt])=>`<option value="${esc(val)}">${esc(txt)}</option>`).join("");if(keep&&list.some(([x])=>x===v))el.value=v;}
+function filtered(){
+  const q=$("#fq").value.trim().toLowerCase(),fs=$("#fstage").value,ft=$("#ftype").value,fu=$("#furg").value,fo=$("#fown").value,fd=+$("#fdate").value;
+  return tickets.filter(t=>{
+    if(client!=="all"&&t.abbr!==client)return false;
+    if((shelf==="archive")!==!!t.archived)return false;
+    if(fs&&stageOf(t)!==fs)return false;
+    if(ft&&t.type!==ft)return false;
+    if(fu&&t.urgency!==fu)return false;
+    if(fo&&(ownerOf(t)||"none")!==fo)return false;
+    if(fd&&Date.now()-ms(t.createdAt)>fd*DAY)return false;
+    if(q&&!(dispId(t)+" "+t.title+" "+t.details+" "+t.page+" "+t.type+" "+nameOf(t.abbr)).toLowerCase().includes(q))return false;
+    return true;
+  }).sort((a,b)=>(stageOf(a)==="live")-(stageOf(b)==="live")||(!!b.awaitingTeam)-(!!a.awaitingTeam)||(/^Urgent/.test(b.urgency))-(/^Urgent/.test(a.urgency))||ms(b.createdAt)-ms(a.createdAt));
+}
+function render(){
+  if($("#app").hidden)return;
+  $("#opencount").textContent=tickets.filter(isOpen).length+" open";
+  const abbrs=[...new Set([...portals.map(p=>p.abbr),...tickets.map(t=>t.abbr)])].sort((a,b)=>nameOf(a).localeCompare(nameOf(b)));
+  const item=(key,name,list,paused)=>{const k=list.filter(isOpen).length,hot=list.some(t=>!t.archived&&(stageOf(t)==="inbox"||stageOf(t)==="review"||t.awaitingTeam));
+    return `<button class="cl" aria-pressed="${key===client}" data-c="${esc(key)}"><span>${esc(name)}${paused?" <small>paused</small>":""}</span><em class="${hot?"hot":""}">${k}</em></button>`;};
+  $("#clist").innerHTML=item("all","All clients",tickets)+abbrs.map(a=>item(a,nameOf(a),tickets.filter(t=>t.abbr===a),portalOf(a)&&!portalOf(a).active)).join("");
+  document.querySelectorAll(".cl").forEach(b=>b.onclick=()=>{client=b.dataset.c;render();});
+  opts($("#fstage"),[["","Any stage"],...PICKABLE.filter(s=>shelf==="archive"?s==="archived":s!=="archived").map(s=>[s,STAGE[s][0]])],true);
+  opts($("#ftype"),[["","Any type"],...[...new Set(tickets.map(t=>t.type))].filter(Boolean).sort().map(x=>[x,x])],true);
+  opts($("#furg"),[["","Any urgency"],...[...new Set(tickets.map(t=>t.urgency))].filter(Boolean).map(x=>[x,x.split(":")[0]])],true);
+  opts($("#fown"),[["","Any owner"],["none","Unassigned"],...[...new Set([...tickets.map(ownerOf),...OWNERS])].filter(Boolean).map(x=>[x,shortName(x)])],true);
+  $("#hsub").textContent=shelf==="archive"?"Archive":"Main funnel";
+  $("#htitle").textContent=client==="all"?"All clients":nameOf(client);
+  drawActs();
+  const rows=filtered();
+  $("#rows").innerHTML=rows.length?rows.map(t=>{const s=stageOf(t);
+    return `<button class="row" data-k="${esc(ticketKey(t))}" aria-current="${ticketKey(t)===sel}"><b><code>${esc(dispId(t))}</code>${esc(t.title)}</b><span class="st ${STAGE[s][1]}">${esc(STAGE[s][0])}</span><span class="m">${client==="all"?esc(nameOf(t.abbr))+" · ":""}${esc(t.type)} · ${/^Urgent/.test(t.urgency)?'<span class="urg">Urgent</span>':esc(t.urgency)} · ${esc(shortName(ownerOf(t)))} · ${ago(t.createdAt)}${t.awaitingTeam?' · <span class="flag">Client answered</span>':""}</span></button>`;}).join(""):`<p class="empty">${tickets.length||portals.length?"Nothing here.":"No clients yet. Add one to get their link."}</p>`;
+  document.querySelectorAll(".row").forEach(b=>b.onclick=()=>select(b.dataset.k));
+  drawDetail();
+}
+function brandComplete(p){const b=p&&p.brand||{};return !!(b.logo&&b.primary&&b.onPrimary&&b.ink&&b.paper&&b.headFont&&b.bodyFont);}
+function linkFor(p){return new URL("site-tickets/?c="+encodeURIComponent(p.token),location.href).href;}
+function drawActs(){
+  const p=client==="all"?null:portalOf(client), ok=brandComplete(p);
+  $("#hacts").innerHTML=`<div class="sw"><button data-sh="active" aria-pressed="${shelf==="active"}">Active</button><button data-sh="archive" aria-pressed="${shelf==="archive"}">Archive</button></div>`+
+   (p?`<button class="mini" id="aBrand">Brand</button><button class="mini" id="aCopy" aria-disabled="${!ok}" title="${ok?"":"Set the logo, colors and fonts first"}">Copy client link</button><button class="mini" id="aRotate">Rotate</button><button class="mini" id="aPause">${p.active?"Pause":"Resume"}</button>`:"");
+  document.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>{shelf=b.dataset.sh;sel=null;render();});
+  if(!p)return;
+  $("#aBrand").onclick=()=>openBrand(p);
+  $("#aCopy").onclick=async e=>{if(!ok){alert("No brand, no link. Set the logo, colors and fonts first.");return;}
+    const u=linkFor(p);try{await navigator.clipboard.writeText(u);e.target.textContent="Link copied";}catch(x){prompt("Copy this link:",u);}setTimeout(()=>{const c=$("#aCopy");if(c)c.textContent="Copy client link";},1500);};
+  $("#aPause").onclick=()=>updateDoc(doc(db,"ticketPortals",p.token),{active:!p.active}).catch(e=>alert("Couldn't change that: "+(e.code||e.message)));
+  $("#aRotate").onclick=()=>rotate(p);
+}
+
+/* ── detail ── */
+function select(k){
+  sel=k;mode="reply";selMsgs=[];selFiles=[];selContact=null;
+  if(msgUnsub){msgUnsub();msgUnsub=null;}
+  const t=tickets.find(x=>ticketKey(x)===k);
+  if(t){
+    markViewed(t).catch(e=>console.warn("viewed",e)); /* first open by Anomaly flips the client's status to Viewed */
+    msgUnsub=onSnapshot(collection(db,"ticketPortals",t.token,"tickets",t.id,"messages"),s=>{selMsgs=s.docs.map(d=>d.data()).sort((a,b)=>ms(a.at)-ms(b.at));if(sel===k)drawDetail();},e=>console.warn(e));
+    if(t.fileCount)getDocs(collection(db,"ticketPortals",t.token,"tickets",t.id,"files")).then(s=>{if(sel!==k)return;selFiles=s.docs.map(d=>safeImg(d.data().data)).filter(Boolean);drawDetail();}).catch(e=>console.warn(e));
+    getDoc(doc(db,"ticketPortals",t.token,"tickets",t.id,"private","contact")).then(d=>{if(sel!==k)return;selContact=d.exists()?d.data():{};drawDetail();}).catch(e=>console.warn(e));
+  }
+  render();
+}
+function drawDetail(){
+  const box=$("#detail"), t=tickets.find(x=>ticketKey(x)===sel);
+  if(!t){box.innerHTML=`<div class="lbl">Select a ticket</div>`;return;}
+  const ta=box.querySelector("textarea"), hadFocus=ta&&document.activeElement===ta, caret=ta?ta.selectionStart:0;
+  const s=stageOf(t), o=ops[dispId(t)]||{}, owner=ownerOf(t);
+  const clientSees=t.archived?"Past requests":(t.status==="needs"&&t.awaitingTeam?"In progress":CLIENT_LABEL[t.status]||"Submitted");
+  const video=/^https:\/\//i.test(t.video||"")?`<dt>Link</dt><dd><a href="${esc(t.video)}" target="_blank" rel="noopener noreferrer">${esc(t.video)}</a></dd>`:"";
+  const ownOpts=[...new Set([...OWNERS,...team,owner])].filter(Boolean);
+  const stageList=PICKABLE.includes(s)?PICKABLE:[s,...PICKABLE];
+  const notes=(o.log||[]).filter(l=>l.kind==="note").map(l=>({...l,_note:1}));
+  const thread=[...selMsgs.map(m=>({...m,_at:ms(m.at)})),...notes.map(n=>({...n,_at:n.at}))].sort((a,b)=>a._at-b._at);
+  box.innerHTML=`<div class="lbl">${esc(dispId(t))} · ${esc(nameOf(t.abbr))}</div><h3>${esc(t.title)}</h3><p>${esc(t.details)}</p>
+    ${selFiles.length?`<div class="shots">${selFiles.map((f,i)=>`<a href="${f}" target="_blank" rel="noopener"><img src="${f}" alt="Screenshot ${i+1}"></a>`).join("")}</div>`:(t.fileCount?`<div class="lbl">Loading ${esc(t.fileCount)} screenshot(s)…</div>`:"")}
+    <dl class="kv"><dt>Type</dt><dd>${esc(t.type)}</dd><dt>Page</dt><dd>${esc(t.page)}</dd><dt>Seen</dt><dd>${esc(t.seen)}</dd><dt>Urgency</dt><dd>${esc(t.urgency)}</dd>
+      <dt>From</dt><dd>${selContact?esc(selContact.name||"")+(selContact.email?` · <a href="mailto:${esc(selContact.email)}">${esc(selContact.email)}</a>`:""):"…"}</dd>${video}
+      <dt>Filed</dt><dd>${ms(t.createdAt)?new Date(ms(t.createdAt)).toLocaleString():"now"}</dd>
+      ${(clientsMeta[t.abbr]||{}).siteNotes?`<dt>Site</dt><dd>${esc(clientsMeta[t.abbr].siteNotes)}</dd>`:""}
+      <dt>Client sees</dt><dd>${esc(clientSees)}</dd></dl>
+    ${t.awaitingTeam?`<div class="warn">The client answered. Move the ticket to its next stage when you're ready.</div>`:""}
+    <div class="two"><div class="f"><label for="dStage">Stage</label><select id="dStage">${stageList.map(x=>`<option value="${x}"${x===s?" selected":""}>${esc(STAGE[x][0])}</option>`).join("")}</select></div>
+      <div class="f"><label for="dOwner">Owner</label><select id="dOwner"><option value="">Unassigned</option>${ownOpts.map(x=>`<option value="${esc(x)}"${x===owner?" selected":""}>${esc(shortName(x))}</option>`).join("")}</select></div></div>
+    ${t.archived?`<div class="acts"><button class="mini" id="dReopen">Reopen</button></div>`:""}
+    ${thread.length?`<div class="thread">${thread.map(m=>m._note?`<div class="msg note"><small>Internal · ${esc(shortName(m.by))} · ${ago(m.at)}</small>${esc(m.text)}</div>`:`<div class="msg"><small>${m.from==="client"?"Client":"Anomaly"+(m.kind==="ask"?" asked":"")} · ${ago(m.at)}</small>${esc(m.text)}${safeImg(m.image)?`<img src="${safeImg(m.image)}" alt="Attached image">`:""}</div>`).join("")}</div>`:""}
+    <div class="sw"><button data-m="reply" aria-pressed="${mode==="reply"}">Reply to client</button><button data-m="ask" aria-pressed="${mode==="ask"}">Ask client</button><button data-m="note" aria-pressed="${mode==="note"}">Internal note</button></div>
+    <textarea id="dText" aria-label="Message" placeholder="${mode==="note"?"Only Anomaly sees this":mode==="ask"?"The client sees this as Needs more and answers on their page":"The client sees this at their link"}">${esc(drafts[sel+mode]||"")}</textarea>
+    <p class="err" id="dErr" hidden></p>
+    <button class="mini" id="dSend" style="justify-self:start">${mode==="note"?"Save note":mode==="ask"?"Send question":"Send reply"}</button>
+    <details><summary class="lbl" style="cursor:pointer">History</summary><div class="log" style="margin-top:6px">${(o.log||[]).slice().reverse().map(l=>`<span>${new Date(l.at).toLocaleString()} · ${esc(shortName(l.by))} · ${esc(l.kind==="note"?"Internal note":l.text)}</span>`).join("")||"<span>No changes yet.</span>"}</div></details>`;
+  const err=x=>{console.error(x);const e=$("#dErr");if(e){e.textContent="That didn't save ("+(x.code||x.message)+").";e.hidden=false;}};
+  $("#dStage").onchange=e=>{const v=e.target.value;if(v==="needs"){mode="ask";drawDetail();$("#dStage").value=s;$("#dText").focus();return;}
+    setStage(t,v).then(()=>{if(v==="archived"){shelf="archive";render();}}).catch(err);};
+  $("#dOwner").onchange=e=>setOwner(t,e.target.value).catch(err);
+  const re=$("#dReopen");if(re)re.onclick=()=>setStage(t,"inbox","Reopened").then(()=>{shelf="active";render();}).catch(err);
+  document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{mode=b.dataset.m;drawDetail();});
+  const tx=$("#dText");tx.oninput=()=>{drafts[sel+mode]=tx.value;};
+  if(hadFocus){tx.focus();try{tx.setSelectionRange(caret,caret);}catch(e){}}
+  $("#dSend").onclick=()=>{const v=tx.value.trim();if(!v)return;const k=sel+mode;send(t,v).then(()=>{delete drafts[k];drawDetail();}).catch(err);};
+}
+
+/* ── rotate: moves everything to a new token, then removes the old one ── */
+function newToken(name){const slug=String(name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,24)||"client";
+  const a=crypto.getRandomValues(new Uint8Array(16)),abc="abcdefghijklmnopqrstuvwxyz0123456789";return slug+"-"+[...a].map(x=>abc[x%36]).join("");}
+class Writer{ /* Firestore commits cap out near 10 MB; screenshots can be 700 KB each */
+  constructor(){this.b=writeBatch(db);this.n=0;this.sz=0;}
+  async flush(){if(this.n){await this.b.commit();this.b=writeBatch(db);this.n=0;this.sz=0;}}
+  async op(fn,size){if(this.n>=300||this.sz+size>6e6)await this.flush();fn(this.b);this.n++;this.sz+=size;}
+}
+async function rotate(p){
+  if(!confirm(`Rotate the link for ${p.clientName}?\n\nThe current link stops working right away. Their tickets move to a new link that you'll need to send them.`))return;
+  const to=newToken(p.clientName), from=p.token, w=new Writer();
+  try{
+    await updateDoc(doc(db,"ticketPortals",from),{active:false});
+    const {token,...rest}=p;
+    await setDoc(doc(db,"ticketPortals",to),{...rest,active:false});
+    const ts=await getDocs(collection(db,"ticketPortals",from,"tickets"));
+    const dels=[];
+    for(const d of ts.docs){
+      await w.op(b=>b.set(doc(db,"ticketPortals",to,"tickets",d.id),d.data()),4e3);
+      for(const sub of ["messages","files","private"]){
+        const ss=await getDocs(collection(db,"ticketPortals",from,"tickets",d.id,sub));
+        for(const x of ss.docs){const data=x.data();await w.op(b=>b.set(doc(db,"ticketPortals",to,"tickets",d.id,sub,x.id),data),JSON.stringify(data).length);dels.push(x.ref);}
+      }
+      dels.push(d.ref);
+    }
+    await w.flush();
+    await updateDoc(doc(db,"ticketPortals",to),{active:true});
+    await setDoc(doc(db,"ticketClients",p.abbr),{token:to},{merge:true});
+    for(const r of dels)await w.op(b=>b.delete(r),100);
+    await w.op(b=>b.delete(doc(db,"ticketPortals",from)),100);
+    await w.flush();
+    sel=null;
+    alert("Done. Use Copy client link to get the new link.");
+  }catch(e){console.error(e);alert("Rotate stopped partway ("+(e.code||e.message)+"). The old link is paused. Nothing was lost, so tell Claude before retrying.");}
+}
+
+/* ── brand dialog ── */
+const HEX=/^#[0-9a-f]{6}$/i;
+function lum(h){const c=[1,3,5].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+function ratio(a,b){const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+let editing=null,logoVal="";
+const COLORS=[["bPrimary","primary"],["bOn","onPrimary"],["bInk","ink"],["bPaper","paper"]];
+function pairColor(id){const a=$("#"+id),t=$("#"+id+"T");a.oninput=()=>{t.value=a.value;brandCheck();};t.oninput=()=>{if(HEX.test(t.value))a.value=t.value;brandCheck();};}
+COLORS.forEach(([id])=>pairColor(id));
+["bHead","bBody","bHeadL","bBodyL","bName"].forEach(id=>$("#"+id).oninput=brandCheck);
+const loaded=new Set();
+function loadFont(f){if(!f||loaded.has(f))return;loaded.add(f);const l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family="+encodeURIComponent(f)+":wght@400;600&display=swap";document.head.appendChild(l);}
+function brandVals(){const v=id=>$("#"+id).value.trim();return {logo:logoVal,primary:v("bPrimaryT"),onPrimary:v("bOnT"),ink:v("bInkT"),paper:v("bPaperT"),headFont:v("bHead"),bodyFont:v("bBody"),headLocal:v("bHeadL"),bodyLocal:v("bBodyL")};}
+function brandCheck(){
+  const b=brandVals(),box=$("#bContrast");
+  if(![b.primary,b.onPrimary,b.ink,b.paper].every(c=>HEX.test(c))){box.innerHTML=`<div class="warn">Enter each color as a 6-digit hex value.</div>`;return;}
+  const low=[["Text on the header and buttons",ratio(b.primary,b.onPrimary)],["Page text",ratio(b.ink,b.paper)],["Links and labels on the page",ratio(b.primary,b.paper)]].filter(x=>x[1]<4.5);
+  box.innerHTML=low.length?`<div class="warn">Hard to read: ${low.map(x=>esc(x[0])+" ("+x[1].toFixed(1)+":1, aim for 4.5:1)").join("; ")}. You can still save.</div>`:`<div class="good">All color pairs are readable.</div>`;
+  loadFont(b.headFont);loadFont(b.bodyFont);
+  const f=(l,g,x)=>[l,g].filter(Boolean).map(n=>`'${n.replace(/[^A-Za-z0-9 \-]/g,"")}'`).concat(x).join(",");
+  const logo=safeImg(logoVal)||(/^logos\/clients\/[\w.\-]+$/.test(logoVal)?logoVal:"");
+  $("#bPrev").innerHTML=`<div class="b" style="background:${b.primary};color:${b.onPrimary}">${logo?`<img src="${esc(logo)}" alt="Logo preview">`:`<span style="font-family:${f(b.headLocal,b.headFont,"serif")};font-size:18px">${esc($("#bName").value||"Client")}</span>`}</div><div class="c" style="background:${b.paper};color:${b.ink};font-family:${f(b.bodyLocal,b.bodyFont,"sans-serif")}"><div style="font-family:${f(b.headLocal,b.headFont,"serif")};font-size:18px">Heading font</div>Body font on the client's page.</div>`;
+}
+$("#bLogo").onchange=async e=>{const file=e.target.files[0];if(!file)return;
+  try{logoVal=await logoData(file);$("#bLogoNote").textContent="New logo ready to save.";brandCheck();}catch(x){$("#bErr").textContent="That logo couldn't be read.";$("#bErr").hidden=false;}};
+async function logoData(file){const u=URL.createObjectURL(file);try{const i=await new Promise((ok,no)=>{const m=new Image();m.onload=()=>ok(m);m.onerror=no;m.src=u;});
+  let max=600;for(let k=0;k<5;k++){const s=Math.min(1,max/Math.max(i.naturalWidth,i.naturalHeight)),c=document.createElement("canvas");c.width=Math.round(i.naturalWidth*s);c.height=Math.round(i.naturalHeight*s);c.getContext("2d").drawImage(i,0,0,c.width,c.height);const d=c.toDataURL("image/png");if(d.length<3e5)return d;max=Math.round(max*.75);}throw new Error("too big");}finally{URL.revokeObjectURL(u);}}
+function fillBrand(b){COLORS.forEach(([id,key])=>{const v=b[key]||"";$("#"+id+"T").value=v;if(HEX.test(v))$("#"+id).value=v;});
+  $("#bHead").value=b.headFont||"";$("#bBody").value=b.bodyFont||"";$("#bHeadL").value=b.headLocal||"";$("#bBodyL").value=b.bodyLocal||"";logoVal=b.logo||"";
+  $("#bLogoNote").textContent=logoVal?"Logo set. Choose a file to replace it.":"Should read on the header color. A white logo usually fits a dark header.";brandCheck();}
+function openBrand(p){
+  editing=p||null;$("#bErr").hidden=true;$("#bLogo").value="";
+  $("#brandTitle").textContent=p?`${p.clientName} brand`:"Add a client";
+  $("#pickWrap").hidden=!!p;$("#bAbbr").disabled=!!p;
+  const m=p?(clientsMeta[p.abbr]||{}):{};
+  $("#bAbbr").value=p?p.abbr:"";$("#bName").value=p?p.clientName:"";$("#bPages").value=p?(p.pages||[]).join("\n"):"Home\nContact";$("#bNotes").value=m.siteNotes||"";
+  const ownOpts=[...new Set([...OWNERS,...team])];$("#bOwner").innerHTML=ownOpts.map(x=>`<option value="${esc(x)}">${esc(shortName(x))}</option>`).join("");$("#bOwner").value=m.defaultOwner||DEFAULT_OWNER;
+  fillBrand(p?p.brand||{}:{primary:"",onPrimary:"#ffffff",ink:"#1a1a1a",paper:"#ffffff"});
+  if(!p){const used=new Set(portals.map(x=>x.abbr));$("#bClient").innerHTML=`<option value="">Choose a client</option>`+clientsList.filter(c=>!used.has(c.abbr)).map(c=>`<option value="${esc(c.abbr)}">${esc(c.name||c.abbr)}</option>`).join("");
+    $("#bClient").onchange=e=>{const c=clientsList.find(x=>x.abbr===e.target.value);if(!c)return;$("#bAbbr").value=String(c.abbr).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,6);$("#bName").value=c.name||"";const pre=PRESETS.find(x=>x.m.test(c.name||""));if(pre)fillBrand(pre.b);};}
+  $("#brandDlg").showModal();
+}
+$("#btnAdd").onclick=()=>openBrand(null);
+$("#bCancel").onclick=()=>$("#brandDlg").close();
+$("#bSave").onclick=async()=>{
+  const err=$("#bErr");err.hidden=true;const fail=t=>{err.textContent=t;err.hidden=false;};
+  const abbr=$("#bAbbr").value.trim().toUpperCase(),name=$("#bName").value.trim(),b=brandVals();
+  if(!/^[A-Z0-9]{2,6}$/.test(abbr))return fail("The ticket prefix needs 2 to 6 letters or numbers.");
+  if(!name)return fail("Add the client's name.");
+  if(!editing&&portalOf(abbr))return fail("That prefix is already in use.");
+  const pages=$("#bPages").value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,40);
+  const clean={...b,webFonts:[b.headFont,b.bodyFont].filter(Boolean)};
+  try{
+    if(editing)await updateDoc(doc(db,"ticketPortals",editing.token),{clientName:name,brand:clean,pages});
+    else await setDoc(doc(db,"ticketPortals",newToken(name)),{abbr,clientName:name,active:true,seq:0,brand:clean,pages,createdAt:serverTimestamp()});
+    const token=editing?editing.token:null;
+    await setDoc(doc(db,"ticketClients",abbr),{name,defaultOwner:$("#bOwner").value,siteNotes:$("#bNotes").value.trim(),...(token?{token}:{})},{merge:true});
+    $("#brandDlg").close();client=abbr;render();
+  }catch(e){console.error(e);fail("That didn't save ("+(e.code||e.message)+").");}
+};
+
+/* ── export: one file with every ticket, including screenshots ── */
+$("#btnExport").onclick=async e=>{
+  const btn=e.target;btn.textContent="Exporting…";
+  try{
+    const out=[];
+    for(const t of tickets){
+      const base=["ticketPortals",t.token,"tickets",t.id];
+      const [m,f,c]=await Promise.all([getDocs(collection(db,...base,"messages")),getDocs(collection(db,...base,"files")),getDoc(doc(db,...base,"private","contact"))]);
+      out.push({ticket:dispId(t),client:nameOf(t.abbr),...t,token:undefined,contact:c.exists()?c.data():null,ops:ops[dispId(t)]||null,messages:m.docs.map(d=>d.data()),screenshots:f.docs.map(d=>d.data().data)});
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),tickets:out},null,1)],{type:"application/json"}));
+    a.download=`website-tickets-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  }catch(x){console.error(x);alert("Export failed ("+(x.code||x.message)+").");}
+  btn.textContent="Export all";
+};
+["fq","fstage","ftype","furg","fown","fdate"].forEach(id=>$("#"+id).addEventListener(id==="fq"?"input":"change",render));
+</script>
+</body>
+</html>

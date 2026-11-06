@@ -539,6 +539,7 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
     <div class="navsep"></div>
     <div class="navlbl lbl">Quick open</div>
     <nav class="nav">
+      <a id="pillTickets" data-name="Website Tickets" href="tickets.html" target="_blank" rel="noopener" style="display:none"><span class="ic">✎</span>Website Tickets<span class="tag" id="ticketCount"></span></a>
       <a id="pillAutomations" href="automations.html" target="_blank" rel="noopener" style="display:none"><span class="ic">✳</span>Client Automations</a>
       <a id="pillAnalytics" href="analytics.html" target="_blank" rel="noopener" style="display:none"><span class="ic">◱</span>Analytics Dashboard</a>
       <a id="pillFinancials" href="financials.html" target="_blank" rel="noopener" style="display:none"><span class="ic">$</span>Financials</a>
@@ -638,6 +639,11 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
           <div id="mlsBody"><div class="amsg">Loading MLS jobs…</div></div>
         </div>
 
+        <div class="acard" id="ticketCard" data-w="tickets" style="display:none">
+          <div class="ahead"><span>Website tickets</span><b id="ticketBadge"></b></div>
+          <div id="ticketBody"><div class="amsg">Loading tickets…</div></div>
+        </div>
+
         <div class="acard" id="socialCard" data-w="social" style="display:none">
           <div class="ahead"><span>Social · last week</span><b id="socBadge"></b></div>
           <div id="socBody"><div class="amsg">Loading social stats…</div></div>
@@ -713,7 +719,7 @@ svg.chart .vlabel{font-size:8.5px;fill:var(--mid)}
 /* ───────── firebase ───────── */
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,getDocs,collection,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,getDocs,collection,collectionGroup,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app=initializeApp({apiKey:"AIzaSyDqSNiF9EP_rV2rDRo1lf7IFqrKVPQ6tgw",authDomain:"anomaly-post-pipeline.firebaseapp.com",projectId:"anomaly-post-pipeline",appId:"1:657647176747:web:cee710794e2b04a3572e6e"});
 const auth=getAuth(app), db=getFirestore(app);
@@ -721,7 +727,7 @@ const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes, which
    makes "have you got the fix yet?" a real question. */
-const APP_VERSION="2.4.2", APP_BUILD="2026-10-04";
+const APP_VERSION="2.5.0", APP_BUILD="2026-11-05";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -741,6 +747,7 @@ const PLATFORMS={
   financials:{name:"Financials (QuickBooks P&L, balance sheet)",cat:null,def:"owners"},
   iganalytics:{name:"Instagram Analytics (client post views, likes, comments)",cat:null,def:"owners"},
   automations:{name:"Client Automations (Claude control panel)",cat:null,def:"owners"},
+  tickets:{name:"Website Tickets (client requests funnel)",cat:null,def:"owners"},
   ares:{name:"Ares Digital (company switch)",cat:null,def:"owners"},
   social:{name:"Social Stats (weekly views · IG / TikTok / YT)",cat:null,def:"everyone"}
 };
@@ -935,6 +942,9 @@ function applyAccess(){
   document.getElementById("pillIg").style.display=canSee("iganalytics")?"flex":"none";
   document.getElementById("mlsCard").style.display=canSee("mls")?"":"none";
   document.getElementById("pillAutomations").style.display=canSee("automations")?"flex":"none";
+  document.getElementById("pillTickets").style.display=canSee("tickets")?"flex":"none";
+  document.getElementById("ticketCard").style.display=canSee("tickets")?"":"none";
+  loadTickets();
   document.getElementById("aresSwitch").classList.toggle("show",canSee("ares"));
   document.getElementById("deck").hidden=false;
   WL=wlLoad(); mountTools(); applyLayout();
@@ -1026,6 +1036,31 @@ function renderMlsBody(){
       <div class="bar"><i style="width:${Math.round(pct*100)}%"></i></div>
       <div class="ms"><span>${esc(j.editor||"")}</span><span class="st">${esc(st)}</span>${desc?`<span>${esc(desc)}</span>`:""}${link&&j.status==="done"?`<a href="${esc(link)}" target="_blank" rel="noopener">Open ↗</a>`:""}</div>
     </div>`; }).join("")+(rows.length>n?`<div class="tmore">+${rows.length-n} more in MLS Studio</div>`:"");
+}
+/* Website Tickets: open count for the sidebar and Home widget */
+let TICKETS_ON=false;
+function loadTickets(){
+  if(TICKETS_ON||!canSee("tickets")) return; TICKETS_ON=true;
+  const card=document.getElementById("ticketCard");
+  card.style.cursor="pointer";
+  card.onclick=e=>{ if(e.target.closest(".wtools")) return; openApp("Website Tickets","tickets.html"); };
+  let T=[], O={};
+  const draw=()=>{
+    const stage=t=>t.archived?"archived":(O[t.abbr+"-"+String(t.num).padStart(3,"0")]||{}).stage||"inbox";
+    const open=T.filter(t=>!t.archived&&stage(t)!=="live");
+    const fresh=open.filter(t=>t.status==="submitted"||t.awaitingTeam||stage(t)==="review");
+    document.getElementById("ticketCount").textContent=open.length||"";
+    const badge=document.getElementById("ticketBadge"); badge.textContent=fresh.length?fresh.length+" need you":""; badge.className=fresh.length?"hot":"";
+    const body=document.getElementById("ticketBody");
+    if(!open.length){ body.innerHTML='<div class="amsg">No open website tickets.</div>'; return; }
+    const urgent=open.filter(t=>/^Urgent/.test(t.urgency||"")).length;
+    body.innerHTML='<div class="amsg"><b>'+open.length+'</b> open'+(urgent?' · <b>'+urgent+'</b> urgent':'')+'</div>';
+  };
+  const fail=e=>{ const b=document.getElementById("ticketBody"); if(b) b.innerHTML='<div class="amsg">Couldn\'t load tickets ('+esc(e.code||e.message)+').</div>'; };
+  try{
+    onSnapshot(collectionGroup(db,"tickets"),s=>{ T=s.docs.map(d=>d.data()); draw(); },fail);
+    onSnapshot(collection(db,"ticketOps"),s=>{ O={}; s.docs.forEach(d=>O[d.id]=d.data()); draw(); },fail);
+  }catch(e){ fail(e); }
 }
 async function loadMls(){
   if(!canSee("mls")) return;
@@ -1359,10 +1394,10 @@ function initReminders(){
    Stored per email in localStorage: a layout is a response to the screen in
    front of you, so it should not follow you from a 27" desktop to a laptop.
    Key is versioned — v2 rebuilt the deck, old saved layouts don't apply. */
-const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","mlsjobs","social","rem"];
+const WKEYS=["today","rev","foot","cds","kpis","chart","clients","eds","josh","mlsjobs","tickets","social","rem"];
 const WSIZES=["s","m","l"];
 const WLABEL={s:"S",m:"M",l:"L"};
-const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",mlsjobs:"m",social:"m",rem:"s"};
+const WDEFAULT={today:"s",rev:"s",foot:"s",cds:"l",kpis:"l",chart:"s",clients:"s",eds:"s",josh:"s",mlsjobs:"m",tickets:"s",social:"m",rem:"s"};
 const wlKey=()=>"hub.widgets2."+((effEmail()||"anon").toLowerCase());
 function wlLoad(){
   try{
@@ -1492,6 +1527,7 @@ function renderTodayTasks(tasks){
   const all=()=>{
     const list=[];
     ["client","pre","post"].forEach(c=>visibleItems(c).forEach(it=>list.push({name:it.name,url:it.url,tag:CATMETA[c].title})));
+    if(canSee("tickets"))list.push({name:"Website Tickets",url:"tickets.html",tag:"Quick"});
     if(canSee("automations"))list.push({name:"Client Automations",url:"automations.html",tag:"Quick"});
     if(canSee("analytics"))list.push({name:"Analytics Dashboard",url:"analytics.html",tag:"Quick"});
     if(canSee("financials"))list.push({name:"Financials",url:"financials.html",tag:"Quick"});
@@ -1556,12 +1592,12 @@ function openApp(name,url,skipHash){
 }
 function closeApp(){viewer.classList.remove("open");if(location.hash)history.replaceState(null,"",location.pathname+location.search);}
 document.getElementById("vClose").onclick=closeApp;
-["pillAnalytics","pillAutomations","pillFinancials","pillIg"].forEach(id=>{
+["pillTickets","pillAnalytics","pillAutomations","pillFinancials","pillIg"].forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener("click",e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey) return;
     e.preventDefault();
-    openApp(el.textContent.trim(), el.getAttribute("href"));
+    openApp((el.dataset.name||el.textContent.trim()), el.getAttribute("href"));
   });
 });
 document.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>openCat(el.dataset.cat)));
