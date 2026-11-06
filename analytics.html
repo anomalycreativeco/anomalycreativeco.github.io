@@ -643,8 +643,13 @@ function render(d){
   /* actual vs goals */
   if(d.goals){
     const G=[["conservative","var(--g1)"],["moderate","var(--g2)"],["aggressive","var(--g3)"]];
-    const W3=1180,H3=280,pL=56,pR=120,pB=28,pT=12;
-    const maxG=d.goals.aggressive*1.05;
+    const W3=1180,H3=280,pL=56,pR=150,pB=28,pT=30;
+    // "actual" = cumulative PROJECTED collections (Daniel only projects what he's confident executes).
+    // Summed first so the scale fits it as well as the goals: when it ran past the aggressive goal
+    // (Nov 2026) the end point sat on the top edge of the chart and its value label was clipped off.
+    let run=0; const cum=[];
+    d.months.forEach((_,i)=>{run+=d.projected[i];cum.push(run);});
+    const maxG=Math.max(d.goals.aggressive,run)*1.05;
     const gx=i=>pL+i*(W3-pL-pR)/11;
     const gy=v=>H3-pB-(v/maxG)*(H3-pB-pT);
     let s="";
@@ -654,16 +659,20 @@ function render(d){
     d.months.forEach((mo,i)=>{s+=`<text x="${gx(i)}" y="${H3-8}" text-anchor="middle">${mo}</text>`;});
     G.forEach(([k,col])=>{
       const t=d.goals[k];
-      s+=`<line x1="${gx(0)}" y1="${gy(t/12)}" x2="${gx(11)}" y2="${gy(t)}" style="stroke:${col}" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>
-          <text x="${gx(11)+10}" y="${gy(t)+3}" style="fill:${col};font-weight:600">${fmtK(t)} ${k[0].toUpperCase()+k.slice(1)}</text>`;
+      s+=`<line x1="${gx(0)}" y1="${gy(t/12)}" x2="${gx(11)}" y2="${gy(t)}" style="stroke:${col}" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"/>`;
     });
-    // "actual" = cumulative PROJECTED collections (Daniel only projects what he's confident executes)
-    let run=0; const apts=[];
-    d.months.forEach((_,i)=>{run+=d.projected[i];apts.push([gx(i),gy(run)]);});
+    const apts=cum.map((v,i)=>[gx(i),gy(v)]);
     s+=`<path d="${apts.map((p,i)=>(i?"L":"M")+p[0]+","+p[1]).join(" ")}" fill="none" style="stroke:var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`;
     const [lx,ly]=apts[apts.length-1];
-    s+=`<circle cx="${lx}" cy="${ly}" r="5.5" style="fill:var(--ink);stroke:var(--frost)" stroke-width="2.5"/>
-        <text x="${lx+10}" y="${ly-10}" style="fill:var(--ink);font-weight:700;font-size:12px">${fmtK(run)}</text>`;
+    s+=`<circle cx="${lx}" cy="${ly}" r="5.5" style="fill:var(--ink);stroke:var(--frost)" stroke-width="2.5"/>`;
+    // Right-hand labels in one column: the three goals plus the projected end value. Sorted top to
+    // bottom and nudged 14px apart, so two values that land close together (projected vs aggressive)
+    // never overlap, and nothing is drawn above the chart's top edge.
+    const labels=G.map(([k,col])=>({y:gy(d.goals[k]),txt:fmtK(d.goals[k])+" "+k[0].toUpperCase()+k.slice(1),col,w:600,fs:9}));
+    labels.push({y:ly,txt:fmtK(run)+" Projected",col:"var(--ink)",w:700,fs:11});
+    labels.sort((a,b)=>a.y-b.y);
+    labels.forEach((l,i)=>{ if(i&&l.y-labels[i-1].y<14) l.y=labels[i-1].y+14; });
+    labels.forEach(l=>{ s+=`<text x="${gx(11)+12}" y="${l.y+3}" style="fill:${l.col};font-weight:${l.w};font-size:${l.fs}px">${l.txt}</text>`; });
     document.getElementById("goalChart").innerHTML=s;
   }
 
