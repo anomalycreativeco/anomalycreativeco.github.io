@@ -1,0 +1,330 @@
+<meta charset="utf-8">
+<title>Renew Script & Leaf Options</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@600&family=Sacramento&family=La+Belle+Aurore&family=Mrs+Saint+Delafield&family=Allura&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap">
+<style>
+/* Layout: a contact sheet. Her two brand references first, then the reference row (live build), then five option rows: specimen line + two site panels (ink strip, paper section) + notes. Single light look matching the Renew site. */
+:root{
+  --paper:#F4F3EF; --white:#FFFFFF; --ink:#141514; --muted:#62655F; --sage:#87A180; --sage-deep:#5F7559; --sage-tint:#E2E7DD; --sage-light:#B7C9AE; --rule:#D9D8D2; --sand:#EDE6DE; --muted-on-ink:#B9BCB5; --mint:#E6EFE3;
+  --sans:"Instrument Sans","Helvetica Neue",Helvetica,Arial,sans-serif; --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --gutter:max(16px,env(safe-area-inset-left,0px)); --gutter-r:max(16px,env(safe-area-inset-right,0px));
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter-r);padding-block:40px 80px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1;letter-spacing:-.02em;font-weight:600;margin:10px 0 18px;text-transform:uppercase;text-wrap:balance}
+.intro{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;padding-bottom:24px}
+.intro p{margin:0 0 12px;max-width:62ch}
+.refs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.refs figure{margin:0;background:var(--white);border:1px solid var(--rule);padding:8px}
+.refs img{display:block;width:100%;height:auto}
+.refs figcaption{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 2px 0}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:22px 0 28px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:24px}
+.rules div{background:var(--white);border:1px solid var(--rule);padding:16px 18px;font-size:14px;color:var(--muted)}
+.rules b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px;font-size:15px}
+.rules p{margin:0}
+.opt{display:grid;grid-template-columns:160px 1fr;gap:24px;padding:30px 0;border-bottom:1px solid var(--rule)}
+.opt header{display:flex;flex-direction:column;gap:6px}
+.opt .letter{font-size:52px;line-height:1;font-weight:600;letter-spacing:-.03em}
+.opt h2{font-size:17px;line-height:1.3;margin:0;font-weight:600}
+.opt h2 small{display:block;font-weight:400;color:var(--muted);font-size:14px;margin-top:2px}
+.body{min-width:0;display:grid;gap:16px}
+.spec{display:flex;flex-wrap:wrap;gap:8px 28px;align-items:baseline;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 0}
+.spec span{font-size:40px;line-height:1.15;white-space:nowrap}
+.spec span.on-sage{color:var(--sage-deep)}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{position:relative;overflow:hidden;min-height:330px;padding:40px 36px 36px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;min-width:0}
+.panel--ink{background:var(--ink);color:var(--paper)}
+.panel--paper{background:var(--white);border:1px solid var(--rule)}
+.panel--mint{background:var(--mint);border:1px solid var(--rule)}
+.panel .eyebrow{font-size:32px;line-height:1.1;position:relative}
+.panel--ink .eyebrow{color:var(--sage-light)}
+.panel--paper .eyebrow,.panel--mint .eyebrow{color:var(--sage-deep)}
+.panel h3{margin:0;font-size:clamp(1.4rem,2.2vw,1.9rem);line-height:1.05;letter-spacing:-.015em;text-transform:uppercase;font-weight:600;max-width:16ch;text-wrap:balance;position:relative}
+.panel p{margin:0;font-size:14px;max-width:38ch;position:relative}
+.panel--ink p{color:var(--muted-on-ink)}
+.panel--paper p,.panel--mint p{color:var(--muted)}
+.panel .label{position:absolute;left:36px;top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.leaf{position:absolute;pointer-events:none;z-index:0}
+.leaf svg,.leaf img{display:block;width:100%;height:auto}
+.leaf--corner{right:-10px;top:-30px;width:190px;transform:rotate(14deg)}
+.leaf--foot{right:14px;bottom:-30px;width:230px;transform:rotate(-8deg)}
+.art img{opacity:.96}
+.panel--ink .art img{opacity:.9}
+.a-corner{right:-6px;top:-6px;width:230px}
+.a-corner-sm{right:-4px;top:-4px;width:170px}
+.a-sprig-foot{right:-20px;bottom:-40px;width:250px;transform:rotate(-14deg)}
+.a-sprig-left{left:-40px;bottom:-30px;width:220px;transform:rotate(22deg) scaleX(-1)}
+.a-pair{right:20px;top:18px;width:120px}
+.a-pair-lg{right:30px;top:22px;width:150px}
+.a-garland{left:0;right:0;bottom:-10px;width:100%}
+.a-garland img{width:100%}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;font-size:14px;color:var(--muted)}
+.notes b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
+.notes p{margin:0}
+.ref{background:var(--sand)}
+.ref .letter{font-size:28px;padding-top:8px}
+.decide{padding-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.decide h2{font-size:22px;margin:0 0 10px;letter-spacing:-.01em}
+.decide ol{margin:0;padding-left:20px;color:var(--muted)}
+.decide li{margin-bottom:8px}
+.decide li b{color:var(--ink);font-weight:600}
+a{color:var(--sage-deep)}
+@media (max-width:860px){
+  .intro,.panels,.notes,.decide,.rules{grid-template-columns:1fr}
+  .opt{grid-template-columns:1fr;gap:12px}
+  .opt header{flex-direction:row;align-items:baseline;gap:14px}
+  .spec span{font-size:32px}
+  .panel{padding:36px 22px 28px;min-height:280px}
+  .panel .label{left:22px}
+  .a-corner{width:170px}.a-sprig-foot{width:190px}.a-sprig-left{width:170px}
+}
+</style>
+
+<div class="wrap">
+  <div class="mono">Renew Staging &amp; Design · Design options · Nov 10, 2026</div>
+  <h1>Script &amp; leaf options</h1>
+
+  <div class="intro">
+    <div>
+      <p>Sara's note on the first pass: the small script line above each section works, but the font reads a little casual and the leaves read as line drawings. Her two examples on the right show the brand's real leaf: soft watercolor silver-dollar eucalyptus in grey-green, spilling in from a corner, paired with a thin slanted handwriting. Every row below uses watercolor eucalyptus painted to match those examples, so the leaf question becomes how much and where, and the font question is the one left to decide.</p>
+      <p>Row 0 is what is live in the preview today. Rows A to E are the alternatives, shown on the same two Home sections: the black "why it matters" strip and the white "our happy clients" section. A font from one row can be paired with the leaf placement from another.</p>
+    </div>
+    <div class="refs">
+      <figure><img src="leaf-art/ref-1.png" alt="Renew teacher's lounge banner with watercolor eucalyptus and script"><figcaption>Sara's example 1 · lounge banner</figcaption></figure>
+      <figure><img src="leaf-art/ref-2.png" alt="Renew teacher's lounge flyer with watercolor eucalyptus corner on a mint background"><figcaption>Sara's example 2 · lounge flyer</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="rules">
+    <div><b>Headlines stay readable</b><p>Every H1 and H2 stays in Instrument Sans caps as live text. Those lines are what Google reads to rank each page and what visitors skim first. No script, ever, at headline size.</p></div>
+    <div><b>Script is the small line only</b><p>The script appears once per section, on the line above the headline, at the size shown here. Below that size thin scripts stop being legible, which is the one thing worth keeping from Caveat.</p></div>
+    <div><b>Leaves are decoration</b><p>Images placed in a corner or along the footer, never behind text and never on photos or case-study pages. At most two per page. They add warmth without touching readability or search.</p></div>
+  </div>
+
+  <!-- Row 0: reference -->
+  <section class="opt ref" style="padding-left:20px;padding-right:20px">
+    <header>
+      <div class="letter mono">0 · Live now</div>
+      <h2>Caveat <small>Line-drawn sprig</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec" style="font-family:'Caveat',cursive;font-weight:600"><span>Why stage?</span><span>In their words</span><span class="on-sage">Start a project</span><span>Who we help</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf leaf--corner" data-leaf="line"></div>
+          <div class="eyebrow" style="font-family:'Caveat',cursive;font-weight:600">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial + footer</span>
+          <div class="leaf leaf--foot" data-leaf="line"></div>
+          <div class="eyebrow" style="font-family:'Caveat',cursive;font-weight:600">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- A -->
+  <section class="opt">
+    <header>
+      <div class="letter">A</div>
+      <h2>Sacramento <small>Corner cluster, like the flyer</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec" style="font-family:'Sacramento',cursive"><span>Why stage?</span><span>In their words</span><span class="on-sage">Start a project</span><span>Who we help</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Sacramento',cursive;font-size:40px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial + footer</span>
+          <div class="leaf art a-sprig-foot"><img src="leaf-art/web/wc-sprig.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Sacramento',cursive;font-size:40px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Thin monoline cursive, formal and even. The most "elevated" of the scripts here and still readable at this size.</p></div>
+        <div><b>Leaves</b><p>The flyer's corner cluster on the black strip, a single sprig at the footer. The closest one-to-one match to what Sara sent.</p></div>
+        <div><b>Watch for</b><p>Hairline strokes get faint on phones. Runs at 40px minimum, no smaller.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="opt">
+    <header>
+      <div class="letter">B</div>
+      <h2>La Belle Aurore <small>Sprig pair beside the text, garland footer</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec" style="font-family:'La Belle Aurore',cursive"><span style="font-size:34px">Why stage?</span><span style="font-size:34px">In their words</span><span class="on-sage" style="font-size:34px">Start a project</span><span style="font-size:34px">Who we help</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-pair-lg" style="right:28px;top:22px;bottom:auto"><img src="leaf-art/web/wc-pair.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'La Belle Aurore',cursive;font-size:30px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper" style="padding-bottom:70px">
+          <span class="label">Home · testimonial + footer</span>
+          <div class="leaf art a-garland"><img src="leaf-art/web/wc-garland.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'La Belle Aurore',cursive;font-size:30px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Thin, slanted pen handwriting. The nearest Google Font to the "Thank you, Teachers" hand on the flyer, so it ties to what Sara already uses.</p></div>
+        <div><b>Leaves</b><p>The banner's small upright sprigs sitting beside the text, and a eucalyptus garland running along the bottom of the footer.</p></div>
+        <div><b>Watch for</b><p>The garland is the most leaf on this sheet. Footer only, never mid-page. Script is light, so 30px is the floor.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="opt">
+    <header>
+      <div class="letter">C</div>
+      <h2>Mrs Saint Delafield <small>One sprig per section</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec" style="font-family:'Mrs Saint Delafield',cursive"><span style="font-size:42px">Why stage?</span><span style="font-size:42px">In their words</span><span class="on-sage" style="font-size:42px">Start a project</span><span style="font-size:42px">Who we help</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art" style="top:-10px;right:-20px;width:150px;transform:rotate(96deg)"><img src="leaf-art/web/wc-sprig.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Mrs Saint Delafield',cursive;font-size:38px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial + footer</span>
+          <div class="leaf art" style="right:-30px;bottom:-50px;width:210px;transform:rotate(-20deg)"><img src="leaf-art/web/wc-sprig.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Mrs Saint Delafield',cursive;font-size:38px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Signature-style script with long slanted strokes, very close to the "Gifted by" lettering on the banner. Elevated and personal at once.</p></div>
+        <div><b>Leaves</b><p>The quietest leaf plan: one watercolor sprig per section, top-right on dark, bottom-left on light. Same art as the brochures, least of it.</p></div>
+        <div><b>Watch for</b><p>The most ornate letterforms on the sheet. Needs 38px and short phrases, three words at most.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- D -->
+  <section class="opt">
+    <header>
+      <div class="letter">D</div>
+      <h2>Allura <small>Mint band with corner leaves</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec" style="font-family:'Allura',cursive"><span style="font-size:38px">Why stage?</span><span style="font-size:38px">In their words</span><span class="on-sage" style="font-size:38px">Start a project</span><span style="font-size:38px">Who we help</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner-sm"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Allura',cursive;font-size:36px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--mint">
+          <span class="label">Home · testimonial on a mint band</span>
+          <div class="leaf art a-corner" style="width:200px"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Allura',cursive;font-size:36px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Classic calligraphic script, upright enough to stay readable. Elevated without being fussy.</p></div>
+        <div><b>Leaves</b><p>Borrows the flyer's pale mint background for the testimonial section, with the corner cluster. Adds a third section color to the site's black and white.</p></div>
+        <div><b>Watch for</b><p>A new band color is a bigger design change than a font. Use it on two or three sections at most or the site goes soft.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- E -->
+  <section class="opt">
+    <header>
+      <div class="letter">E</div>
+      <h2>Cormorant Garamond Italic <small>Same leaves as A, no script</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500"><span style="font-size:36px;letter-spacing:.01em">Why stage?</span><span style="font-size:36px;letter-spacing:.01em">In their words</span><span class="on-sage" style="font-size:36px;letter-spacing:.01em">Start a project</span><span style="font-size:36px;letter-spacing:.01em">Who we help</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:30px;letter-spacing:.01em">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial + footer</span>
+          <div class="leaf art" style="right:34px;top:22px;width:130px"><img src="leaf-art/web/wc-pair.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:30px;letter-spacing:.01em">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Not a script: a classic italic serif, the way the banner sets "Enjoy your" and "Teacher's Lounge". The most legible option on any screen size.</p></div>
+        <div><b>Leaves</b><p>The corner cluster and the sprig pair, same as above. Shown here to separate the two decisions: the leaves can be approved on their own.</p></div>
+        <div><b>Watch for</b><p>If "script" means cursive to Sara, this is a sidestep. It is here because it settles the readability question outright.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="decide">
+    <div>
+      <h2>How to use this</h2>
+      <ol>
+        <li><b>Pick a row</b>, or name a font from one row and the leaf placement from another. The leaf art is the same family throughout, painted to match the two examples above.</li>
+        <li><b>Stock art welcome.</b> If Sara has the original brochure artwork or a stock set she prefers, it drops straight into these placements. Best as vector (SVG, AI, EPS) or transparent PNG, licensed for web use.</li>
+        <li><b>Timing.</b> A pick by Thursday goes into the Webflow build during launch week. Later than that, it becomes the first polish item after launch and nothing else slips.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>What does not change</h2>
+      <ol>
+        <li><b>Headlines</b> stay in Instrument Sans caps as live text, for readers and for search. The script is an accent above them, never a second headline face.</li>
+        <li><b>Mono tags</b> stay for before/after labels, card types and badges.</li>
+        <li><b>Colors</b> stay inside the current palette. The watercolor greens sit in the existing sage range; the mint band in D is the only new color on the sheet.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script>
+// Row 0 only: the line sprig that is live on the site today, drawn along a curve.
+(function(){
+  function pt(t,p0,p1,p2){var u=1-t;return{x:u*u*p0.x+2*u*t*p1.x+t*t*p2.x,y:u*u*p0.y+2*u*t*p1.y+t*t*p2.y}}
+  function ang(t,p0,p1,p2){var dx=2*(1-t)*(p1.x-p0.x)+2*t*(p2.x-p1.x),dy=2*(1-t)*(p1.y-p0.y)+2*t*(p2.y-p1.y);return Math.atan2(dy,dx)*180/Math.PI}
+  function sprig(stroke){
+    var p0={x:30,y:230},p1={x:70,y:120},p2={x:200,y:30},n=8,out=[],i,t,p,a,s,side,len,wid,rot;
+    out.push('<path d="M'+p0.x+' '+p0.y+' Q'+p1.x+' '+p1.y+' '+p2.x+' '+p2.y+'" fill="none" stroke="'+stroke+'" stroke-width="1.6" stroke-linecap="round"/>');
+    for(i=0;i<n;i++){t=0.08+i*(0.86/(n-1));p=pt(t,p0,p1,p2);a=ang(t,p0,p1,p2);side=i%2?1:-1;s=1-i*0.06;len=34*s;wid=13*s;rot=a+side*55;
+      out.push('<ellipse cx="'+(len/2)+'" cy="0" rx="'+(len/2)+'" ry="'+wid+'" transform="translate('+p.x+' '+p.y+') rotate('+rot+')" fill="none" stroke="'+stroke+'" stroke-width="1.6"/>');
+      out.push('<path d="M0 0 L'+(len*0.85)+' 0" transform="translate('+p.x+' '+p.y+') rotate('+rot+')" stroke="'+stroke+'" stroke-width="1.6" opacity=".55" stroke-linecap="round"/>');}
+    return '<svg viewBox="0 0 240 250" xmlns="http://www.w3.org/2000/svg">'+out.join('')+'</svg>';
+  }
+  document.querySelectorAll('[data-leaf="line"]').forEach(function(el){var onInk=!!el.closest('.panel--ink');el.innerHTML=sprig('#87A180');el.style.opacity=onInk?'.75':'.6';});
+})();
+</script>
