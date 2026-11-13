@@ -18,7 +18,7 @@
   /* type */
   --sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --script: "Caveat", "Bradley Hand", cursive;
+  --script: "Petit Formal Script", "Snell Roundhand", cursive;  /* Nov 13: team picked option I */
 
   --t-display: clamp(2.75rem, 7.4vw, 6.75rem);
   --t-h2: clamp(1.75rem, 3.3vw, 3rem);
@@ -626,9 +626,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
 /* ---------- script eyebrows (Nov 6): section eyebrows in Caveat, open, no pill; functional tags stay mono ---------- */
 .tag:not(.tag--tbd):not(.tag--sage):not(.tag--before):not(.tag--after) {
   font-family: var(--script);
-  font-weight: 600;
-  font-size: clamp(28px, 2.6vw, 34px);
-  line-height: 1;
+  font-weight: 400;
+  font-size: clamp(24px, 2.1vw, 30px);
+  line-height: 1.15;
   text-transform: none;
   letter-spacing: 0;
   border: 0;
