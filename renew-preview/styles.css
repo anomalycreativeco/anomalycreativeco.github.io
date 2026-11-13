@@ -665,28 +665,6 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
   .leaf--wc-pair { width: 80px; right: 16px; top: 16px; }
 }
 
-/* ---------- footer: Renew x CDF lockup on every page ---------- */
-.site-footer__lockup {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: clamp(20px, 3vw, 44px);
-  align-items: center;
-  margin-top: clamp(32px, 4vw, 56px);
-  padding-block: 22px;
-  border-top: 1px solid var(--rule);
-}
-.site-footer__lockup .lockup__marks { gap: clamp(14px, 2vw, 28px); }
-.site-footer__lockup .lockup__renew { height: 40px; }
-.site-footer__lockup .lockup__cdf { height: 58px; }
-.site-footer__lockup .lockup__x { font-size: 1.5rem; }
-.site-footer__lockup a.lockup__link { display: inline-flex; transition: opacity 0.2s; }
-.site-footer__lockup a.lockup__link:hover { opacity: 0.7; }
-.site-footer__lockup .lockup__note { font-size: var(--t-small); max-width: 52ch; justify-self: start; }
-.site-footer__base { margin-top: 0; padding-top: 18px; }
-@media (max-width: 760px) {
-  .site-footer__lockup { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-}
-
 /* ---------- team bios: shadow box (modal) instead of pages ---------- */
 .card3--modal { cursor: pointer; background: none; border: 0; padding: 0; margin: 0; font: inherit; color: inherit; text-align: left; align-items: flex-start; }
 .card3--modal .slot--photo img { transition: transform 0.4s ease; }
@@ -764,10 +742,13 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
 .ba .slot:not(.slot--photo) .slot__kind { display: none; }
 .ba .slot:not(.slot--photo) { align-items: flex-start; }
 
-/* ---------- pre-footer before/after pair (Nov 13, Sara): under the CTA on every page ---------- */
-.prefoot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; background: var(--ink); }
-.prefoot figure { margin: 0; position: relative; }
-.prefoot .slot { aspect-ratio: 3 / 2; }
-.prefoot .tag--before, .prefoot .tag--after { position: absolute; left: 16px; bottom: 16px; background: var(--paper); border-color: var(--ink); color: var(--ink); }
-.prefoot__cap { position: absolute; right: 16px; bottom: 20px; color: var(--paper); text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-@media (max-width: 760px) { .prefoot__cap { display: none; } .prefoot .tag--before, .prefoot .tag--after { left: 10px; bottom: 10px; } }
+/* ---------- footer: Capital Discount inside the brand column (Nov 13, Daniel) ---------- */
+.site-footer__cdf { display: flex; align-items: center; gap: 14px; margin-top: 6px; }
+.site-footer__cdf-mark img { height: 48px; width: auto; transition: opacity 0.2s; }
+.site-footer__cdf-mark:hover img { opacity: 0.7; }
+.site-footer__cdf-text { display: flex; flex-direction: column; gap: 4px; }
+.site-footer__cdf-text .mono { color: var(--sage-deep); }
+.site-footer__cdf-link { font-size: var(--t-small); font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em; }
+.site-footer__cdf-link::after { content: " \2197"; }
+.site-footer__cdf-link:hover { color: var(--sage-deep); }
+.site-footer__base { margin-top: clamp(32px, 4vw, 56px); padding-top: 18px; }
