@@ -763,3 +763,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
 .section--sand .leaf--wc, .section--white .leaf--wc { opacity: 0.95; }
 .ba .slot:not(.slot--photo) .slot__kind { display: none; }
 .ba .slot:not(.slot--photo) { align-items: flex-start; }
+
+/* ---------- pre-footer before/after pair (Nov 13, Sara): under the CTA on every page ---------- */
+.prefoot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; background: var(--ink); }
+.prefoot figure { margin: 0; position: relative; }
+.prefoot .slot { aspect-ratio: 3 / 2; }
+.prefoot .tag--before, .prefoot .tag--after { position: absolute; left: 16px; bottom: 16px; background: var(--paper); border-color: var(--ink); color: var(--ink); }
+.prefoot__cap { position: absolute; right: 16px; bottom: 20px; color: var(--paper); text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+@media (max-width: 760px) { .prefoot__cap { display: none; } .prefoot .tag--before, .prefoot .tag--after { left: 10px; bottom: 10px; } }
