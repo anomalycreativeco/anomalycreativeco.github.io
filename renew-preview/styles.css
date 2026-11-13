@@ -330,7 +330,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
 .lockup__renew { height: clamp(44px, 5vw, 72px); width: auto; }
 .lockup__cdf { height: clamp(64px, 7vw, 104px); width: auto; }
 .lockup__x { font-size: clamp(1.5rem, 2.6vw, 2.5rem); line-height: 1; color: var(--sage-deep); font-weight: 300; }
-.lockup__note { color: var(--muted); max-width: 42ch; justify-self: end; }
+.lockup__note { color: var(--muted); max-width: 46ch; justify-self: end; }
 .lockup__note .mono { color: var(--sage-deep); }
 @media (max-width: 760px) { .lockup { grid-template-columns: minmax(0, 1fr); } .lockup__note { justify-self: start; } }
 
