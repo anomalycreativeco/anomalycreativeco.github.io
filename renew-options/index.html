@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
 <meta charset="utf-8">
 <title>Renew Script & Leaf Options</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@600&family=Sacramento&family=La+Belle+Aurore&family=Mrs+Saint+Delafield&family=Allura&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Caveat:wght@600&family=Sacramento&family=La+Belle+Aurore&family=Mrs+Saint+Delafield&family=Allura&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Great+Vibes&family=Parisienne&family=Alex+Brush&family=Petit+Formal+Script&family=Pinyon+Script&display=swap">
 <style>
 /* Layout: a contact sheet. Her two brand references first, then the reference row (live build), then five option rows: specimen line + two site panels (ink strip, paper section) + notes. Single light look matching the Renew site. */
 :root{
@@ -77,6 +78,13 @@ h1{font-size:clamp(2rem,5vw,3.6rem);line-height:1;letter-spacing:-.02em;font-wei
 .decide li{margin-bottom:8px}
 .decide li b{color:var(--ink);font-weight:600}
 a{color:var(--sage-deep)}
+.phone{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;padding:6px 0 0}
+.phone .mono{flex-basis:100%}
+.phone span{font-size:22px;line-height:1.2;white-space:nowrap}
+.flag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid var(--sage-deep);color:var(--sage-deep);border-radius:999px}
+.flag--no{border-color:var(--rule);color:var(--muted)}
+.retired{opacity:.55}
+.retired .panels,.retired .notes,.retired .spec{display:none}
 @media (max-width:860px){
   .intro,.panels,.notes,.decide,.rules{grid-template-columns:1fr}
   .opt{grid-template-columns:1fr;gap:12px}
@@ -92,13 +100,13 @@ a{color:var(--sage-deep)}
 
 
 <div class="wrap">
-  <div class="mono">Renew Staging &amp; Design · Design options · Nov 10, 2026</div>
+  <div class="mono">Renew Staging &amp; Design · Design options · Round 2 · Nov 13, 2026</div>
   <h1>Script &amp; leaf options</h1>
 
   <div class="intro">
     <div>
       <p>Sara's note on the first pass: the small script line above each section works, but the font reads a little casual and the leaves read as line drawings. Her two examples on the right show the brand's real leaf: soft watercolor silver-dollar eucalyptus in grey-green, spilling in from a corner, paired with a thin slanted handwriting. Every row below uses watercolor eucalyptus painted to match those examples, so the leaf question becomes how much and where, and the font question is the one left to decide.</p>
-      <p>Row 0 is what is live in the preview today. Rows A to E are the alternatives, shown on the same two Home sections: the black "why it matters" strip and the white "our happy clients" section. A font from one row can be paired with the leaf placement from another.</p>
+      <p><b>Round 2, after the Nov 12 call.</b> The leaves are approved: the watercolor eucalyptus stays, placed the way rows A and E place it, sparse, with no footer garland. That leaves the font. None of A to E landed outright, so rows F to J below are five more, each shown at desktop size and at the 22px it runs on a phone, where 70 to 80 percent of visitors will see it. A and E stay on the sheet as the fallbacks; C is retired.</p>
     </div>
     <div class="refs">
       <figure><img src="leaf-art/ref-1.png" alt="Renew teacher's lounge banner with watercolor eucalyptus and script"><figcaption>Sara's example 1 · lounge banner</figcaption></figure>
@@ -144,9 +152,11 @@ a{color:var(--sage-deep)}
     <header>
       <div class="letter">A</div>
       <h2>Sacramento <small>Corner cluster, like the flyer</small></h2>
+      <span class="flag">Fallback pick · Nov 12</span>
     </header>
     <div class="body">
       <div class="spec" style="font-family:'Sacramento',cursive"><span>Why stage?</span><span>In their words</span><span class="on-sage">Start a project</span><span>Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Sacramento',cursive;font-size:24px">Why stage?</span><span style="font-family:'Sacramento',cursive;font-size:24px">In their words</span><span style="font-family:'Sacramento',cursive;font-size:24px">Start a project</span></div>
       <div class="panels">
         <div class="panel panel--ink">
           <span class="label">Home · why it matters</span>
@@ -179,6 +189,7 @@ a{color:var(--sage-deep)}
     </header>
     <div class="body">
       <div class="spec" style="font-family:'La Belle Aurore',cursive"><span style="font-size:34px">Why stage?</span><span style="font-size:34px">In their words</span><span class="on-sage" style="font-size:34px">Start a project</span><span style="font-size:34px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'La Belle Aurore',cursive;font-size:22px">Why stage?</span><span style="font-family:'La Belle Aurore',cursive;font-size:22px">In their words</span><span style="font-family:'La Belle Aurore',cursive;font-size:22px">Start a project</span></div>
       <div class="panels">
         <div class="panel panel--ink">
           <span class="label">Home · why it matters</span>
@@ -204,10 +215,11 @@ a{color:var(--sage-deep)}
   </section>
 
   <!-- C -->
-  <section class="opt">
+  <section class="opt retired">
     <header>
       <div class="letter">C</div>
-      <h2>Mrs Saint Delafield <small>One sprig per section</small></h2>
+      <h2>Mrs Saint Delafield <small>Retired after the Nov 12 call: too ornate to read on a phone</small></h2>
+      <span class="flag flag--no">Retired</span>
     </header>
     <div class="body">
       <div class="spec" style="font-family:'Mrs Saint Delafield',cursive"><span style="font-size:42px">Why stage?</span><span style="font-size:42px">In their words</span><span class="on-sage" style="font-size:42px">Start a project</span><span style="font-size:42px">Who we help</span></div>
@@ -243,6 +255,7 @@ a{color:var(--sage-deep)}
     </header>
     <div class="body">
       <div class="spec" style="font-family:'Allura',cursive"><span style="font-size:38px">Why stage?</span><span style="font-size:38px">In their words</span><span class="on-sage" style="font-size:38px">Start a project</span><span style="font-size:38px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Allura',cursive;font-size:24px">Why stage?</span><span style="font-family:'Allura',cursive;font-size:24px">In their words</span><span style="font-family:'Allura',cursive;font-size:24px">Start a project</span></div>
       <div class="panels">
         <div class="panel panel--ink">
           <span class="label">Home · why it matters</span>
@@ -272,9 +285,11 @@ a{color:var(--sage-deep)}
     <header>
       <div class="letter">E</div>
       <h2>Cormorant Garamond Italic <small>Same leaves as A, no script</small></h2>
+      <span class="flag">Fallback pick · Nov 12</span>
     </header>
     <div class="body">
       <div class="spec" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500"><span style="font-size:36px;letter-spacing:.01em">Why stage?</span><span style="font-size:36px;letter-spacing:.01em">In their words</span><span class="on-sage" style="font-size:36px;letter-spacing:.01em">Start a project</span><span style="font-size:36px;letter-spacing:.01em">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:22px">Why stage?</span><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:22px">In their words</span><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:22px">Start a project</span></div>
       <div class="panels">
         <div class="panel panel--ink">
           <span class="label">Home · why it matters</span>
@@ -299,13 +314,179 @@ a{color:var(--sage-deep)}
     </div>
   </section>
 
+
+  <!-- F -->
+  <section class="opt">
+    <header>
+      <div class="letter">F</div>
+      <h2>Great Vibes <small>Classic calligraphy, open loops</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec"><span style="font-family:'Great Vibes',cursive;font-size:40px">Why stage?</span><span style="font-family:'Great Vibes',cursive;font-size:40px">In their words</span><span class="on-sage" style="font-family:'Great Vibes',cursive;font-size:40px">Start a project</span><span style="font-family:'Great Vibes',cursive;font-size:40px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Great Vibes',cursive;font-size:22px">Why stage?</span><span style="font-family:'Great Vibes',cursive;font-size:22px">In their words</span><span style="font-family:'Great Vibes',cursive;font-size:22px">Start a project</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Great Vibes',cursive;font-size:36px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial</span>
+          <div class="leaf art" style="right:34px;top:22px;width:130px"><img src="leaf-art/web/wc-pair.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Great Vibes',cursive;font-size:36px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Formal calligraphic script with open, generous loops. Reads as elevated the way a wedding suite does, but the letters are wide enough to hold up small.</p></div>
+        <div><b>Leaves</b><p>Approved leaves, A/E placement: corner cluster on dark, a small sprig or pair on light. Same on every row below; the font is the only variable.</p></div>
+        <div><b>Watch for</b><p>Capital letters are showy; keep eyebrows to two or three words. 36px on desktop, 22px on phones is the floor.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- G -->
+  <section class="opt">
+    <header>
+      <div class="letter">G</div>
+      <h2>Parisienne <small>Soft, slightly casual calligraphy</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec"><span style="font-family:'Parisienne',cursive;font-size:38px">Why stage?</span><span style="font-family:'Parisienne',cursive;font-size:38px">In their words</span><span class="on-sage" style="font-family:'Parisienne',cursive;font-size:38px">Start a project</span><span style="font-family:'Parisienne',cursive;font-size:38px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Parisienne',cursive;font-size:22px">Why stage?</span><span style="font-family:'Parisienne',cursive;font-size:22px">In their words</span><span style="font-family:'Parisienne',cursive;font-size:22px">Start a project</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Parisienne',cursive;font-size:34px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial</span>
+          <div class="leaf art" style="right:-30px;bottom:-50px;width:210px;transform:rotate(-20deg)"><img src="leaf-art/web/wc-sprig.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Parisienne',cursive;font-size:34px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Rounder and friendlier than Great Vibes, with the same calligraphic structure. The middle ground between Caveat's warmth and a formal script.</p></div>
+        <div><b>Leaves</b><p>Approved leaves, A/E placement: corner cluster on dark, a small sprig or pair on light. Same on every row below; the font is the only variable.</p></div>
+        <div><b>Watch for</b><p>The friendliest of the five; if the goal is strictly 'elevated', F or J goes further.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- H -->
+  <section class="opt">
+    <header>
+      <div class="letter">H</div>
+      <h2>Alex Brush <small>Brush script, even weight</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec"><span style="font-family:'Alex Brush',cursive;font-size:40px">Why stage?</span><span style="font-family:'Alex Brush',cursive;font-size:40px">In their words</span><span class="on-sage" style="font-family:'Alex Brush',cursive;font-size:40px">Start a project</span><span style="font-family:'Alex Brush',cursive;font-size:40px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Alex Brush',cursive;font-size:22px">Why stage?</span><span style="font-family:'Alex Brush',cursive;font-size:22px">In their words</span><span style="font-family:'Alex Brush',cursive;font-size:22px">Start a project</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner-sm"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Alex Brush',cursive;font-size:36px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial</span>
+          <div class="leaf art" style="right:34px;top:22px;width:130px"><img src="leaf-art/web/wc-pair.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Alex Brush',cursive;font-size:36px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>A brush script with an even stroke, so it stays legible when small. Closest in feel to the hand on the flyer while reading cleanly on a phone.</p></div>
+        <div><b>Leaves</b><p>Approved leaves, A/E placement: corner cluster on dark, a small sprig or pair on light. Same on every row below; the font is the only variable.</p></div>
+        <div><b>Watch for</b><p>Lowercase is narrow; letter pairs like 'rn' can crowd. Short phrases only.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- I -->
+  <section class="opt">
+    <header>
+      <div class="letter">I</div>
+      <h2>Petit Formal Script <small>Upright, formal, very readable</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec"><span style="font-family:'Petit Formal Script',cursive;font-size:30px">Why stage?</span><span style="font-family:'Petit Formal Script',cursive;font-size:30px">In their words</span><span class="on-sage" style="font-family:'Petit Formal Script',cursive;font-size:30px">Start a project</span><span style="font-family:'Petit Formal Script',cursive;font-size:30px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Petit Formal Script',cursive;font-size:22px">Why stage?</span><span style="font-family:'Petit Formal Script',cursive;font-size:22px">In their words</span><span style="font-family:'Petit Formal Script',cursive;font-size:22px">Start a project</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Petit Formal Script',cursive;font-size:28px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial</span>
+          <div class="leaf art" style="right:34px;top:22px;width:130px"><img src="leaf-art/web/wc-pair.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Petit Formal Script',cursive;font-size:28px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>An upright formal script, almost a cursive italic. The most legible script on the sheet at small sizes, and still clearly a script.</p></div>
+        <div><b>Leaves</b><p>Approved leaves, A/E placement: corner cluster on dark, a small sprig or pair on light. Same on every row below; the font is the only variable.</p></div>
+        <div><b>Watch for</b><p>Runs small: 28 to 30px on desktop looks right, 22px on phones. Less flourish than F or J.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- J -->
+  <section class="opt">
+    <header>
+      <div class="letter">J</div>
+      <h2>Pinyon Script <small>Copperplate, the most elevated</small></h2>
+    </header>
+    <div class="body">
+      <div class="spec"><span style="font-family:'Pinyon Script',cursive;font-size:40px">Why stage?</span><span style="font-family:'Pinyon Script',cursive;font-size:40px">In their words</span><span class="on-sage" style="font-family:'Pinyon Script',cursive;font-size:40px">Start a project</span><span style="font-family:'Pinyon Script',cursive;font-size:40px">Who we help</span></div>
+      <div class="phone"><span class="mono">Same line at phone size · 22px</span><span style="font-family:'Pinyon Script',cursive;font-size:22px">Why stage?</span><span style="font-family:'Pinyon Script',cursive;font-size:22px">In their words</span><span style="font-family:'Pinyon Script',cursive;font-size:22px">Start a project</span></div>
+      <div class="panels">
+        <div class="panel panel--ink">
+          <span class="label">Home · why it matters</span>
+          <div class="leaf art a-corner"><img src="leaf-art/web/wc-corner.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Pinyon Script',cursive;font-size:38px">Why it matters</div>
+          <h3>Buyers decide from the photos</h3>
+          <p>Two figures from the National Association of Realtors and one from our own listings.</p>
+        </div>
+        <div class="panel panel--paper">
+          <span class="label">Home · testimonial</span>
+          <div class="leaf art" style="right:-30px;bottom:-50px;width:210px;transform:rotate(-20deg)"><img src="leaf-art/web/wc-sprig.png" alt=""></div>
+          <div class="eyebrow" style="font-family:'Pinyon Script',cursive;font-size:38px">In their words</div>
+          <h3>Our happy clients</h3>
+          <p>"Renew Staging knocks this out of the park." Stephen Dunn, Exeter Building Company.</p>
+        </div>
+      </div>
+      <div class="notes">
+        <div><b>Font</b><p>Copperplate-style script with hairline connectors. The most formal and 'elevated' option here, the stationery-shop look.</p></div>
+        <div><b>Leaves</b><p>Approved leaves, A/E placement: corner cluster on dark, a small sprig or pair on light. Same on every row below; the font is the only variable.</p></div>
+        <div><b>Watch for</b><p>Hairlines thin out on phones; needs 38px desktop, 24px phone, and the sage color rather than gray. The farthest from Caveat.</p></div>
+      </div>
+    </div>
+  </section>
+
   <div class="decide">
     <div>
       <h2>How to use this</h2>
       <ol>
-        <li><b>Pick a row</b>, or name a font from one row and the leaf placement from another. The leaf art is the same family throughout, painted to match the two examples above.</li>
+        <li><b>Pick a font</b> from F to J, or fall back to A or E. The leaves are decided; every row shows the approved placement.</li>
         <li><b>Stock art welcome.</b> If Sara has the original brochure artwork or a stock set she prefers, it drops straight into these placements. Best as vector (SVG, AI, EPS) or transparent PNG, licensed for web use.</li>
-        <li><b>Timing.</b> A pick by Thursday goes into the Webflow build during launch week. Later than that, it becomes the first polish item after launch and nothing else slips.</li>
+        <li><b>Timing.</b> A pick this week goes into the Webflow build. If nothing here lands, send the font you like and we will check whether it is licensed for web; buying one is fine.</li>
       </ol>
     </div>
     <div>
