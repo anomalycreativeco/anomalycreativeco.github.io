@@ -753,18 +753,20 @@ h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
 .site-footer__cdf-link:hover { color: var(--sage-deep); }
 .site-footer__base { margin-top: clamp(32px, 4vw, 56px); padding-top: 18px; }
 
-/* ---------- giving back: Teachers' Lounge Renewal Project (Nov 13, Daniel: read as philanthropy, use the mark) ---------- */
-.giving { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(28px, 4vw, 72px); align-items: center; }
-.giving__text { display: flex; flex-direction: column; gap: 22px; align-items: flex-start; }
-.giving__head { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
-.giving__mark { width: 120px; height: 120px; object-fit: contain; }
-.giving__mark--slot { aspect-ratio: 1 / 1; padding: 10px; }
-.giving .lead { max-width: 48ch; }
-.giving__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 24px; width: 100%; max-width: 560px; border-top: 1px solid rgba(20, 21, 20, 0.14); padding-top: 16px; }
-.giving__fact { display: flex; flex-direction: column; gap: 4px; }
-.giving__fact b { font-size: clamp(1.5rem, 2.4vw, 2.25rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
-.giving__fact span { color: var(--muted); font-size: var(--t-small); }
-.giving__note { max-width: 48ch; }
-.giving__media .slot { aspect-ratio: 4 / 3; }
-.hero .giving__mark { width: 96px; height: 96px; }
-@media (max-width: 760px) { .giving { grid-template-columns: minmax(0, 1fr); } .giving__facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; } .giving__mark { width: 88px; height: 88px; } }
+
+/* ---------- giving back band: Teachers' Lounge Renewal Project (Nov 13, compact) ---------- */
+.section--giving { padding-block: clamp(36px, 4vw, 56px); }
+.giving { display: grid; grid-template-columns: auto minmax(0, 1.2fr) auto auto; gap: clamp(20px, 3vw, 44px); align-items: center; }
+.giving__mark { width: 96px; height: 96px; object-fit: contain; flex: none; }
+.giving__mark--slot { aspect-ratio: 1 / 1; padding: 8px; }
+.giving__text { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; min-width: 0; }
+.giving__title { max-width: 26ch; }
+.giving__lead { max-width: 52ch; font-size: var(--t-small); }
+.giving__facts { display: flex; gap: clamp(16px, 2vw, 32px); padding-left: clamp(16px, 2vw, 32px); border-left: 1px solid rgba(20, 21, 20, 0.14); }
+.giving__fact { display: flex; flex-direction: column; gap: 2px; }
+.giving__fact b { font-size: clamp(1.4rem, 2vw, 2rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
+.giving__fact span { color: var(--muted); font-size: 0.75rem; white-space: nowrap; }
+.giving__btns { flex-direction: column; align-items: flex-end; gap: 8px; }
+.hero .giving__mark { width: 88px; height: 88px; }
+@media (max-width: 1000px) { .giving { grid-template-columns: auto minmax(0, 1fr); } .giving__facts { grid-column: 2; border-left: 0; padding-left: 0; } .giving__btns { grid-column: 2; flex-direction: row; align-items: center; } }
+@media (max-width: 760px) { .giving { grid-template-columns: minmax(0, 1fr); } .giving__facts, .giving__btns { grid-column: 1; } .giving__mark { width: 72px; height: 72px; } }
