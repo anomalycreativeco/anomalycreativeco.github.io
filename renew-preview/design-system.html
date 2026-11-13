@@ -1,0 +1,207 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Renew Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+
+<header class="site-header">
+  <div class="wrap site-header__bar">
+    <a class="site-logo" href="index.html" aria-label="Renew Staging &amp; Design, home"><img src="assets/renew-logo.png" alt="Renew Staging &amp; Design"></a>
+    <nav class="btn-row" aria-label="Design pages">
+      <a class="btn btn--plain" href="index.html">Home page</a>
+      <span class="tag">Design system v1</span>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="tag">Design system components</span>
+      <h1 class="display">Renew website kit</h1>
+      <p class="lead muted">Every page in the site is assembled from the parts on this page. Values here are the ones to carry into Figma styles and Webflow classes.</p>
+    </div>
+  </section>
+
+  <!-- COLOR -->
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <div class="section-head__title"><span class="tag">01 Color</span><h2 class="h2">Palette</h2>
+        <p class="muted measure">Off-white ground, near-black type. Sections alternate paper, white, sand and ink, following the Renew brochures; sage is the accent and the closing band on each page. The bright leaf green stays inside the logo.</p></div>
+      <div class="ds-swatches">
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#F4F3EF"></div><strong class="small">Paper</strong><span class="mono muted">#F4F3EF &middot; page ground</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#FFFFFF"></div><strong class="small">White</strong><span class="mono muted">#FFFFFF &middot; alt sections, panels</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#141514"></div><strong class="small">Ink</strong><span class="mono muted">#141514 &middot; type, solid buttons</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#87A180"></div><strong class="small">Sage</strong><span class="mono muted">#87A180 &middot; logo green, CTA band</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#5F7559"></div><strong class="small">Sage deep</strong><span class="mono muted">#5F7559 &middot; links on hover, labels</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#E2E7DD"></div><strong class="small">Sage tint</strong><span class="mono muted">#E2E7DD &middot; row hover, photo slots</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#EDE6DE"></div><strong class="small">Sand</strong><span class="mono muted">#EDE6DE &middot; warm alt section, from the brochures</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#D9D8D2"></div><strong class="small">Rule</strong><span class="mono muted">#D9D8D2 &middot; hairlines, borders</span></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:#62655F"></div><strong class="small">Muted</strong><span class="mono muted">#62655F &middot; secondary text</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section class="section section--white">
+    <div class="wrap stack stack--lg">
+      <div class="section-head__title"><span class="tag">02 Type</span><h2 class="h2">Typography</h2>
+        <p class="muted measure">Instrument Sans for everything people read, set in tight medium-weight capitals for headlines. DM Mono for tags, captions and photo-slot labels. Both are Google Fonts, available in Figma and Webflow.</p></div>
+      <div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Display &middot; 108/0.93 &middot; 500 &middot; -4% &middot; caps<br>mobile 44</span><span class="display">Staged &amp; installed</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">H2 &middot; 48/1.0 &middot; 500 &middot; -2.8% &middot; caps<br>mobile 28</span><span class="h2">Everything under one roof</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">H3 &middot; 22/1.15 &middot; 500 &middot; -1% &middot; caps<br>mobile 18</span><span class="h3">Vacant home staging</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Lead &middot; 20/1.45 &middot; 400</span><span class="lead">Renew stages listings, furnishes model homes and designs lived-in spaces across the Triangle.</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Body &middot; 16/1.55 &middot; 400</span><span class="measure">We quote from your listing photos or a walkthrough, install with our own crew, and clear out when the home goes under contract.</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Small &middot; 14/1.55 &middot; 400</span><span class="small muted">Empty listings furnished for photos and showings</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Mono label &middot; 11/1.4 &middot; +8% &middot; caps</span><span class="mono">Photo 3:2 &middot; staged living room</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <div class="section-head__title"><span class="tag">03 Controls</span><h2 class="h2">Buttons, tags &amp; chips</h2></div>
+      <div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Button &middot; solid / outline / small / plain</span><div class="ds-demo"><a class="btn btn--solid" href="#">Start a Project</a><a class="btn" href="#">See Our Work</a><a class="btn btn--solid btn--sm btn--plain" href="#">View</a><a class="btn btn--plain" href="#">(919) 600-1994</a></div></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Tag &middot; section label / sage / to-be-supplied</span><div class="ds-demo"><span class="tag">Who we help</span><span class="tag tag--sage">Builder case study</span><span class="tag tag--tbd">Figure from Scott</span></div></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Chip &middot; default / selected<br>intake answers, portfolio filters</span><div class="ds-demo"><span class="chip">Vacant</span><span class="chip chip--on">Occupied</span><span class="chip">Model home</span><span class="chip">Short-term rental</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROWS -->
+  <section class="section section--white">
+    <div class="wrap grid-split">
+      <div class="section-head__title"><span class="tag">04 Ruled rows</span><h2 class="h2">Row list</h2>
+        <p class="muted measure">The signature pattern. Used for services, capabilities, the intent router, FAQ and nav menus. Hover and selected states fill with sage tint and indent 14px.</p></div>
+      <div class="stack stack--lg">
+        <div class="rows">
+          <a class="row" href="#"><span class="row__main"><span class="row__title">Default row</span><span class="row__note">Supporting line in muted small text</span></span><span class="row__arrow" aria-hidden="true">&nearr;</span></a>
+          <a class="row" href="#" aria-selected="true"><span class="row__main"><span class="row__title">Selected / hover row</span><span class="row__note">Sage tint fill, 14px indent</span></span><span class="row__arrow" aria-hidden="true">&nearr;</span></a>
+          <a class="row" href="#"><span class="row__main"><span class="row__title">Default row</span><span class="row__note">Supporting line in muted small text</span></span><span class="row__arrow" aria-hidden="true">&nearr;</span></a>
+        </div>
+        <div class="rows rows--compact">
+          <a class="row" href="#"><span class="row__title">Compact row for long lists</span><span class="row__arrow" aria-hidden="true">&nearr;</span></a>
+          <a class="row" href="#"><span class="row__title">Compact row for long lists</span><span class="row__arrow" aria-hidden="true">&nearr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEDIA -->
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <div class="section-head__title"><span class="tag">05 Media</span><h2 class="h2">Photo &amp; video slots</h2>
+        <p class="muted measure">Every image position is a labeled slot: the label describes the shot and the pill gives type and ratio. Together they are the shot list. In Figma, replace the slot fill with the photo and delete the label.</p></div>
+      <div class="grid-3">
+        <div class="stack stack--sm"><div class="slot slot--16x9"><span class="slot__label">Shot description</span><span class="slot__kind">Photo 16:9</span></div><span class="mono muted">16:9 &middot; panels, inline</span></div>
+        <div class="stack stack--sm"><div class="slot slot--3x2"><span class="slot__label">Shot description</span><span class="slot__kind">Photo 3:2</span></div><span class="mono muted">3:2 &middot; project cards</span></div>
+        <div class="stack stack--sm"><div class="slot slot--4x5"><span class="slot__label">Shot description</span><span class="slot__kind">Photo 4:5</span></div><span class="mono muted">4:5 &middot; split sections</span></div>
+      </div>
+      <div class="stack stack--sm"><div class="slot slot--21x9 slot--dark"><span class="slot__play" aria-hidden="true">&#9654;</span><span class="slot__label">Video description</span><span class="slot__kind">Video 21:9</span></div><span class="mono muted">21:9 dark &middot; hero video, before state (4:3 on mobile)</span></div>
+    </div>
+  </section>
+
+  <!-- CARDS / DATA -->
+  <section class="section section--white">
+    <div class="wrap stack stack--lg">
+      <div class="section-head__title"><span class="tag">06 Blocks</span><h2 class="h2">Project card, stats &amp; steps</h2></div>
+      <div class="grid-2">
+        <a class="project" href="#"><div class="slot slot--3x2"><span class="slot__label">Project hero interior</span><span class="slot__kind">Photo 3:2</span></div><div class="project__meta"><span><span class="project__name">Project name</span> <span class="project__type">&middot; Service, city</span></span><span class="btn btn--solid btn--sm btn--plain">View</span></div></a>
+        <div class="stack">
+          <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+            <div class="stat"><span class="stat__value">000+</span><span class="stat__label">Stat label</span></div>
+            <div class="stat"><span class="stat__value">00 days</span><span class="stat__label">Stat label</span></div>
+          </div>
+          <ol class="steps" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+            <li class="step"><span class="step__num">Step 01</span><h3 class="h3">Step title</h3><p class="muted small">One or two lines on what happens.</p></li>
+            <li class="step"><span class="step__num">Step 02</span><h3 class="h3">Step title</h3><p class="muted small">One or two lines on what happens.</p></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMS -->
+  <section class="section">
+    <div class="wrap grid-split">
+      <div class="section-head__title"><span class="tag">07 Forms</span><h2 class="h2">Fields</h2>
+        <p class="muted measure">Underlined fields with mono labels. Used on Start a Project and Contact.</p></div>
+      <form class="stack" onsubmit="return false">
+        <div class="grid-2">
+          <div class="field"><label for="ds-name">Name</label><input id="ds-name" type="text" placeholder="Jordan Avery"></div>
+          <div class="field"><label for="ds-email">Email</label><input id="ds-email" type="email" placeholder="jordan@brokerage.com"></div>
+        </div>
+        <div class="field"><label for="ds-type">Project type</label><select id="ds-type"><option>Vacant home staging</option><option>Occupied staging</option><option>Interior design</option><option>Model or spec home</option></select></div>
+        <div class="field"><label for="ds-notes">Anything we should know</label><textarea id="ds-notes" placeholder="Listing date, rooms, access notes"></textarea></div>
+        <div><button class="btn btn--solid" type="submit">Send</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- SPACING -->
+  <section class="section section--white">
+    <div class="wrap stack stack--lg">
+      <div class="section-head__title"><span class="tag">08 Layout</span><h2 class="h2">Grid &amp; spacing</h2></div>
+      <div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Frame</span><span>1440 desktop &middot; 390 mobile &middot; content max-width 1440</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Side gutter</span><span>56 desktop &middot; 16 mobile</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Section padding</span><span>120 top and bottom desktop &middot; 56 mobile &middot; 1px rule between sections</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Column gap</span><span>28 desktop &middot; 16 mobile &middot; section heads split 55/45 with copy right-aligned to the grid</span></div>
+        <div class="ds-spec"><span class="mono ds-spec__meta">Corners</span><span>Square everywhere. Only buttons, tags and chips are fully round.</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <img src="assets/renew-logo.png" alt="Renew Staging &amp; Design">
+        <p class="small muted">Home staging, interior design and furnishing for the Raleigh-Durham Triangle. A Capital Discount Furniture company.</p>
+      </div>
+      <div class="site-footer__col">
+        <span class="mono site-footer__head">Services</span>
+        <a href="service-vacant-staging.html">Vacant Home Staging</a>
+        <a href="service-occupied-staging.html">Occupied Staging</a>
+        <a href="service-interior-design.html">Interior Design</a>
+        <a href="service-short-term-rental.html">Short-Term Rentals</a>
+        <a href="service-commercial-model-homes.html">Commercial &amp; Model Homes</a>
+      </div>
+      <div class="site-footer__col">
+        <span class="mono site-footer__head">Company</span>
+        <a href="work.html">Our Work</a>
+        <a href="how-we-work.html">How We Work</a>
+        <a href="why-renew.html">Why Renew</a>
+        <a href="about.html">About Us</a>
+        <a href="teachers-lounge-renewal-project.html">Teachers&rsquo; Lounge Renewal Project</a>
+      </div>
+      <div class="site-footer__col">
+        <span class="mono site-footer__head">Contact</span>
+        <a href="tel:+19196001994">(919) 600-1994</a>
+        <span>3921 S. Miami Blvd.<br>Durham, NC 27703</span>
+        <a href="contact.html">Contact Us</a>
+        <a href="https://www.instagram.com/renewstaginganddesign/">Instagram</a>
+      </div>
+    </div>
+    <div class="site-footer__lockup">
+      <div class="lockup__marks">
+        <img class="lockup__renew" src="assets/renew-logo.png" alt="Renew Staging &amp; Design">
+        <span class="lockup__x" aria-hidden="true">&times;</span>
+        <a class="lockup__link" href="https://www.capitaldiscountfurniture.com" target="_blank" rel="noopener" aria-label="Capital Discount Furniture website"><img class="lockup__cdf" src="assets/cdf-mark-ink.png" alt="Capital Discount Furniture"></a>
+      </div>
+      <p class="lockup__note muted"><span class="mono">Powered by</span><br>Renew Staging &amp; Design is a Capital Discount Furniture company. Same owners, same Durham warehouse, same crew.</p>
+      <a class="btn" href="https://www.capitaldiscountfurniture.com" target="_blank" rel="noopener">Shop Capital Discount Furniture</a>
+    </div>
+    <div class="site-footer__base mono">
+      <span>&copy; 2026 Renew Staging &amp; Design &middot; <a href="design-system.html">Design system</a></span>
+      <span>Durham &middot; Raleigh &middot; Chapel Hill &middot; Cary &middot; Apex &middot; Wake Forest</span>
+    </div>
+  </div>
+</footer>
