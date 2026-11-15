@@ -1,3 +1,13 @@
+// Designer-only hide classes (is-hidden-*) keep inactive panels out of the
+// Webflow canvas; on the live site the hidden attribute does that job.
+(function () {
+  document.querySelectorAll('[class*="is-hidden-"]').forEach(function (el) {
+    Array.prototype.slice.call(el.classList).forEach(function (c) {
+      if (c.indexOf('is-hidden-') === 0) el.classList.remove(c);
+    });
+  });
+})();
+
 // Webflow build: inputs are only allowed inside forms, so the before/after
 // range inputs ship as <div data-range> placeholders. Rebuild them first.
 (function () {
