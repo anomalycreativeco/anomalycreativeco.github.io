@@ -1,9 +1,10 @@
 // Designer-only hide classes (is-hidden-*) keep inactive panels out of the
-// Webflow canvas; on the live site the hidden attribute does that job.
+// Webflow canvas. Webflow strips the hidden attribute on publish, so turn the
+// class back into hidden here.
 (function () {
   document.querySelectorAll('[class*="is-hidden-"]').forEach(function (el) {
     Array.prototype.slice.call(el.classList).forEach(function (c) {
-      if (c.indexOf('is-hidden-') === 0) el.classList.remove(c);
+      if (c.indexOf('is-hidden-') === 0) { el.classList.remove(c); el.hidden = true; }
     });
   });
 })();
