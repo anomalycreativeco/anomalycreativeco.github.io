@@ -1,3 +1,19 @@
+// Webflow build: inputs are only allowed inside forms, so the before/after
+// range inputs ship as <div data-range> placeholders. Rebuild them first.
+(function () {
+  document.querySelectorAll('div[data-range]').forEach(function (d) {
+    var i = document.createElement('input');
+    i.type = 'range';
+    i.className = d.className;
+    if (d.dataset.id) i.id = d.dataset.id;
+    i.min = d.dataset.min || '0';
+    i.max = d.dataset.max || '100';
+    i.value = d.dataset.value || '50';
+    if (d.dataset.label) i.setAttribute('aria-label', d.dataset.label);
+    d.parentNode.replaceChild(i, d);
+  });
+})();
+
 // Renew Staging & Design — prototype interactions for the design pages.
 
 (function () {
