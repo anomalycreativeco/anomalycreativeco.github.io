@@ -104,4 +104,4 @@ h4 { margin: 0; font-weight: 500; }
   * { transition: none !important; }
 }
 /* Webflow build: elements that were <button> in the preview are divs here; restore the UA button line-height. */
-[role="button"] { line-height: normal; }
+.chip[role="button"], .row[role="button"] { line-height: normal; }
