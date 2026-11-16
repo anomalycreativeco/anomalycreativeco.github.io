@@ -125,3 +125,19 @@
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('is-open')) close(); });
 })();
+
+// Webflow build: chip groups on the intake form write their selection into a
+// hidden text field (data-field names it) so the answer reaches the form inbox.
+(function () {
+  document.querySelectorAll('.filters[data-field]').forEach(function (group) {
+    var form = group.closest('form');
+    var input = form && form.querySelector('input[name="' + group.getAttribute('data-field') + '"]');
+    if (!input) return;
+    var sync = function () {
+      input.value = Array.prototype.slice.call(group.querySelectorAll('.chip[aria-pressed="true"]'))
+        .map(function (c) { return c.textContent.trim(); }).join(', ');
+    };
+    group.addEventListener('click', function () { setTimeout(sync, 0); });
+    sync();
+  });
+})();
