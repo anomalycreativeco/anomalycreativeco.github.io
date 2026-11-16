@@ -105,3 +105,7 @@ h4 { margin: 0; font-weight: 500; }
 }
 /* Webflow build: elements that were <button> in the preview are divs here; restore the UA button line-height. */
 .chip[role="button"], .row[role="button"] { line-height: normal; }
+/* Webflow build: Webflow's base CSS centers figcaption and adds 5px top margin; the design uses the UA default. */
+figcaption { margin-top: 0; text-align: left; }
+/* Webflow build: Cloudflare Turnstile (spam check) appends an empty box to each form; keep it out of the stack gap while it is invisible. */
+form > div:has(> div > input[name="cf-turnstile-response"]):not(:has(iframe)) { position: absolute; width: 0; height: 0; overflow: hidden; }

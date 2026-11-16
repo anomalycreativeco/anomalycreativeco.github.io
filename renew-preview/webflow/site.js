@@ -141,3 +141,6 @@
     sync();
   });
 })();
+
+// Webflow build: hidden chip fields get Webflow's default "Example Text" placeholder; clear it.
+document.querySelectorAll('input.sr-field').forEach(function (i) { i.removeAttribute('placeholder'); });
