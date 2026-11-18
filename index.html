@@ -104,17 +104,27 @@ h1 .serif{color:var(--sage);font-size:1.04em}
 .today{color:var(--faint);line-height:1.9}
 .today em{font-style:normal;color:var(--muted)}
 
-/* ── the dock: every platform, one row (two for the business tools) ── */
-.dock{border-top:1px solid var(--line);padding:12px 56px 20px;margin:0 -64px;display:flex;flex-direction:column;gap:2px}
-.dgrp{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
-.dgrp .dl{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--faint);width:72px;flex:none;padding-left:8px}
-.dk{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:10px 13px;border-radius:999px;color:var(--muted);text-decoration:none;display:inline-flex;gap:8px;align-items:center;white-space:nowrap}
-.dk:hover{background:rgba(255,255,255,.06);color:var(--ink)}
-.dk i{font-style:normal;color:var(--sage)}
-.dk i:empty{display:none}
-.dk i.red{color:var(--red)}
-.dk i.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sage);box-shadow:0 0 0 3px rgba(145,171,165,.22)}
-.dock{position:relative}
+/* ── the dock: four categories; each opens a menu above itself on hover (or tap) ── */
+.dock{position:relative;border-top:1px solid var(--line);padding:14px 56px 18px;margin:0 -64px;display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.dgrp{position:relative}
+.dt,.dk1{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;line-height:1;padding:12px 16px;border-radius:999px;color:var(--muted);background:none;border:0;cursor:pointer;display:inline-flex;gap:10px;align-items:center;white-space:nowrap;text-decoration:none}
+.dk1:hover,.dgrp:hover>.dt,.dgrp.open>.dt,.dgrp:focus-within>.dt{background:rgba(255,255,255,.06);color:var(--ink)}
+.dt .car{width:5px;height:5px;border-right:1px solid currentColor;border-top:1px solid currentColor;transform:rotate(-45deg) translate(1px,1px);opacity:.55;transition:transform .18s,opacity .18s}
+.dgrp:hover>.dt .car,.dgrp.open>.dt .car,.dgrp:focus-within>.dt .car{opacity:1;color:var(--sage)}
+.dt i,.dk1 i,.dm a i{font-style:normal;font-family:var(--mono);color:var(--sage)}
+.dt i:empty,.dk1 i:empty,.dm a i:empty{display:none}
+.dt i.red,.dk1 i.red,.dm a i.red{color:var(--red)}
+.dt i.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sage)}
+.dt i.dot.red{background:var(--red)}
+.dm a i.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sage);box-shadow:0 0 0 3px rgba(145,171,165,.22)}
+/* the menu rises out of its category; the padding keeps the pointer "inside" across the gap */
+.dm{position:absolute;left:0;bottom:100%;padding-bottom:6px;z-index:40;visibility:hidden;opacity:0;transform:translateY(6px);transition:opacity .14s ease,transform .14s ease,visibility 0s linear .14s}
+.dm.flip{left:auto;right:0}
+.dgrp:hover>.dm,.dgrp.open>.dm,.dgrp:focus-within>.dm{visibility:visible;opacity:1;transform:none;transition-delay:.05s}
+.dm>div{min-width:232px;background:var(--card);border:1px solid var(--line-2);border-radius:18px;padding:8px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.dm a{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 14px;border-radius:12px;color:var(--body);text-decoration:none;font-size:14.5px;white-space:nowrap}
+.dm a:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.dm a i{font-size:11px;letter-spacing:.08em}
 .ver{position:absolute;right:64px;bottom:16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--faint)}
 
 /* ── ⌘K: jump anywhere ── */
@@ -199,8 +209,9 @@ h1 .serif{color:var(--sage);font-size:1.04em}
   .needs a{grid-template-columns:12px 1fr 20px;font-size:17px;gap:12px;padding:16px 0}
   .needs .w{display:none}
   .more{flex-direction:column;gap:10px}
-  .dock{margin:0 -22px;padding:12px 14px 18px}
-  .dgrp .dl{display:none}
+  .dock{margin:0 -22px;padding:12px 10px 18px;gap:0}
+  .dt,.dk1{padding:12px 13px}
+  .dm>div{min-width:200px}
   .ver{display:none}
   .panel{padding:22px 18px}
   .kbox{top:12vh}
@@ -337,7 +348,7 @@ const auth=getAuth(app), db=getFirestore(app);
 const AUTH_USER={get getIdToken(){return auth.currentUser?(()=>auth.currentUser.getIdToken()):null;}};
 
 /* Bump on every deploy. GitHub Pages caches at the edge for ~10 minutes. */
-const APP_VERSION="3.0.0", APP_BUILD="2026-11-17";
+const APP_VERSION="3.0.0", APP_BUILD="2026-11-18";
 
 const esc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const cap=s=>{s=String(s||"").trim();return s?s.charAt(0).toUpperCase()+s.slice(1):"";};
@@ -384,6 +395,17 @@ const BUSINESS=[
   {key:"iganalytics",name:"Instagram Analytics",short:"IG Analytics",url:"instagram-analytics.html"}
 ];
 const PIPE_URL=STUDIO[0].url;
+/* The dock groups them into four categories; a category with one visible item shows that item directly. */
+const ARES={key:"ares",name:"Ares Digital",short:"Ares ↗",url:"ares.html",direct:true};
+const DOCK=[
+  {cat:"Post",keys:["pipeline","josh","mls","captionwriter"]},
+  {cat:"Planning",keys:["brief","rchplanner","ufplanner","renewplanner"]},
+  {cat:"Clients",keys:["onboarding","relmap","tickets","iganalytics"]},
+  {cat:"Business",keys:["automations","analytics","financials","ares"]}
+];
+const ALLAPPS=[...STUDIO,...BUSINESS,ARES];
+const appOf=k=>ALLAPPS.find(a=>a.key===k);
+const catOf=k=>(DOCK.find(d=>d.keys.includes(k))||{}).cat||"Hub";
 
 let USER=null, MYEMAIL="", MYROLE="none", ACCESS=null, PREVIEW=null;
 const isOwner=()=>OWNERS.includes(MYEMAIL);
@@ -780,23 +802,36 @@ function paintToday(){
 }
 
 /* ───────── the dock ───────── */
+const dockEl=document.getElementById("dock");
+function dockCloseAll(){ dockEl.querySelectorAll(".dgrp.open").forEach(g=>{ g.classList.remove("open"); g.querySelector(".dt").setAttribute("aria-expanded","false"); }); }
 function renderDock(){
-  const dock=document.getElementById("dock");
-  const chip=it=>`<a class="dk" href="${esc(it.url)}" data-key="${it.key}" data-name="${esc(it.name)}" target="_blank" rel="noopener">${esc(it.short)}<i data-badge="${it.key}"></i></a>`;
-  let studio=STUDIO.filter(it=>canSee(it.key)).map(chip).join("");
-  studio+=`<a class="dk" href="#" data-key="reminders" data-name="Reminders">Reminders<i data-badge="reminders"></i></a>`;
-  let biz=BUSINESS.filter(it=>canSee(it.key)).map(chip).join("");
-  if(canSee("ares")) biz+=`<a class="dk" href="ares.html" data-key="ares" data-direct="1" title="Switch to Ares Digital">Ares ↗</a>`;
-  dock.innerHTML=`<div class="dgrp"><span class="dl">STUDIO</span>${studio}</div>`
-    +(biz?`<div class="dgrp"><span class="dl">BUSINESS</span>${biz}</div>`:"")
-    +`<span class="ver" id="vBadge" title="Studio Hub v${APP_VERSION} — built ${APP_BUILD}">v${APP_VERSION}</span>`;
-  dock.querySelectorAll("a.dk").forEach(a=>a.addEventListener("click",e=>{
+  const link=(it,cls)=>`<a${cls?` class="${cls}"`:""} href="${esc(it.url)}" data-key="${it.key}" data-name="${esc(it.name)}"${it.direct?' data-direct="1"':' target="_blank" rel="noopener"'}>${esc(it.short)}<i data-badge="${it.key}"></i></a>`;
+  let html="";
+  DOCK.forEach(d=>{
+    const items=d.keys.map(appOf).filter(it=>it&&canSee(it.key));
+    if(!items.length) return;
+    if(items.length===1){ html+=link(items[0],"dk1"); return; }
+    html+=`<div class="dgrp" data-cat="${esc(d.cat)}"><button class="dt" type="button" aria-haspopup="true" aria-expanded="false">${esc(d.cat)}<i data-cbadge="${esc(d.cat)}"></i><span class="car"></span></button><div class="dm"><div>${items.map(it=>link(it)).join("")}</div></div></div>`;
+  });
+  html+=`<a class="dk1" href="#" data-key="reminders" data-name="Reminders">Reminders<i data-badge="reminders"></i></a>`;
+  html+=`<span class="ver" id="vBadge" title="Studio Hub v${APP_VERSION} — built ${APP_BUILD}">v${APP_VERSION}</span>`;
+  dockEl.innerHTML=html;
+  dockEl.querySelectorAll(".dgrp").forEach(g=>{
+    const bt=g.querySelector(".dt"), m=g.querySelector(".dm");
+    const fit=()=>{ m.classList.remove("flip"); if(m.getBoundingClientRect().right>innerWidth-8) m.classList.add("flip"); };
+    g.addEventListener("pointerenter",fit);
+    // click or tap toggles it too (phones have no hover); one open at a time
+    bt.addEventListener("click",e=>{ e.stopPropagation(); const was=g.classList.contains("open"); dockCloseAll(); if(!was){ g.classList.add("open"); bt.setAttribute("aria-expanded","true"); fit(); } });
+  });
+  dockEl.querySelectorAll("a[data-key]").forEach(a=>a.addEventListener("click",e=>{
+    dockCloseAll();
     if(a.dataset.direct) return;
     if(a.dataset.key==="reminders"){ e.preventDefault(); openReminders(); return; }
     if(e.metaKey||e.ctrlKey||e.shiftKey) return;
     e.preventDefault(); openApp(a.dataset.name,a.getAttribute("href"));
   }));
 }
+document.addEventListener("click",e=>{ if(!e.target.closest(".dgrp")) dockCloseAll(); });
 function setBadge(k,txt,cls){ const i=document.querySelector(`[data-badge="${k}"]`); if(!i) return; i.textContent=txt||""; i.className=cls||""; }
 function paintDockBadges(){
   const team=teamwide(), today=todayISO();
@@ -807,6 +842,14 @@ function paintDockBadges(){
   if(TICKETS){ const open=TICKETS.T.filter(t=>!t.archived&&ticketStage(t,TICKETS.O)!=="live").length; setBadge("tickets",open||""); }
   const me=(effEmail()||"").toLowerCase();
   setBadge("reminders",REMS.filter(r=>!r.done&&(r.for||"").toLowerCase()===me).length||"");
+  // the closed category carries the headline: a red count if anything inside is red, else a dot if anything inside has a badge
+  dockEl.querySelectorAll(".dgrp").forEach(g=>{
+    const b=g.querySelector("[data-cbadge]"), inner=[...g.querySelectorAll(".dm i[data-badge]")];
+    const red=inner.find(i=>i.classList.contains("red")&&i.textContent);
+    if(red){ b.textContent=red.textContent; b.className="red"; }
+    else if(inner.some(i=>i.textContent||i.classList.contains("live"))){ b.textContent=""; b.className="dot"; }
+    else { b.textContent=""; b.className=""; }
+  });
 }
 
 /* ───────── ⌘K: jump anywhere ───────── */
@@ -814,8 +857,7 @@ const kov=document.getElementById("kov"), kInput=document.getElementById("kInput
 let KSEL=0, KHITS=[];
 function kItems(){
   const list=[];
-  STUDIO.filter(it=>canSee(it.key)).forEach(it=>list.push({name:it.name,sub:"Platform",run:()=>openApp(it.name,it.url)}));
-  BUSINESS.filter(it=>canSee(it.key)).forEach(it=>list.push({name:it.name,sub:"Business",run:()=>openApp(it.name,it.url)}));
+  [...STUDIO,...BUSINESS].filter(it=>canSee(it.key)).forEach(it=>list.push({name:it.name,sub:catOf(it.key),run:()=>openApp(it.name,it.url)}));
   list.push({name:"Reminders",sub:"Hub",run:openReminders});
   if(canSee("pipeline")) CLIENTS.slice().sort((a,b)=>String(a.name||a.abbr).localeCompare(String(b.name||b.abbr))).forEach(c=>
     list.push({name:c.name||c.abbr,sub:"Client · pipeline calendar",run:()=>openApp("Editing Pipeline",PIPE_URL+"?view=calendar&client="+encodeURIComponent(c.abbr))}));
@@ -1001,6 +1043,7 @@ document.getElementById("adminSave").onclick=async()=>{
 addEventListener("keydown",e=>{
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){ e.preventDefault(); if(kov.classList.contains("open")) kClose(); else kOpen(); return; }
   if(e.key==="Escape"){
+    if(dockEl.querySelector(".dgrp.open")){ dockCloseAll(); return; }
     if(kov.classList.contains("open")){ kClose(); return; }
     if(remOvl.classList.contains("open")||adminOvl.classList.contains("open")){ remOvl.classList.remove("open"); adminOvl.classList.remove("open"); return; }
     if(viewer.classList.contains("open")) closeApp();
